@@ -20,6 +20,8 @@ func DDL(cms ...string) {
 		DDLSchema(name)
 	case "tb", "table": //查看table的DDL
 		DDLTable(name)
+	case "vw", "view": //查看view的DDL
+		DDLView(name)
 	default:
 		fmt.Println("Failed:DDL Cmd fail")
 		return
@@ -87,6 +89,24 @@ func DDLTable(name string) {
 	} else {
 		fmt.Println("Failed:DDL Cmd Schema fail,error ", err.Error())
 		return
+	}
+}
+
+// DDLView 生成view视图的DDL
+// viewName 视图名称
+func DDLView(viewName string) {
+	if viewInfo, err := P.Views("filter", viewName); err == nil {
+		//判断信息不为空
+		if len(viewInfo) == 0 {
+			fmt.Println("Failed:DDL Cmd View fail,View not exists!")
+			return
+		}
+
+		//print Create View SQL
+		fmt.Println("========= Create View Success ============")
+		if def, ok := viewInfo[0]["definition"]; ok {
+			fmt.Println(fmt.Sprintf(" CREATE OR REPLACE VIEW \"%s\".%s\n AS%s", P.Schema, viewName, def))
+		}
 	}
 }
 

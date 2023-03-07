@@ -17,54 +17,13 @@ func Show(cmdList []string) {
 				ShowVersion()
 			case "db", "database":
 				ShowDatabases()
-			case "tb", "table":
-				//增加过滤过功能
-				if len(cmdList) != 3 { //filter
-					ShowTables("")
-				}
-
-				if len(cmdList) == 3 {
-					//带有like 或 filter
-					sonCmd := strings.ToLower(strings.Trim(cmdList[1], ""))
-					//过滤参数处理
-					param := strings.Replace(cmdList[2], "'", "", -1)
-					param = strings.Replace(param, "\"", "", -1)
-					params := strings.Split(param, "|")
-
-					if !InArray(sonCmd, []string{"filter", "like"}) {
-						fmt.Println("Failed:CmdLine Show table filter is Wrong!")
-					}
-
-					ShowTables(sonCmd, params...)
-				}
-
+			case "tb", "table", "view", "vw":
+				ShowTableView(cmd, cmdList)
 				return
 			case "sd", "selectdb":
 				fmt.Println("DataBase:", *Database, ";Schema:", P.Schema)
 			case "sc", "schema": //查询schema
 				ShowSchema()
-			case "view": //查询视图
-				//增加过滤过功能
-				if len(cmdList) != 3 { //filter
-					ShowView("")
-				}
-
-				if len(cmdList) == 3 {
-					//带有like 或 filter
-					sonCmd := strings.ToLower(strings.Trim(cmdList[1], ""))
-					//过滤参数处理
-					param := strings.Replace(cmdList[2], "'", "", -1)
-					param = strings.Replace(param, "\"", "", -1)
-					params := strings.Split(param, "|")
-
-					if !InArray(sonCmd, []string{"filter", "like"}) {
-						fmt.Println("Failed:CmdLine Show View filter is Wrong!")
-					}
-
-					ShowView(sonCmd, params...)
-				}
-
-				return
 			default:
 				fmt.Println("Failed:CmdLine is Wrong!")
 			}
@@ -91,7 +50,7 @@ func ShowSchema() {
 				P.GetRoleNameByOid(cast.ToInt(v["nspowner"])),
 				v["nspacl"],
 			)
-			//
+			//填入数组
 			dbs = append(dbs, sbs)
 		}
 		t.AppendRows(dbs)
@@ -145,6 +104,35 @@ func ShowDatabases() {
 	} else {
 		fmt.Println("Failed:Show DataBase is Wrong! error ", err.Error())
 	}
+}
+
+func ShowTableView(cmd string, cmdList []string) {
+	//增加过滤过功能
+	if len(cmdList) == 3 {
+		//带有like 或 filter
+		sonCmd := strings.ToLower(strings.Trim(cmdList[1], ""))
+		//过滤参数处理
+		param := strings.Replace(cmdList[2], "'", "", -1)
+		param = strings.Replace(param, "\"", "", -1)
+		params := strings.Split(param, "|")
+
+		if !InArray(sonCmd, []string{"filter", "like"}) {
+			fmt.Println("Failed:CmdLine Show Table Or View filter is Wrong!")
+		}
+
+		//校验是查表还是视图
+		if InArray(cmd, []string{"tb", "table"}) {
+			ShowTables(sonCmd, params...)
+		} else if InArray(cmd, []string{"view", "vw"}) {
+			ShowView(sonCmd, params...)
+		} else {
+			fmt.Println("Failed:CmdLine Show Table Or View filter is Wrong!")
+		}
+
+	} else {
+		ShowView("")
+	}
+
 }
 
 func ShowTables(cmd string, filter ...string) {
