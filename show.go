@@ -128,9 +128,14 @@ func ShowTableView(cmd string, cmdList []string) {
 		} else {
 			fmt.Println("Failed:CmdLine Show Table Or View filter is Wrong!")
 		}
-
 	} else {
-		ShowView("")
+		if InArray(cmd, []string{"tb", "table"}) {
+			ShowTables("")
+		} else if InArray(cmd, []string{"view", "vw"}) {
+			ShowView("")
+		} else {
+			fmt.Println("Failed:CmdLine Show Table Or View filter is Wrong!")
+		}
 	}
 
 }
