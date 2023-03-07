@@ -43,6 +43,28 @@ func Show(cmdList []string) {
 				fmt.Println("DataBase:", *Database, ";Schema:", P.Schema)
 			case "sc", "schema": //查询schema
 				ShowSchema()
+			case "view": //查询视图
+				//增加过滤过功能
+				if len(cmdList) != 3 { //filter
+					ShowView("")
+				}
+
+				if len(cmdList) == 3 {
+					//带有like 或 filter
+					sonCmd := strings.ToLower(strings.Trim(cmdList[1], ""))
+					//过滤参数处理
+					param := strings.Replace(cmdList[2], "'", "", -1)
+					param = strings.Replace(param, "\"", "", -1)
+					params := strings.Split(param, "|")
+
+					if !InArray(sonCmd, []string{"filter", "like"}) {
+						fmt.Println("Failed:CmdLine Show View filter is Wrong!")
+					}
+
+					ShowView(sonCmd, params...)
+				}
+
+				return
 			default:
 				fmt.Println("Failed:CmdLine is Wrong!")
 			}
@@ -136,6 +158,24 @@ func ShowTables(cmd string, filter ...string) {
 			var sbs []interface{}
 			//oid
 			sbs = append(sbs, v["schemaname"], v["tablename"], v["tableowner"], v["tablespace"])
+			tbs = append(tbs, sbs)
+		}
+		t.AppendRows(tbs)
+		t.Render()
+	}
+}
+
+func ShowView(cmd string, filter ...string) {
+	if tb, err := P.Views(cmd, filter...); err == nil {
+		//序列化输出
+		t := table.NewWriter()
+		t.SetOutputMirror(os.Stdout)
+		t.AppendHeader(table.Row{"Schema", "viewname", "viewowner"})
+		var tbs []table.Row
+		for _, v := range tb {
+			var sbs []interface{}
+			//oid
+			sbs = append(sbs, v["schemaname"], v["viewname"], v["viewowner"])
 			tbs = append(tbs, sbs)
 		}
 		t.AppendRows(tbs)

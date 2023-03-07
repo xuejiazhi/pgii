@@ -162,6 +162,66 @@ func (p *PgDsn) Tables(cmd string, param ...string) (pgTables []map[string]inter
 	return
 }
 
+func (p *PgDsn) Views(cmd string, param ...string) (pgTables []map[string]interface{}, err error) {
+	/**
+	pg_tables 提供对数据库中每个表的信息的访问
+		schemaname  包含表的模式名
+		tablename   表名  	pg_class.relname
+		tableowner  表拥有者的名字  pg_authid.rolname
+		tablespace  包含表的表空间的名字（如果使用数据库的默认表空间，此列为空） pg_tablespace.spcname
+	*/
+	sqlStr := "select * from pg_views"
+
+	//是否选择Schema
+	condition := ""
+	if p.Schema != "" {
+		condition += " schemaname='" + p.Schema + "'"
+	}
+	//加上过滤条件
+	if InArray(cmd, []string{"filter", "like"}) {
+		if len(param) > 0 {
+			if cmd == "filter" {
+				inParam := "("
+				for k, v := range param {
+					if len(param)-1 == k {
+						inParam += fmt.Sprintf("'%s'", v)
+					} else {
+						inParam += fmt.Sprintf("'%s',", v)
+					}
+				}
+				inParam += ")"
+				condition += cast.ToString(If(condition == "",
+					fmt.Sprintf(" viewname in %s", inParam),
+					fmt.Sprintf(" and viewname in %s", inParam)))
+			}
+
+			if cmd == "like" {
+				inParam := "("
+				for k, v := range param {
+					if len(param)-1 == k {
+						inParam += fmt.Sprintf("viewname like '%%%s%%'", v)
+					} else {
+						inParam += fmt.Sprintf("viewname like '%%%s%%' or ", v)
+					}
+				}
+				inParam += ")"
+				condition += cast.ToString(
+					If(condition == "",
+						fmt.Sprintf("  %s", inParam),
+						fmt.Sprintf(" and %s", inParam)))
+			}
+		}
+	}
+
+	if condition != "" {
+		sqlStr += fmt.Sprintf(" where %s", condition)
+	}
+	//query
+	err = p.PgConn.Raw(sqlStr).Scan(&pgTables).Error
+
+	return
+}
+
 func (p *PgDsn) Column(tableName string) (tbColumns []map[string]interface{}, err error) {
 	///Get Column TSQL
 	sqlStr := fmt.Sprintf("select * from information_schema.columns where table_schema='%s' and table_name='%s'", p.Schema, tableName)
