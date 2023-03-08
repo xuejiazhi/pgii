@@ -5,7 +5,7 @@ import "fmt"
 func Size(params ...string) {
 	//参数长度为1位或2位
 	if len(params) > 2 || len(params) < 1 {
-		fmt.Println("Failed:DDL Cmd fail")
+		fmt.Println("Failed:SIZE Cmd fail")
 		return
 	}
 

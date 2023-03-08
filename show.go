@@ -78,7 +78,7 @@ func ShowDatabases() {
 		//序列化输出
 		t := table.NewWriter()
 		t.SetOutputMirror(os.Stdout)
-		t.AppendHeader(table.Row{"#oid", "DbName", "Auth", "Encoding", "LC_COLLATE", "LC_CTYPE", "AllowConn", "ConnLimit", "LastSysOid", "TableSpace", "Acl"})
+		t.AppendHeader(table.Row{"#oid", "DbName", "Auth", "Encoding", "LC_COLLATE", "LC_CTYPE", "AllowConn", "ConnLimit", "LastSysOid", "TableSpace", "size"})
 		var dbs []table.Row
 		for _, v := range dbList {
 			var sbs []interface{}
@@ -94,7 +94,7 @@ func ShowDatabases() {
 				v["datconnlimit"],
 				v["datlastsysoid"],
 				P.GetTableSpaceNameByOid(cast.ToInt(v["dattablespace"])),
-				v["datacl"],
+				v["size"],
 			)
 			//
 			dbs = append(dbs, sbs)
@@ -116,29 +116,29 @@ func ShowTableView(cmd string, cmdList []string) {
 		param = strings.Replace(param, "\"", "", -1)
 		params := strings.Split(param, "|")
 
-		if !InArray(sonCmd, []string{"filter", "like"}) ||
-			!InArray(cmd, []string{"tb", "table", "view", "vw"}) {
+		if !InArray(sonCmd, EqualAndFilter) ||
+			!InArray(cmd, TableAndView) {
 			fmt.Println("Failed:CmdLine Show Table Or View filter is Wrong!")
 			return
 		}
 
 		//校验是查表还是视图
 		IfCmdFunc(
-			InArray(cmd, []string{"tb", "table"}),
-			cmd,
+			InArray(cmd, TableVar),
+			sonCmd,
 			params,
 			ShowTables,
 			ShowView,
 		)
 
 	} else {
-		if !InArray(cmd, []string{"tb", "table", "view", "vw"}) {
+		if !InArray(cmd, TableAndView) {
 			fmt.Println("Failed:CmdLine Show Table Or View filter is Wrong!")
 			return
 		}
 
 		IfCmdFunc(
-			InArray(cmd, []string{"tb", "table"}),
+			InArray(cmd, TableVar),
 			"",
 			nil,
 			ShowTables,

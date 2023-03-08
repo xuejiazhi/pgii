@@ -77,19 +77,20 @@ func (p *PgDsn) Database() (pgDatabases []map[string]interface{}, err error) {
 		dattablespace  此数据库的默认表空间。在此数据库中，所有pg_class.reltablespace为0的表都将被存储在这个表空间中，尤其是非共享系统目录都会在其中。
 		datacl   访问权限，更多信息参见 GRANT和 REVOKE
 	*/
-	sqlStr := "select " +
-		"oid," +
-		"datname," +
-		"datdba," +
-		"encoding," +
-		"datcollate," +
-		"datctype," +
-		"datallowconn," +
-		"datconnlimit," +
-		"datlastsysoid," +
-		"dattablespace," +
-		"datacl " +
-		" from pg_database"
+	sqlStr := `select 
+    			  oid,
+    			  datname,
+    			  datdba,
+    			  encoding,
+    			  datcollate,
+    			  datctype,
+    			  datallowconn,
+    			  datconnlimit,
+    			  datlastsysoid,
+    			  dattablespace, 
+    			  (select pg_size_pretty( pg_database_size(datname) ) ) as size 
+			   from 
+				  pg_database`
 
 	//query
 	err = p.PgConn.Raw(sqlStr).Scan(&pgDatabases).Error
@@ -105,53 +106,16 @@ func (p *PgDsn) Tables(cmd string, param ...string) (pgTables []map[string]inter
 		tableowner  表拥有者的名字  pg_authid.rolname
 		tablespace  包含表的表空间的名字（如果使用数据库的默认表空间，此列为空） pg_tablespace.spcname
 	*/
-	sqlStr := "select " +
-		"schemaname," +
-		"tablename," +
-		"tableowner," +
-		"tablespace" +
-		" from pg_tables"
+	sqlStr := `select 
+    			  schemaname,
+    			  tablename,
+    			  tableowner,
+    			  tablespace
+				from 
+				  pg_tables `
 
 	//是否选择Schema
-	condition := ""
-	if p.Schema != "" {
-		condition += " schemaname='" + p.Schema + "'"
-	}
-	//加上过滤条件
-	if InArray(cmd, []string{"filter", "like"}) {
-		if len(param) > 0 {
-			if cmd == "filter" {
-				inParam := "("
-				for k, v := range param {
-					if len(param)-1 == k {
-						inParam += fmt.Sprintf("'%s'", v)
-					} else {
-						inParam += fmt.Sprintf("'%s',", v)
-					}
-				}
-				inParam += ")"
-				condition += cast.ToString(If(condition == "",
-					fmt.Sprintf(" tablename in %s", inParam),
-					fmt.Sprintf(" and tablename in %s", inParam)))
-			}
-
-			if cmd == "like" {
-				inParam := "("
-				for k, v := range param {
-					if len(param)-1 == k {
-						inParam += fmt.Sprintf("tablename like '%%%s%%'", v)
-					} else {
-						inParam += fmt.Sprintf("tablename like '%%%s%%' or ", v)
-					}
-				}
-				inParam += ")"
-				condition += cast.ToString(
-					If(condition == "",
-						fmt.Sprintf("  %s", inParam),
-						fmt.Sprintf(" and %s", inParam)))
-			}
-		}
-	}
+	condition := p.getTableViewCondition("table", cmd, param...)
 
 	if condition != "" {
 		sqlStr += fmt.Sprintf(" where %s", condition)
@@ -173,45 +137,7 @@ func (p *PgDsn) Views(cmd string, param ...string) (pgTables []map[string]interf
 	sqlStr := "select * from pg_views"
 
 	//是否选择Schema
-	condition := ""
-	if p.Schema != "" {
-		condition += " schemaname='" + p.Schema + "'"
-	}
-	//加上过滤条件
-	if InArray(cmd, []string{"filter", "like"}) {
-		if len(param) > 0 {
-			if cmd == "filter" {
-				inParam := "("
-				for k, v := range param {
-					if len(param)-1 == k {
-						inParam += fmt.Sprintf("'%s'", v)
-					} else {
-						inParam += fmt.Sprintf("'%s',", v)
-					}
-				}
-				inParam += ")"
-				condition += cast.ToString(If(condition == "",
-					fmt.Sprintf(" viewname in %s", inParam),
-					fmt.Sprintf(" and viewname in %s", inParam)))
-			}
-
-			if cmd == "like" {
-				inParam := "("
-				for k, v := range param {
-					if len(param)-1 == k {
-						inParam += fmt.Sprintf("viewname like '%%%s%%'", v)
-					} else {
-						inParam += fmt.Sprintf("viewname like '%%%s%%' or ", v)
-					}
-				}
-				inParam += ")"
-				condition += cast.ToString(
-					If(condition == "",
-						fmt.Sprintf("  %s", inParam),
-						fmt.Sprintf(" and %s", inParam)))
-			}
-		}
-	}
+	condition := p.getTableViewCondition("view", cmd, param...)
 
 	if condition != "" {
 		sqlStr += fmt.Sprintf(" where %s", condition)
@@ -219,6 +145,56 @@ func (p *PgDsn) Views(cmd string, param ...string) (pgTables []map[string]interf
 	//query
 	err = p.PgConn.Raw(sqlStr).Scan(&pgTables).Error
 
+	return
+}
+
+func (p *PgDsn) getTableViewCondition(style, cmd string, param ...string) (condition string) {
+	if p.Schema != "" {
+		condition += fmt.Sprintf(" schemaname='%s'", p.Schema)
+	}
+
+	//查表还是查视图
+	useName := If(style == "view", "viewname", "tablename")
+
+	//加上过滤条件
+	if InArray(cmd, EqualAndFilter) {
+		if len(param) == 0 {
+			return
+		}
+
+		inParam := ""
+		for k, v := range param {
+			//eq
+			if InArray(cmd, EqualVar) {
+				inParam += cast.ToString(If(len(param)-1 == k,
+					fmt.Sprintf("'%s'", v),
+					fmt.Sprintf("'%s',", v)))
+			}
+
+			//filter
+			if InArray(cmd, FilterVar) {
+				inParam += cast.ToString(If(len(param)-1 == k,
+					fmt.Sprintf("%s like '%%%s%%'", useName, v),
+					fmt.Sprintf("%s like '%%%s%%' or ", useName, v)))
+			}
+		}
+		inParam = fmt.Sprintf("(%s)", inParam)
+		//eq的处理
+		if InArray(cmd, EqualVar) {
+			condition += cast.ToString(If(condition == "",
+				fmt.Sprintf(" %s in %s", useName, inParam),
+				fmt.Sprintf(" and %s in %s", useName, inParam)))
+		}
+
+		//filter的处理
+		if InArray(cmd, FilterVar) {
+			condition += cast.ToString(
+				If(condition == "",
+					fmt.Sprintf("  %s", inParam),
+					fmt.Sprintf(" and %s", inParam)))
+		}
+
+	}
 	return
 }
 
