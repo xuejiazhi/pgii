@@ -29,6 +29,8 @@ func Route(cmd string) {
 		Help(cmdList[1:]...)
 	case "ddl": //查看建模式与表的语句
 		DDL(cmdList[1:]...)
+	case "size": //查看库和表的空间大小
+		Size(cmdList[1:]...)
 	case "exit":
 		os.Exit(0)
 	default:

@@ -9,6 +9,14 @@ func If(condition bool, x, y interface{}) interface{} {
 	return y
 }
 
+func IfCmdFunc(condition bool, cmd string, param []string, x, y func(string, ...string)) {
+	if condition {
+		x(cmd, param...)
+	} else {
+		y(cmd, param...)
+	}
+}
+
 func InArray(param string, params []string) bool {
 	for _, v := range params {
 		if param == v {
@@ -35,7 +43,7 @@ func RemoveNullStr(params *[]string) {
 				flag = 1
 			}
 		}
-		
+
 		if flag == 1 {
 			break
 		}

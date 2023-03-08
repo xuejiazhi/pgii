@@ -116,26 +116,34 @@ func ShowTableView(cmd string, cmdList []string) {
 		param = strings.Replace(param, "\"", "", -1)
 		params := strings.Split(param, "|")
 
-		if !InArray(sonCmd, []string{"filter", "like"}) {
+		if !InArray(sonCmd, []string{"filter", "like"}) ||
+			!InArray(cmd, []string{"tb", "table", "view", "vw"}) {
 			fmt.Println("Failed:CmdLine Show Table Or View filter is Wrong!")
+			return
 		}
 
 		//校验是查表还是视图
-		if InArray(cmd, []string{"tb", "table"}) {
-			ShowTables(sonCmd, params...)
-		} else if InArray(cmd, []string{"view", "vw"}) {
-			ShowView(sonCmd, params...)
-		} else {
-			fmt.Println("Failed:CmdLine Show Table Or View filter is Wrong!")
-		}
+		IfCmdFunc(
+			InArray(cmd, []string{"tb", "table"}),
+			cmd,
+			params,
+			ShowTables,
+			ShowView,
+		)
+
 	} else {
-		if InArray(cmd, []string{"tb", "table"}) {
-			ShowTables("")
-		} else if InArray(cmd, []string{"view", "vw"}) {
-			ShowView("")
-		} else {
+		if !InArray(cmd, []string{"tb", "table", "view", "vw"}) {
 			fmt.Println("Failed:CmdLine Show Table Or View filter is Wrong!")
+			return
 		}
+
+		IfCmdFunc(
+			InArray(cmd, []string{"tb", "table"}),
+			"",
+			nil,
+			ShowTables,
+			ShowView,
+		)
 	}
 
 }

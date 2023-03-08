@@ -284,20 +284,11 @@ func (p *PgDsn) GetTableSpaceNameByOid(oid int) string {
 	}
 }
 
-func (p *PgDsn) GetDatabaseInfoByName(name string) (pgDatabase map[string]interface{}, err error) {
-	sqlStr := "select " +
-		"oid," +
-		"datname," +
-		"datdba," +
-		"encoding," +
-		"datcollate," +
-		"datctype," +
-		"datallowconn," +
-		"datconnlimit," +
-		"datlastsysoid," +
-		"dattablespace," +
-		"datacl " +
-		" from pg_database where datname ='" + name + "'"
+func (p *PgDsn) GetDatabaseInfoByName(dbName string) (pgDatabase map[string]interface{}, err error) {
+	sqlStr := fmt.Sprintf(`
+				select 
+					oid,datname,datdba,encoding,datcollate,datctype,datallowconn,datconnlimit,datlastsysoid,dattablespace,datacl 
+				from pg_database where datname ='%s'`, dbName)
 
 	//query
 	err = p.PgConn.Raw(sqlStr).Scan(&pgDatabase).Error
