@@ -1,4 +1,4 @@
-module mcspg
+module pgii
 
 go 1.19
 
