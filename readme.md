@@ -27,6 +27,27 @@ pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进
 ```
 
 # 相关指令
+## use 指令
+### use <db|database> <dbName>
+```bash
+  功能：
+    用于选择数据库,选中数据后，可以使用show db 或 show selectdb 查看当前选中的数据库
+  用法：
+    pgii~[postgres/]# use db benchmark
+      # Use Database Success!
+    pgii~[benchmark/]#
+```
+
+### use <sc|schema> <schemaName>
+```bash
+  功能：
+    用于选择数据库模式,选中模式后，可以使用show sc 或 show schema 查看当前选中的模式
+  用法：
+    pgii~[benchmark/]# use sc  public
+     # Use Schema Success!
+    pgii~[benchmark/public]#
+```
+
 ## show 指令
 ### show <db|database>
 ```bash
@@ -69,10 +90,10 @@ pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进
 └───────┴──────────────────────────┴──────────┴─────────────────────────────────────┘
 ```
 
-### show <tb|table>
+### show <tb|table> [filter|equal] [value]
 ```bash
   功能：
-    用于查看数据库的相关表信息
+    用于查看数据库的相关表信息,使用filter,可以过滤TABLENAME包含value的记录，equal 为全等于
   用法
    pgii~[postgres/]# show table
    pgii~[postgres/]# show tb
@@ -80,6 +101,12 @@ pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进
 | SCHEMA | TABLENAME | TABLEOWNER | TABLESPACE |
 +--------+-----------+------------+------------+
 | public | tags      | postgres   | <nil>      |
+| public | cpu       | postgres   | <nil>      |
++--------+-----------+------------+------------+
+pgii~[benchmark/public]# show tb filter c
++--------+-----------+------------+------------+
+| SCHEMA | TABLENAME | TABLEOWNER | TABLESPACE |
++--------+-----------+------------+------------+
 | public | cpu       | postgres   | <nil>      |
 +--------+-----------+------------+------------+
 ```
@@ -106,4 +133,60 @@ pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进
    pgii~[benchmark/public]# show sd
    pgii~[benchmark/public]# show selectdb
      DataBase: benchmark ;Schema: public
+```
+
+## desc 指令
+### desc <tableName>
+```bash
+  功能：
+     用于查看表结构
+  用法
+    pgii~[benchmark/public]# desc cpu
++----+------------------+-------------+--------+--------+--------------+
+| #  | COLUMN           | DATATYPE    | LENGTH | ISNULL | DEFAULTVALUE |
++----+------------------+-------------+--------+--------+--------------+
+| 1  | time             | timestamptz | <nil>  | NO     | <nil>        |
+| 2  | tags_id          | int4        | <nil>  | YES    | <nil>        |
+| 3  | hostname         | text        | <nil>  | YES    | <nil>        |
+| 4  | usage_user       | float8      | <nil>  | YES    | <nil>        |
+| 5  | usage_system     | float8      | <nil>  | YES    | <nil>        |
+| 6  | usage_idle       | float8      | <nil>  | YES    | <nil>        |
+| 7  | usage_nice       | float8      | <nil>  | YES    | <nil>        |
+| 8  | usage_iowait     | float8      | <nil>  | YES    | <nil>        |
+| 9  | usage_irq        | float8      | <nil>  | YES    | <nil>        |
+| 10 | usage_softirq    | float8      | <nil>  | YES    | <nil>        |
+| 11 | usage_steal      | float8      | <nil>  | YES    | <nil>        |
+| 12 | usage_guest      | float8      | <nil>  | YES    | <nil>        |
+| 13 | usage_guest_nice | float8      | <nil>  | YES    | <nil>        |
+| 14 | additional_tags  | jsonb       | <nil>  | YES    | <nil>        |
++----+------------------+-------------+--------+--------+--------------+
+```
+
+## size 指令
+### size <db|database> <dbName>
+```bash
+  功能：
+     用于查看数据库的大小
+  用法
+    pgii~[benchmark/public]# size database benchmark
+    pgii~[benchmark/public]# size db benchmark
+┌───────────┬─────────┐
+│ DATABASE  │ SIZE    │
+├───────────┼─────────┤
+│ benchmark │ 3370 MB │
+└───────────┴─────────┘
+```
+
+### size <tb|table> <tableName>
+```bash
+  功能：
+     用于查看数据库表的大小
+  用法
+  pgii~[benchmark/public]# size table cpu
+  pgii~[benchmark/public]# size tb cpu
+┌───────────┬───────┐
+│ TABLENAME │ SIZE  │
+├───────────┼───────┤
+│ cpu       │ 32 kB │
+└───────────┴───────┘
 ```
