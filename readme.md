@@ -111,6 +111,26 @@ pgii~[benchmark/public]# show tb filter c
 +--------+-----------+------------+------------+
 ```
 
+### show <vw|view> [filter|equal] [value]
+```bash
+  功能：
+    用于查看数据库的相关视图信息,使用filter,可以过滤VIEWNAME包含value的记录，equal 为全等于
+  用法
+   pgii~[postgres/]# show view
+   pgii~[postgres/]# show vw
++--------+----------+-----------+
+| SCHEMA | VIEWNAME | VIEWOWNER |
++--------+----------+-----------+
+| public | cpu_view | postgres  |
++--------+----------+-----------+
+pgii~[benchmark/public]# show tb filter c
++--------+----------+-----------+
+| SCHEMA | VIEWNAME | VIEWOWNER |
++--------+----------+-----------+
+| public | cpu_view | postgres  |
++--------+----------+-----------+
+```
+
 ### show <ver|version>
 ```bash
   功能：
@@ -189,4 +209,75 @@ pgii~[benchmark/public]# show tb filter c
 ├───────────┼───────┤
 │ cpu       │ 32 kB │
 └───────────┴───────┘
+```
+
+## ddl 指令
+### ddl <tb|table> <tableName>
+```bash
+  功能：
+     用于查看表的ddl建表语句
+  用法
+  pgii~[benchmark/public]# ddl table cpu
+  pgii~[benchmark/public]# ddl tb cpu
+========= Create Table Success ============
+-- DROP Table;
+-- DROP Table cpu;
+CREATE TABLE "public".cpu (
+    time timestamptz NOT NULL,
+    tags_id int4 NULL,
+    hostname text NULL,
+    usage_user float8 NULL,
+    usage_system float8 NULL,
+    usage_idle float8 NULL,
+    usage_nice float8 NULL,
+    usage_iowait float8 NULL,
+    usage_irq float8 NULL,
+    usage_softirq float8 NULL,
+    usage_steal float8 NULL,
+    usage_guest float8 NULL,
+    usage_guest_nice float8 NULL,
+    additional_tags jsonb NULL
+);
+CREATE INDEX cpu_usage_user_time_idx ON public.cpu USING btree (usage_user, "time" DESC);
+CREATE INDEX cpu_time_idx ON public.cpu USING btree ("time" DESC);
+CREATE INDEX cpu_hostname_time_idx ON public.cpu USING btree (hostname, "time" DESC);
+```
+
+### ddl <sc|schema> <schemaName>
+```bash
+  功能：
+     用于查看模式的ddl建表语句
+  用法
+  pgii~[benchmark/public]# ddl schema public
+  pgii~[benchmark/public]# ddl sc public
+========= Create Schema Success ============
+-- DROP SCHEMA public;
+CREATE SCHEMA "public" AUTHORIZATION postgres;
+```
+
+### ddl <vw|view> <viewName>
+```bash
+  功能：
+     用于查看模式的ddl建表语句
+  用法
+  pgii~[benchmark/public]# ddl view cpu_view
+  pgii~[benchmark/public]# ddl vw cpu_view
+========= Create View Success ============
+ CREATE OR REPLACE VIEW "public".cpu_view
+ AS SELECT cpu."time",
+    cpu.tags_id,
+    cpu.hostname,
+    cpu.usage_user,
+    cpu.usage_system,
+    cpu.usage_idle,
+    cpu.usage_nice,
+    cpu.usage_iowait,
+    cpu.usage_irq,
+    cpu.usage_softirq,
+    cpu.usage_steal,
+    cpu.usage_guest,
+    cpu.usage_guest_nice,
+    cpu.additional_tags
+   FROM cpu
+  WHERE ((cpu."time" > '2023-03-01 08:00:00+08'::timestamp with time zone) AND (cpu.tags_id > 10) AND (cpu.tags_id < 1000) AND (cpu.usage_user = ANY (ARRAY[(21)::double precision, (22)::double precision, (23)::double precision, (24)::double precision, (25)::double precision, (26)::double precision, (27)::double precision, (28)::double precision, (29)::double precision])));
 ```
