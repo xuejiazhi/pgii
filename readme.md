@@ -1,4 +1,5 @@
 # 一种postgreSql的Cli工具
+[![imi License](https://img.shields.io/badge/license-MIT-green)](https://github.com/xuejiazhi/pgii/blob/main/LICENSE)
 
 pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进行开发,可以多平台下面编译使用：
 
