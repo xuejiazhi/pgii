@@ -1,4 +1,4 @@
-一种postgreSql的Cli工具
+# 一种postgreSql的Cli工具
 
 pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进行开发,可以多平台下面编译使用：
 
