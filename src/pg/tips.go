@@ -21,4 +21,8 @@ var (
 	UseSchemaFailed    = "Failed:Use Schema fail!"
 	UseSchemaNotExists = "Failed:Use Schema fail,Schema Not Exists!"
 	UseSchemaSucc      = "Use Schema Success!"
+
+	//DDL
+	DDLTableNoExists  = "Failed:DDL Cmd Table fail,Table not exists!"
+	DDLColumnNoExists = "Failed:DDL Cmd Table fail,Column not exists!"
 )

@@ -17,3 +17,10 @@ func (p *PgDsn) GetSizeInfo(style, Name string) (sizeInfo map[string]interface{}
 
 	return
 }
+
+// QueryTableNums 获取表的行数
+func (p *PgDsn) QueryTableNums(tableName string) (count int) {
+	sqlStr := fmt.Sprintf("select count(1) as count from %s", tableName)
+	p.PgConn.Raw(sqlStr).First(&count)
+	return
+}

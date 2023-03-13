@@ -7,3 +7,7 @@ var (
 	TableAndView   = []string{"tb", "table", "view", "vw"}
 	TableVar       = []string{"tb", "table"}
 )
+
+var (
+	PgLimit = 10000 //每次
+)

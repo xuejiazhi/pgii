@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/fatih/color v1.14.1
 	github.com/jedib0t/go-pretty/v6 v6.4.4
+	github.com/pierrec/lz4/v4 v4.1.17
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/pflag v1.0.5
 	gorm.io/driver/postgres v1.4.8

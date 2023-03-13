@@ -55,38 +55,9 @@ func DDLTable(name string) {
 			return
 		}
 		//print Create Table SQL
-		fmt.Println("========= Create Table Success ============")
-		fmt.Println(fmt.Sprintf("-- DROP Table;"))
-		fmt.Println(fmt.Sprintf("-- DROP Table %s;", name))
-
-		//获取column
-		if column, err := P.Column(name); err == nil {
-			columnList := generateColumn(column)
-
-			//获取主键或唯一约束
-			puInfo, err := P.GetPriMaryUniqueKey(name)
-			constraintList, indexList := generateConstraint(puInfo)
-			if err == nil {
-				//加上约束
-				columnList = append(columnList, constraintList...)
-			}
-
-			//打印建表语句
-			fmt.Println(fmt.Sprintf("CREATE TABLE \"%s\".%s (\n%s\n);",
-				P.Schema,
-				name,
-				strings.Join(columnList, ",\n")))
-
-			//获取Index
-			indexDef, err := P.GetIndexDef(name, indexList)
-			if err == nil {
-				for _, v := range indexDef {
-					if def, ok := v["indexdef"]; ok {
-						fmt.Println(fmt.Sprintf("%v;", def))
-					}
-				}
-			}
-		}
+		tSql := getTableDdlSql(name)
+		//print screen
+		util.PrintColorTips(util.LightSeaBlue, tSql)
 	} else {
 		fmt.Println("Failed:DDL Cmd Schema fail,error ", err.Error())
 		return
@@ -229,4 +200,49 @@ func getSerial(nextval, types string, dv interface{}) string {
 		}
 	}
 	return types
+}
+
+// 获取DDL T-SQL
+func getTableDdlSql(tbName string) (sqlStr string) {
+	//print Create Table SQL
+	sqlStr = fmt.Sprintf(`========= Create Table Success ============
+-- DROP Table;
+DROP Table %s;`, tbName) + "\n"
+
+	//获取column
+	column, err := P.Column(tbName)
+	if err != nil {
+		fmt.Println(util.SetColor(DDLColumnNoExists, util.LightRed))
+		return
+	}
+
+	columnList := generateColumn(column)
+
+	//获取主键或唯一约束
+	puInfo, err := P.GetPriMaryUniqueKey(tbName)
+	constraintList, indexList := generateConstraint(puInfo)
+	if err == nil {
+		//加上约束
+		columnList = append(columnList, constraintList...)
+	}
+
+	//获取建表语句
+	sqlStr += fmt.Sprintf("CREATE TABLE \"%s\".%s (\n%s\n);\n",
+		P.Schema,
+		tbName,
+		strings.Join(columnList, ",\n"))
+
+	//获取Index
+	indexDef, err := P.GetIndexDef(tbName, indexList)
+	if err == nil {
+		for k, v := range indexDef {
+			if def, ok := v["indexdef"]; ok {
+				sqlStr += fmt.Sprintf("%v;", def)
+				if k < len(indexDef)-1 {
+					sqlStr += "\n"
+				}
+			}
+		}
+	}
+	return
 }
