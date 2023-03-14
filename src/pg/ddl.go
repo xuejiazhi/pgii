@@ -244,5 +244,56 @@ DROP Table %s;`, tbName) + "\n"
 			}
 		}
 	}
+	//判断是否有触发器
+	if triggerDef, err := getTriggerDef(tbName); err == nil {
+		if triggerDef != "" {
+			sqlStr += "\n" + triggerDef + ";\n"
+		}
+	}
+
+	return
+}
+
+func getTriggerDef(tbName string) (triggerDef string, err error) {
+	//判断是否有触发器
+	pgcData, err := P.GetPgClassValueForTbName(tbName, "relhastriggers", "oid")
+	if err != nil {
+		return
+	}
+
+	//judge field
+	hasTrigger, okr := pgcData["relhastriggers"]
+	oid, oko := pgcData["oid"]
+
+	if !okr || !oko {
+		return
+	}
+
+	//是否存的触发器
+	if !cast.ToBool(hasTrigger) {
+		return
+	}
+
+	//查询trigger
+	triggerData, err := P.GetTriggerByTgRelid(cast.ToInt(oid))
+	if err != nil || len(triggerData) == 0 {
+		return
+	}
+
+	// trigger oid是否存在
+	_, ok := triggerData[0]["oid"]
+	if !ok {
+		return
+	}
+
+	//查询triggerdef
+	defInfo, err := P.GetPgTriggerDef(cast.ToInt(triggerData[0]["oid"]))
+	if err != nil || len(defInfo) == 0 {
+		return
+	}
+
+	if _, ok := defInfo["def"]; ok {
+		triggerDef = cast.ToString(defInfo["def"])
+	}
 	return
 }

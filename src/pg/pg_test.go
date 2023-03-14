@@ -16,3 +16,14 @@ import (
 func Test_c(t *testing.T) {
 	fmt.Print(time.Now().Unix() > 0)
 }
+
+func Test_b(t *testing.T) {
+	a := 1 << 1
+	fmt.Println(a)
+	b := 1 << 2
+	fmt.Println(b)
+	fmt.Println(1 << 3)
+	fmt.Println(1 << 4)
+	fmt.Println(1 << 5)
+	fmt.Println(1 << 6)
+}

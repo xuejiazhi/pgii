@@ -364,3 +364,15 @@ func (p *PgDsn) GetIndexDef(tbName string, notIName []string) (indexInfo []map[s
 
 	return
 }
+
+// GetTriggerByTgRelid 获取触发器
+func (p *PgDsn) GetTriggerByTgRelid(tgrelid int) (triggerInfo []map[string]interface{}, err error) {
+	//T-SQL
+	sqlStr := fmt.Sprintf("SELECT oid,* FROM pg_trigger where tgrelid =%d", tgrelid)
+
+	//query
+	err = p.PgConn.Raw(sqlStr).Scan(&triggerInfo).Error
+
+	//return
+	return
+}
