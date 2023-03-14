@@ -25,4 +25,7 @@ var (
 	//DDL
 	DDLTableNoExists  = "Failed:DDL Cmd Table fail,Table not exists!"
 	DDLColumnNoExists = "Failed:DDL Cmd Table fail,Column not exists!"
+
+	//SHOW
+	ShowTriggerCmdFailed = "Failed Show Trigger CMD is Failed"
 )

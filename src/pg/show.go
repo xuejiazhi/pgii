@@ -25,12 +25,63 @@ func Show(cmdList []string) {
 				fmt.Println("DataBase:", *Database, ";Schema:", P.Schema)
 			case "sc", "schema": //查询schema
 				ShowSchema()
+			case "tg", "trigger": //查询trigger
+				ShowTrigger(cmdList)
 			default:
 				fmt.Println("Failed:CmdLine is Wrong!")
 			}
 		}
 	} else {
 		fmt.Println("Failed:CmdLine is Wrong!")
+	}
+}
+
+func ShowTrigger(cmdList []string) {
+	triggerInfo := []map[string]interface{}{}
+	fqv := ""
+	var err error
+	if len(cmdList) == 3 {
+		//带有like 或 filter
+		sonCmd := strings.ToLower(strings.Trim(cmdList[1], ""))
+		value := strings.ToLower(strings.Trim(cmdList[2], ""))
+		fqv = value
+		triggerInfo, err = P.Trigger(sonCmd, value)
+	} else {
+		if len(cmdList) == 1 {
+			triggerInfo, err = P.Trigger("", "")
+		} else {
+			fmt.Println(ShowTriggerCmdFailed)
+		}
+	}
+
+	//序列化输出
+	if err == nil && len(triggerInfo) > 0 {
+		//序列化输出
+		t := table.NewWriter()
+		t.SetOutputMirror(os.Stdout)
+		t.AppendHeader(TriggerHeader)
+		var tbs []table.Row
+		for _, v := range triggerInfo {
+			var sbs []interface{}
+			//
+			triggerName := cast.ToString(v["trigger_name"])
+			if fqv != "" {
+				triggerName = strings.Replace(triggerName, fqv, util.SetColor(fqv, util.LightGreen), -1)
+			}
+			//oid
+			sbs = append(sbs,
+				v["trigger_catalog"],
+				v["trigger_schema"],
+				triggerName,
+				v["event_manipulation"],
+				v["event_object_table"],
+				v["action_orientation"],
+				v["action_timing"],
+			)
+			tbs = append(tbs, sbs)
+		}
+		t.AppendRows(tbs)
+		t.Render()
 	}
 }
 
@@ -156,12 +207,19 @@ func ShowTables(cmd string, filter ...string) {
 		//序列化输出
 		t := table.NewWriter()
 		t.SetOutputMirror(os.Stdout)
-		t.AppendHeader(table.Row{"Schema", "tablename", "tableowner", "tablespace"})
+		t.AppendHeader(TableHeader)
 		var tbs []table.Row
 		for _, v := range tb {
 			var sbs []interface{}
+			//
+			tableName := cast.ToString(v["tablename"])
+			if len(filter) > 0 {
+				for _, v := range filter {
+					tableName = strings.Replace(tableName, v, util.SetColor(v, util.LightGreen), -1)
+				}
+			}
 			//oid
-			sbs = append(sbs, v["schemaname"], v["tablename"], v["tableowner"], v["tablespace"])
+			sbs = append(sbs, v["schemaname"], tableName, v["tableowner"], v["tablespace"])
 			tbs = append(tbs, sbs)
 		}
 		t.AppendRows(tbs)
@@ -174,7 +232,7 @@ func ShowView(cmd string, filter ...string) {
 		//序列化输出
 		t := table.NewWriter()
 		t.SetOutputMirror(os.Stdout)
-		t.AppendHeader(table.Row{"Schema", "viewname", "viewowner"})
+		t.AppendHeader(ViewHeader)
 		var tbs []table.Row
 		for _, v := range tb {
 			var sbs []interface{}

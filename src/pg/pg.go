@@ -210,6 +210,50 @@ func (p *PgDsn) Column(tableName string) (tbColumns []map[string]interface{}, er
 	return
 }
 
+func (p *PgDsn) Trigger(cmd, value string) (triggerInfo []map[string]interface{}, err error) {
+	//T-SQL
+	sqlStr := "select * from information_schema.triggers "
+
+	//设置的条件值
+	conditionList := []string{}
+
+	//是否选择了DB
+	//trigger_catalog
+	if p.DataBase != "" {
+		conditionList = append(conditionList, fmt.Sprintf("trigger_catalog='%s'", p.DataBase))
+	}
+	//是否选择了schema
+	// column : trigger_schema
+	if p.Schema != "" {
+		conditionList = append(conditionList, fmt.Sprintf("trigger_schema='%s'", p.Schema))
+	}
+
+	// trigger_name 进行 filter 和 equal的操作
+	if util.InArray(cmd, EqualAndFilter) {
+
+		//eq的处理
+		if util.InArray(cmd, EqualVar) {
+			conditionList = append(conditionList, fmt.Sprintf("trigger_name ='%s'", value))
+		}
+
+		//filter的处理
+		if util.InArray(cmd, FilterVar) {
+			conditionList = append(conditionList, fmt.Sprintf("trigger_name like '%%%s%%'", value))
+		}
+	}
+
+	conditionStr := strings.Join(conditionList, " and ")
+
+	if conditionStr != "" {
+		sqlStr += fmt.Sprintf(" where %s", conditionStr)
+	}
+
+	//query
+	err = p.PgConn.Raw(sqlStr).Scan(&triggerInfo).Error
+
+	return
+}
+
 // SchemaNS 取Schema
 func (p *PgDsn) SchemaNS() (pgSchema []map[string]interface{}, err error) {
 	//query
