@@ -258,7 +258,7 @@ CREATE SCHEMA "public" AUTHORIZATION postgres;
 ### ddl <vw|view> <viewName>
 ```bash
   功能：
-     用于查看模式的ddl建表语句
+     用于查看视图的ddl建表语句
   用法
   pgii~[benchmark/public]# ddl view cpu_view
   pgii~[benchmark/public]# ddl vw cpu_view
