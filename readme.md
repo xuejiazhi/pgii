@@ -34,6 +34,7 @@ pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进
     用于选择数据库,选中数据后，可以使用show db 或 show selectdb 查看当前选中的数据库
   用法：
     pgii~[postgres/]# use db benchmark
+	pgii~[postgres/]# use database benchmark
       # Use Database Success!
     pgii~[benchmark/]#
 ```
@@ -43,7 +44,8 @@ pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进
   功能：
     用于选择数据库模式,选中模式后，可以使用show sc 或 show schema 查看当前选中的模式
   用法：
-    pgii~[benchmark/]# use sc  public
+    pgii~[benchmark/]# use sc  public;
+	pgii~[benchmark/]# use schema public;
      # Use Schema Success!
     pgii~[benchmark/public]#
 ```
@@ -54,8 +56,8 @@ pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进
   功能：
     用于查看数据库的相关信息,包括当前选中的库,以及库的大小
   用法
-   pgii~[postgres/]# show database
-   pgii~[postgres/]# show db
+   pgii~[postgres/]# show database;
+   pgii~[postgres/]# show db;
 +-------+-------------+----------+----------+------------+----------+-----------+-----------+------------+------------+---------+
 | #OID  | DBNAME      | AUTH     | ENCODING | LC_COLLATE | LC_CTYPE | ALLOWCONN | CONNLIMIT | LASTSYSOID | TABLESPACE | SIZE    |
 +-------+-------------+----------+----------+------------+----------+-----------+-----------+------------+------------+---------+
@@ -72,8 +74,8 @@ pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进
   功能：
     用于查看数据库的相关模式信息,包括当前选中的模式
   用法
-   pgii~[postgres/]# show schema
-   pgii~[postgres/]# show sc
+   pgii~[postgres/]# show schema;
+   pgii~[postgres/]# show sc;
 ┌───────┬──────────────────────────┬──────────┬─────────────────────────────────────┐
 │ #OID  │ SCHEMANAME               │ OWNER    │ ACL                                 │
 ├───────┼──────────────────────────┼──────────┼─────────────────────────────────────┤
@@ -95,8 +97,8 @@ pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进
   功能：
     用于查看数据库的相关表信息,使用filter,可以过滤TABLENAME包含value的记录，equal 为全等于
   用法
-   pgii~[postgres/]# show table
-   pgii~[postgres/]# show tb
+   pgii~[postgres/]# show table;
+   pgii~[postgres/]# show tb;
 +--------+-----------+------------+------------+
 | SCHEMA | TABLENAME | TABLEOWNER | TABLESPACE |
 +--------+-----------+------------+------------+
@@ -116,8 +118,8 @@ pgii~[benchmark/public]# show tb filter c
   功能：
     用于查看数据库的相关视图信息,使用filter,可以过滤VIEWNAME包含value的记录，equal 为全等于
   用法
-   pgii~[postgres/]# show view
-   pgii~[postgres/]# show vw
+   pgii~[postgres/]# show view;
+   pgii~[postgres/]# show vw;
 +--------+----------+-----------+
 | SCHEMA | VIEWNAME | VIEWOWNER |
 +--------+----------+-----------+
@@ -131,13 +133,33 @@ pgii~[benchmark/public]# show tb filter c
 +--------+----------+-----------+
 ```
 
+### show <tg|trigger> [filter|equal] [value]
+```bash
+  功能：
+    用于查看数据库的相关触发器信息,使用filter,可以过滤触发器包含value的记录，equal 为全等于
+  用法
+   pgii~[postgres/]# show tg;
+   pgii~[postgres/]# show trigger;
++-----------+--------+-------------------+--------------------+--------------------+--------------------+---------------+
+| DATABASE  | SCHEMA | TRIGGER_NAME      | EVENT_MANIPULATION | EVENT_OBJECT_TABLE | ACTION_ORIENTATION | ACTION_TIMING |
++-----------+--------+-------------------+--------------------+--------------------+--------------------+---------------+
+| benchmark | public | ts_insert_blocker | INSERT             | cpu                | ROW                | BEFORE        |
++-----------+--------+-------------------+--------------------+--------------------+--------------------+---------------+
+pgii~[benchmark/public]# show trigger filter ts;
++-----------+--------+-------------------+--------------------+--------------------+--------------------+---------------+
+| DATABASE  | SCHEMA | TRIGGER_NAME      | EVENT_MANIPULATION | EVENT_OBJECT_TABLE | ACTION_ORIENTATION | ACTION_TIMING |
++-----------+--------+-------------------+--------------------+--------------------+--------------------+---------------+
+| benchmark | public | ts_insert_blocker | INSERT             | cpu                | ROW                | BEFORE        |
++-----------+--------+-------------------+--------------------+--------------------+--------------------+---------------+
+```
+
 ### show <ver|version>
 ```bash
   功能：
     用于查看数据库的相关版本信息
   用法
-   pgii~[postgres/]# show version
-   pgii~[postgres/]# show ver
+   pgii~[postgres/]# show version;
+   pgii~[postgres/]# show ver;
 +-------------+---------+
 | #           | VERSION |
 +-------------+---------+
@@ -150,8 +172,8 @@ pgii~[benchmark/public]# show tb filter c
   功能：
     用于查看数据库的当前选中的database 和schema
   用法
-   pgii~[benchmark/public]# show sd
-   pgii~[benchmark/public]# show selectdb
+   pgii~[benchmark/public]# show sd;
+   pgii~[benchmark/public]# show selectdb;
      DataBase: benchmark ;Schema: public
 ```
 
@@ -161,7 +183,7 @@ pgii~[benchmark/public]# show tb filter c
   功能：
      用于查看表结构
   用法
-    pgii~[benchmark/public]# desc cpu
+    pgii~[benchmark/public]# desc cpu;
 +----+------------------+-------------+--------+--------+--------------+
 | #  | COLUMN           | DATATYPE    | LENGTH | ISNULL | DEFAULTVALUE |
 +----+------------------+-------------+--------+--------+--------------+
@@ -188,8 +210,8 @@ pgii~[benchmark/public]# show tb filter c
   功能：
      用于查看数据库的大小
   用法
-    pgii~[benchmark/public]# size database benchmark
-    pgii~[benchmark/public]# size db benchmark
+    pgii~[benchmark/public]# size database benchmark;
+    pgii~[benchmark/public]# size db benchmark;
 ┌───────────┬─────────┐
 │ DATABASE  │ SIZE    │
 ├───────────┼─────────┤
@@ -202,8 +224,8 @@ pgii~[benchmark/public]# show tb filter c
   功能：
      用于查看数据库表的大小
   用法
-  pgii~[benchmark/public]# size table cpu
-  pgii~[benchmark/public]# size tb cpu
+  pgii~[benchmark/public]# size table cpu;
+  pgii~[benchmark/public]# size tb cpu;
 ┌───────────┬───────┐
 │ TABLENAME │ SIZE  │
 ├───────────┼───────┤
@@ -217,8 +239,8 @@ pgii~[benchmark/public]# show tb filter c
   功能：
      用于查看表的ddl建表语句
   用法
-  pgii~[benchmark/public]# ddl table cpu
-  pgii~[benchmark/public]# ddl tb cpu
+  pgii~[benchmark/public]# ddl table cpu;
+  pgii~[benchmark/public]# ddl tb cpu;
 ========= Create Table Success ============
 -- DROP Table;
 -- DROP Table cpu;
@@ -248,8 +270,8 @@ CREATE INDEX cpu_hostname_time_idx ON public.cpu USING btree (hostname, "time" D
   功能：
      用于查看模式的ddl建表语句
   用法
-  pgii~[benchmark/public]# ddl schema public
-  pgii~[benchmark/public]# ddl sc public
+  pgii~[benchmark/public]# ddl schema public;
+  pgii~[benchmark/public]# ddl sc public;
 ========= Create Schema Success ============
 -- DROP SCHEMA public;
 CREATE SCHEMA "public" AUTHORIZATION postgres;
@@ -260,8 +282,8 @@ CREATE SCHEMA "public" AUTHORIZATION postgres;
   功能：
      用于查看视图的ddl建表语句
   用法
-  pgii~[benchmark/public]# ddl view cpu_view
-  pgii~[benchmark/public]# ddl vw cpu_view
+  pgii~[benchmark/public]# ddl view cpu_view;
+  pgii~[benchmark/public]# ddl vw cpu_view;
 ========= Create View Success ============
  CREATE OR REPLACE VIEW "public".cpu_view
  AS SELECT cpu."time",
