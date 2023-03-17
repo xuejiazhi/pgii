@@ -64,15 +64,38 @@ func WelCome(v string) {
 
 // ReadLine 获取键盘输入
 func ReadLine() {
+	//print header
 	fmt.Print(util.SetColor(fmt.Sprintf("pgii~[%s/%s]# ", *Database, P.Schema), util.LightBlue))
-	r := bufio.NewReader(os.Stdin)
-	if n, err := r.ReadString('\n'); err == nil {
-		cmd := strings.Replace(strings.Replace(n, "\r", "", -1), "\n", "", -1)
-		if cmd != "" {
-			Route(cmd)
+
+	//CMD
+	cmdLine := ""
+
+	//键盘输入
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		//获取输入的值
+		t := strings.Trim(scanner.Text(), "")
+		//拼接到CMDLINE
+		cmdLine += t
+		if strings.HasSuffix(t, "\\") {
+			//如果以 \ 结尾,继续输入
+			fmt.Print(">")
+		} else {
+			//使用;结束
+			if strings.HasSuffix(t, ";") {
+				//去掉 \和最后的 ;
+				cmdStr := strings.Replace(cmdLine, "\\", " ", -1)
+				cmdLine = util.Substring(cmdStr, 0, len(cmdStr)-1)
+				//去掉 ;
+				Route(cmdLine)
+				break
+			}
+			//wrong
+			if strings.Trim(cmdLine, "") != "" {
+				util.PrintColorTips(util.LightRed, CmdLineError)
+			}
+			break
 		}
-	} else {
-		fmt.Print(err.Error() + "\n")
 	}
 }
 

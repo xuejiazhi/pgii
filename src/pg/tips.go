@@ -28,4 +28,6 @@ var (
 
 	//SHOW
 	ShowTriggerCmdFailed = "Failed Show Trigger CMD is Failed"
+
+	CmdLineError = "CmdLine Must be With ; ending"
 )
