@@ -1,6 +1,9 @@
 package util
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 func If(condition bool, x, y interface{}) interface{} {
 	if condition {
@@ -64,4 +67,16 @@ func Substring(source string, start int, end int) string {
 	}
 
 	return string(r[start:end])
+}
+
+func TypeTransForm(typename, fieldname string) (columnStr string) {
+	switch strings.ToLower(typename) {
+	case "timestamptz":
+		columnStr = fmt.Sprintf("to_char(%s,'YYYY-MM-DD hh24:mi:ss') AS %s", fieldname, fieldname)
+	case "timestamp":
+		columnStr = fmt.Sprintf("to_char(%s,'YYYY-MM-DD hh24:mi:ss') AS %s", fieldname, fieldname)
+	default:
+		columnStr = fieldname
+	}
+	return
 }

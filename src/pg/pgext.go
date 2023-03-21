@@ -2,7 +2,9 @@ package pg
 
 import (
 	"fmt"
+	"github.com/spf13/cast"
 	"pgii/src/util"
+	"strings"
 )
 
 func (p *PgDsn) GetSizeInfo(style, Name string) (sizeInfo map[string]interface{}, err error) {
@@ -66,5 +68,35 @@ func (p *PgDsn) GetPgTriggerDef(oid int) (triggerDef map[string]interface{}, err
 	//query
 	err = p.PgConn.Raw(sqlStr).First(&triggerDef).Error
 	//return
+	return
+}
+
+// GetColumnList 获取字段列表
+func (p *PgDsn) GetColumnList(tbName string) (cols []string) {
+	//取co
+	if columnList, err := p.Column(tbName); err == nil {
+		if len(columnList) == 0 {
+			return
+		}
+		//拼接column
+		for _, c := range columnList {
+			if _, ok := c["column_name"]; ok {
+				cols = append(cols, cast.ToString(c["column_name"]))
+			}
+		}
+
+	}
+
+	return
+}
+
+// GetQuerySql 获取查询SQL
+func (p *PgDsn) GetQuerySql(tbName string, fieldList []string, pageSize int) (sqlStr string) {
+	//生成SQL
+	sqlStr = fmt.Sprintf("SELECT %s FROM %s  OFFSET %d LIMIT %d",
+		strings.Join(fieldList, ","),
+		tbName,
+		pageSize*PgLimit,
+		PgLimit)
 	return
 }

@@ -2,6 +2,7 @@ package pg
 
 import (
 	"fmt"
+	"github.com/spf13/cast"
 	"os"
 	"pgii/src/util"
 )
@@ -63,12 +64,59 @@ func DumpTable(tbName string) {
 	if cnt > 0 {
 		pgCount = cnt/PgLimit + 1
 	}
-	//开始处理
-	for i := 0; i < pgCount; i++ {
-		for {
+	//开始处理表的数据
+	//获取表的column
+	columnList := P.GetColumnList(tbName)
 
+	for i := 0; i < pgCount; i++ {
+		//查询的SQL
+		querySQL := P.GetQuerySql(tbName, columnList, i)
+		//run sql
+		data, err := P.RunSQL(querySQL)
+		if err != nil {
+			fmt.Println()
+			continue
+		}
+
+		if len(data) == 0 {
+			fmt.Println()
+			continue
+		}
+		//循环
+		valList := []string{}
+		for _, v := range data {
+			valSon := ""
+			l := 0
+			for _, sv := range columnList {
+				if _, ok := v[sv]; ok {
+					valSon += cast.ToString(v[sv])
+					l++
+				} else {
+					break
+				}
+			}
+			//加入数组
+			if l == len(columnList) {
+				valList = append(valList, "("+valSon+")")
+			}
+		}
+		fmt.Println(valList)
+	}
+}
+
+// 获取
+func getColumn(columnList []map[string]interface{}) (cols []string) {
+	if len(columnList) == 0 {
+		return
+	}
+
+	//拼接column
+	for _, c := range columnList {
+		if _, ok := c["column_name"]; ok {
+			cols = append(cols, cast.ToString(c["column_name"]))
 		}
 	}
+	return
 }
 
 // DumpDatabase 生成Database的备份
