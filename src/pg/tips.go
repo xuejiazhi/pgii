@@ -2,9 +2,15 @@ package pg
 
 var (
 	// Dump
-	DumpFailed        = "Failed:Dump Cmd is failed"
-	DumpFailedNoTable = "Failed:Dump Cmd Table fail,Table not exists!"
-	DumpTableSuccess  = "Dump Table Success"
+	DumpFailed               = "Failed:Dump Cmd is failed"
+	DumpFailedNoTable        = "Failed:Dump Cmd Table fail,Table not exists!"
+	DumpFailedNoSelectSchema = "Failed:Dump Cmd Table fail,Schema not Selected!"
+	DumpFailedSchemaNoTable  = "Failed:Dump Cmd Table fail,Schema not Selected!"
+	DumpTableSuccess         = "Dump Table Success"
+	DumpTableStructSuccess   = "Dump Table Struct Success"
+	DumpTableRecordSuccess   = "Dump Table Record Success"
+	DumpSchemaSuccess        = "Dump Schema Success"
+	DumpTableNotExists       = "Dump Table Not Exists"
 
 	// Size
 	SizeFailed           = "Failed:SIZE Cmd fail"

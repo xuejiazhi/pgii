@@ -32,7 +32,100 @@ func Dump(params ...string) {
 }
 
 func DumpSchema() {
+	if P.Schema == "" {
+		fmt.Println(util.SetColor(DumpFailedNoSelectSchema, util.LightRed))
+		return
+	}
 
+	//校验schema 是否存在
+	if info, err := P.GetSchemaFromNS(P.Schema); err == nil {
+		if len(info) == 0 {
+			fmt.Println(util.SetColor(DumpFailedNoSelectSchema, util.LightRed))
+			return
+		}
+	}
+
+	//打开要生成的文件句柄
+	fileName := fmt.Sprintf("dump_schema_%s.pgi", P.Schema)
+	if _, err := os.Stat(fileName); err == nil {
+		_ = os.Remove(fileName)
+	}
+
+	f, _ := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
+	defer f.Close()
+	//生成schema
+	schemaStr := []byte(generateSchema(P.Schema))
+	util.Compress(&schemaStr)
+	//写入文件
+	_, _ = f.Write(schemaStr)
+	//print success
+	fmt.Println(util.SetColor(fmt.Sprintf("%s [%s]", DumpSchemaSuccess, P.Schema), util.LightGreen))
+	//查询所有的表
+	if tbs, err := P.Tables(""); err == nil {
+		if len(tbs) == 0 {
+			fmt.Println(util.SetColor(DumpFailedSchemaNoTable, util.LightRed))
+			return
+		}
+
+		for _, tb := range tbs {
+			tn, ok := tb["tablename"]
+			if !ok {
+				fmt.Println(util.SetColor(fmt.Sprintf("%s", DumpFailedNoTable), util.LightRed))
+				continue
+			}
+
+			tbName := cast.ToString(tn)
+			//校验表是否存在
+			if tbInfo, err := P.GetTableByName(cast.ToString(tbName)); err != nil || len(tbInfo) == 0 {
+				fmt.Println(util.SetColor(DumpFailedNoTable, util.LightRed))
+				return
+			}
+
+			//生成Table 的DDL
+			tbsql := []byte(getTableDdlSql(cast.ToString(tbName)))
+			//压缩数据
+			util.Compress(&tbsql)
+			//写入文件
+			_, _ = f.Write(tbsql)
+			//print success
+			fmt.Println(util.SetColor(fmt.Sprintf("%s [%s]", DumpTableStructSuccess, cast.ToString(tbName)), util.LightGreen))
+
+			//处理SQL语句
+			//获取表的行数
+			cnt := P.QueryTableNums(tbName)
+			pgCount := 0
+			if cnt > 0 {
+				pgCount = cnt/PgLimit + 1
+			}
+			//开始处理表的数据
+			//获取表的column
+			columnList := P.GetColumnList(tbName)
+			columnType := P.GetColumnsType(tbName, columnList...)
+			for i := 0; i < pgCount; i++ {
+				batchSql := ""
+				//定义定入的SQL
+				batchValue := generateBatchValue(i, tbName, columnList, columnType)
+				if len(batchValue) > 0 {
+					batchSql = fmt.Sprintf("Insert into %s.%s(%s) values %s;", P.Schema, tbName, strings.Join(columnList, ","), strings.Join(batchValue, ","))
+				}
+				//压缩数据
+				tbSqlByte := []byte(batchSql)
+				util.Compress(&tbSqlByte)
+				//写入文件
+				_, _ = f.Write(tbSqlByte)
+			}
+			//print success
+			fmt.Println(util.SetColor(fmt.Sprintf(" ->%s [%s]", DumpTableRecordSuccess, cast.ToString(tbName)), util.LightGrey))
+		}
+	}
+}
+
+func generateSchema(scName string) (scStr string) {
+	//print Create schema SQL
+	scStr = "========= Create Schema Success ============\n"
+	scStr += fmt.Sprintf("-- DROP SCHEMA %s;", scName)
+	scStr += fmt.Sprintf("CREATE SCHEMA \"%s\" AUTHORIZATION %s;", scName, *UserName)
+	return
 }
 
 // DumpTable 生成一个创建Table 的SQL
