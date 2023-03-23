@@ -90,11 +90,43 @@ func (p *PgDsn) GetColumnList(tbName string) (cols []string) {
 	return
 }
 
+// GetColumnsType 获取表字段的类型
+func (p *PgDsn) GetColumnsType(tbName string, columns ...string) (types map[string]string) {
+	//取co
+	newType := map[string]string{}
+	if columnList, err := p.Column(tbName); err == nil {
+		if len(columnList) == 0 {
+			return
+		}
+		//拼接column
+		for _, c := range columnList {
+			if _, ok := c["column_name"]; !ok {
+				continue
+			}
+
+			columnName := cast.ToString(c["column_name"])
+			if util.InArray(columnName, columns) {
+				newType[columnName] = cast.ToString(c["udt_name"])
+			}
+		}
+	}
+	types = newType
+	return
+}
+
 // GetQuerySql 获取查询SQL
-func (p *PgDsn) GetQuerySql(tbName string, fieldList []string, pageSize int) (sqlStr string) {
+func (p *PgDsn) GetQuerySql(tbName string, fieldList []string, columnTypes map[string]string, pageSize int) (sqlStr string) {
+	//range filed
+	newFiledList := make([]string, len(fieldList))
+	copy(newFiledList, fieldList)
+	for k, v := range newFiledList {
+		if ct, ok := columnTypes[v]; ok {
+			newFiledList[k] = util.TypeTransForm(ct, v)
+		}
+	}
 	//生成SQL
 	sqlStr = fmt.Sprintf("SELECT %s FROM %s  OFFSET %d LIMIT %d",
-		strings.Join(fieldList, ","),
+		strings.Join(newFiledList, ","),
 		tbName,
 		pageSize*PgLimit,
 		PgLimit)

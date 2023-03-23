@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cast"
 	"os"
 	"pgii/src/util"
+	"strings"
 )
 
 // Dump DUMP PGSQL
@@ -47,7 +48,7 @@ func DumpTable(tbName string) {
 	}
 
 	//打开要生成的文件句柄
-	f, _ := os.OpenFile("data.pgi", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
+	f, _ := os.OpenFile(fmt.Sprintf("dump_table_%s.pgi", tbName), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
 	defer f.Close()
 	//生成Table 的DDL
 	tbsql := []byte(getTableDdlSql(tbName))
@@ -67,41 +68,52 @@ func DumpTable(tbName string) {
 	//开始处理表的数据
 	//获取表的column
 	columnList := P.GetColumnList(tbName)
-
+	columnType := P.GetColumnsType(tbName, columnList...)
 	for i := 0; i < pgCount; i++ {
-		//查询的SQL
-		querySQL := P.GetQuerySql(tbName, columnList, i)
-		//run sql
-		data, err := P.RunSQL(querySQL)
-		if err != nil {
-			fmt.Println()
-			continue
+		batchSql := ""
+		//定义定入的SQL
+		batchValue := generateBatchValue(i, tbName, columnList, columnType)
+		if len(batchValue) > 0 {
+			batchSql = fmt.Sprintf("Insert into %s.%s(%s) values %s;", P.Schema, tbName, strings.Join(columnList, ","), strings.Join(batchValue, ","))
 		}
-
-		if len(data) == 0 {
-			fmt.Println()
-			continue
-		}
-		//循环
-		valList := []string{}
-		for _, v := range data {
-			valSon := ""
-			l := 0
-			for _, sv := range columnList {
-				if _, ok := v[sv]; ok {
-					valSon += cast.ToString(v[sv])
-					l++
-				} else {
-					break
-				}
-			}
-			//加入数组
-			if l == len(columnList) {
-				valList = append(valList, "("+valSon+")")
-			}
-		}
-		fmt.Println(valList)
+		//压缩数据
+		tbSqlByte := []byte(batchSql)
+		util.Compress(&tbSqlByte)
+		//写入文件
+		_, _ = f.Write(tbSqlByte)
 	}
+}
+
+func generateBatchValue(idx int, tbName string, columnList []string, columnType map[string]string) (batchValue []string) {
+	//查询的SQL
+	querySQL := P.GetQuerySql(tbName, columnList, columnType, idx)
+	//run sql
+	data, err := P.RunSQL(querySQL)
+	if err != nil {
+		fmt.Println("value is null")
+		return
+	}
+
+	if len(data) == 0 {
+		fmt.Println("value is null")
+		return
+	}
+	//循环
+	for _, v := range data {
+		valSon := []string{}
+		l := 0
+		for _, sv := range columnList {
+			if _, ok := v[sv]; ok {
+				valSon = append(valSon, fmt.Sprintf("'%s'", cast.ToString(v[sv])))
+				l++
+			} else {
+				break
+			}
+		}
+		//加入数组
+		batchValue = append(batchValue, "("+strings.Join(valSon, ",")+")")
+	}
+	return
 }
 
 // 获取
