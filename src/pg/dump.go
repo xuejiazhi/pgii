@@ -48,7 +48,11 @@ func DumpTable(tbName string) {
 	}
 
 	//打开要生成的文件句柄
-	f, _ := os.OpenFile(fmt.Sprintf("dump_table_%s.pgi", tbName), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
+	fileName := fmt.Sprintf("dump_table_%s.pgi", tbName)
+	if _, err := os.Stat(fileName); err == nil {
+		_ = os.Remove(fileName)
+	}
+	f, _ := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
 	defer f.Close()
 	//生成Table 的DDL
 	tbsql := []byte(getTableDdlSql(tbName))
@@ -82,6 +86,7 @@ func DumpTable(tbName string) {
 		//写入文件
 		_, _ = f.Write(tbSqlByte)
 	}
+	fmt.Println(util.SetColor(DumpTableSuccess, util.LightGreen))
 }
 
 func generateBatchValue(idx int, tbName string, columnList []string, columnType map[string]string) (batchValue []string) {

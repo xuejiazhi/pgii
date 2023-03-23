@@ -4,6 +4,7 @@ var (
 	// Dump
 	DumpFailed        = "Failed:Dump Cmd is failed"
 	DumpFailedNoTable = "Failed:Dump Cmd Table fail,Table not exists!"
+	DumpTableSuccess  = "Dump Table Success"
 
 	// Size
 	SizeFailed           = "Failed:SIZE Cmd fail"
