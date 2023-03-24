@@ -1,6 +1,8 @@
 package pg
 
 var (
+	//COMMON
+
 	// Dump
 	DumpFailed               = "Failed:Dump Cmd is failed"
 	DumpFailedNoTable        = "Failed:Dump Cmd Table fail,Table not exists!"
@@ -30,11 +32,22 @@ var (
 	UseSchemaSucc      = "Use Schema Success!"
 
 	//DDL
-	DDLTableNoExists  = "Failed:DDL Cmd Table fail,Table not exists!"
-	DDLColumnNoExists = "Failed:DDL Cmd Table fail,Column not exists!"
+	DDLTableNoExists   = "Failed:DDL Cmd Table fail,Table not exists!"
+	DDLColumnNoExists  = "Failed:DDL Cmd Table fail,Column not exists!"
+	DDLViewNoExists    = "Failed:DDL Cmd View fail,View not exists!"
+	DDLTableError      = "Failed:DDL Cmd Table fail,error "
+	DDLViewError       = "Failed:DDL Cmd View fail,error "
+	DDLSchemaError     = "Failed:DDL Cmd Schema fail,error "
+	DDLSchemaNotExists = "Failed:DDL Cmd Schema fail,Schema not exists!"
 
 	//SHOW
 	ShowTriggerCmdFailed = "Failed Show Trigger CMD is Failed"
+	ShowDatabaseError    = "Failed:Show DataBase is Wrong! error"
+	CmdLineError         = "CmdLine Must be With ; ending"
+	CmdLineWrong         = "Failed:CmdLine is Wrong!"
 
-	CmdLineError = "CmdLine Must be With ; ending"
+	//DESC
+	DescTableError    = "Failed:Describe Table fail!Error"
+	DescTableNoExists = "Failed:Describe Table fail!Table not exists"
+	DescTableFailed   = "Failed:Describe Table fail"
 )

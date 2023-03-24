@@ -6,16 +6,16 @@ import (
 )
 
 // Use 用做切换数据库
-func Use(cmdList []string) {
+func (s *Params) Use() {
 	//判断
-	if len(cmdList) == 2 {
-		sw := strings.Trim(cmdList[0], "")
-		para := strings.Trim(cmdList[1], "")
-		switch sw {
-		case "db", "database":
-			UseDatabase(para)
-		case "sc", "schema":
-			UseSchema(para)
+	if len(s.Param) == TwoCMDLength {
+		sw := strings.Trim(s.Param[0], "")
+		para := strings.Trim(s.Param[1], "")
+		switch CheckParamType(sw) {
+		case DatabaseStyle:
+			s.UseDatabase(para)
+		case SchemaStyle:
+			s.UseSchema(para)
 		default:
 			util.PrintColorTips(util.LightRed, UseFailed)
 		}
@@ -25,7 +25,7 @@ func Use(cmdList []string) {
 }
 
 // UseDatabase 选择数据库
-func UseDatabase(dbName string) {
+func (s *Params) UseDatabase(dbName string) {
 	//判断是否存在这个数据库
 	info, err := P.GetDatabaseInfoByName(dbName)
 	if err != nil {
@@ -47,7 +47,7 @@ func UseDatabase(dbName string) {
 }
 
 // UseSchema 选择模式
-func UseSchema(schema string) {
+func (s *Params) UseSchema(schema string) {
 	//判断是否存在这个模式
 	info, err := P.GetSchemaFromNS(schema)
 	if err != nil {

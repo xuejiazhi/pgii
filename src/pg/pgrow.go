@@ -3,8 +3,18 @@ package pg
 import "github.com/jedib0t/go-pretty/v6/table"
 
 var (
-	// TriggerHeader show header
-	TriggerHeader = table.Row{"database", "schema", "trigger_name", "event_manipulation", "event_object_table", "action_orientation", "action_timing"}
-	TableHeader   = table.Row{"Schema", "tablename", "tableowner", "tablespace"}
-	ViewHeader    = table.Row{"Schema", "viewname", "viewowner"}
+	//Show
+	VersionShowHeader  = []interface{}{"#", "Version"}
+	TriggerShowHeader  = table.Row{"database", "schema", "trigger_name", "event_manipulation", "event_object_table", "action_orientation", "action_timing"}
+	TableShowHeader    = []interface{}{"Schema", "tablename", "tableowner", "tablespace"}
+	ViewShowHeader     = table.Row{"Schema", "viewname", "viewowner"}
+	DatabaseShowHeader = []interface{}{"#oid", "DbName", "Auth", "Encoding", "LC_COLLATE", "LC_CTYPE", "AllowConn", "ConnLimit", "LastSysOid", "TableSpace", "size"}
+	SchemaShowHeader   = []interface{}{"#oid", "SchemaName", "Owner", "Acl"}
+
+	//Size Show Header
+	DatabaseSizeHeader = []interface{}{"database", "size"}
+	TableSizeHeader    = []interface{}{"tablename", "size"}
+
+	//DESC Header
+	DescTableHeader = []interface{}{"#", "column", "dataType", "length", "isnull", "defaultValue"}
 )

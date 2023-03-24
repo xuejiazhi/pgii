@@ -7,22 +7,22 @@ import (
 	"strings"
 )
 
-func DDL(cms ...string) {
-	if len(cms) != 2 {
+func (s *Params) DDL() {
+	if len(s.Param) != TwoCMDLength {
 		fmt.Println("Failed:DDL Cmd fail")
 		return
 	}
 
 	//查看DDL的类型
-	types := util.TrimLower(cms[0])
-	name := util.TrimLower(cms[1])
-	switch types {
-	case "sc", "schema": //查看schema的DDL
-		DDLSchema(name)
-	case "tb", "table": //查看table的DDL
-		DDLTable(name)
-	case "vw", "view": //查看view的DDL
-		DDLView(name)
+	sCmd := util.TrimLower(s.Param[0])
+	name := util.TrimLower(s.Param[1])
+	switch CheckParamType(sCmd) {
+	case SchemaStyle: //查看schema的DDL
+		s.DDLSchema(name)
+	case TableStyle: //查看table的DDL
+		s.DDLTable(name)
+	case ViewStyle: //查看view的DDL
+		s.DDLView(name)
 	default:
 		fmt.Println("Failed:DDL Cmd fail")
 		return
@@ -30,55 +30,61 @@ func DDL(cms ...string) {
 }
 
 // DDLSchema 生成SCHEAM的DDL
-func DDLSchema(name string) {
+func (s *Params) DDLSchema(name string) {
 	//校验schema 是否存在
-	if info, err := P.GetSchemaFromNS(name); err == nil {
-		if len(info) == 0 {
-			fmt.Println("Failed:DDL Cmd Schema fail,Schema not exists!")
-			return
-		}
-		//print Create schema SQL
-		fmt.Println("========= Create Schema Success ============")
-		fmt.Println(fmt.Sprintf("-- DROP SCHEMA %s;", name))
-		fmt.Println(fmt.Sprintf("CREATE SCHEMA \"%s\" AUTHORIZATION %s;", name, *UserName))
-	} else {
-		fmt.Println("Failed:DDL Cmd Schema fail,error ", err.Error())
+	info, err := P.GetSchemaFromNS(name)
+	if err != nil {
+		util.PrintColorTips(util.LightRed, DDLSchemaError, err.Error())
 		return
 	}
+
+	if len(info) == 0 {
+		util.PrintColorTips(util.LightRed, DDLSchemaNotExists)
+		return
+	}
+
+	//print schema ddl
+	fmt.Println(generateSchema(name))
 }
 
 // DDLTable 生成Table的DDL
-func DDLTable(name string) {
-	if info, err := P.GetTableByName(name); err == nil {
-		if len(info) == 0 {
-			fmt.Println("Failed:DDL Cmd Table fail,Table not exists!")
-			return
-		}
-		//print Create Table SQL
-		tSql := getTableDdlSql(name)
-		//print screen
-		util.PrintColorTips(util.LightSeaBlue, tSql)
-	} else {
-		fmt.Println("Failed:DDL Cmd Schema fail,error ", err.Error())
+func (s *Params) DDLTable(name string) {
+	//get table info
+	info, err := P.GetTableByName(name)
+	if err != nil {
+		util.PrintColorTips(util.LightRed, DDLTableError, err.Error())
 		return
 	}
+
+	if len(info) == 0 {
+		util.PrintColorTips(util.LightRed, DDLTableNoExists)
+		return
+	}
+
+	//print
+	util.PrintColorTips(util.LightSeaBlue, getTableDdlSql(name))
 }
 
 // DDLView 生成view视图的DDL
 // viewName 视图名称
-func DDLView(viewName string) {
-	if viewInfo, err := P.Views("filter", viewName); err == nil {
-		//判断信息不为空
-		if len(viewInfo) == 0 {
-			fmt.Println("Failed:DDL Cmd View fail,View not exists!")
-			return
-		}
+func (s *Params) DDLView(viewName string) {
+	//获取view信息
+	viewInfo, err := P.Views("filter", viewName)
+	if err != nil {
+		util.PrintColorTips(util.LightRed, DDLViewError, err.Error())
+		return
+	}
 
-		//print Create View SQL
-		fmt.Println("========= Create View Success ============")
-		if def, ok := viewInfo[0]["definition"]; ok {
-			fmt.Println(fmt.Sprintf(" CREATE OR REPLACE VIEW \"%s\".%s\n AS%s", P.Schema, viewName, def))
-		}
+	//判断信息不为空
+	if len(viewInfo) == 0 {
+		util.PrintColorTips(util.LightRed, DDLViewNoExists)
+		return
+	}
+
+	//print Create View SQL
+	fmt.Println("========= Create View Success ============")
+	if def, ok := viewInfo[0]["definition"]; ok {
+		fmt.Println(fmt.Sprintf(" CREATE OR REPLACE VIEW \"%s\".%s\n AS%s", P.Schema, viewName, def))
 	}
 }
 

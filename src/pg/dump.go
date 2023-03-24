@@ -9,44 +9,44 @@ import (
 )
 
 // Dump DUMP PGSQL
-func Dump(params ...string) {
+func (s *Params) Dump() {
 	//参数长度至少为1位
-	if len(params) < 1 {
-		fmt.Println(util.SetColor(DumpFailed, util.LightRed))
+	if len(s.Param) < OneCMDLength {
+		util.PrintColorTips(util.LightRed, DumpFailed)
 		return
 	}
 
 	//查看Dump的类型
-	style := util.TrimLower(params[0])
-	switch style {
-	case "tb", "table": //生成表的备份
-		DumpTable(params[1])
-	case "sc", "schema": //生成schema的备份
-		DumpSchema()
-	case "db", "database": //生成database的备份
-		DumpDatabase()
+	sCmd := util.TrimLower(s.Param[0])
+	switch CheckParamType(sCmd) {
+	case TableStyle: //生成表的备份
+		s.DumpTable()
+	case SchemaStyle: //生成schema的备份
+		s.DumpSchema()
+	case DatabaseStyle: //生成database的备份
+		s.DumpDatabase()
 	default:
-		fmt.Println(util.SetColor(DumpFailed, util.LightRed))
+		util.PrintColorTips(util.LightRed, DumpFailed)
 	}
 
 }
 
-func DumpSchema() {
+func (s *Params) DumpSchema() {
 	if P.Schema == "" {
-		fmt.Println(util.SetColor(DumpFailedNoSelectSchema, util.LightRed))
+		util.PrintColorTips(util.LightRed, DumpFailedNoSelectSchema)
 		return
 	}
 
 	//校验schema 是否存在
 	if info, err := P.GetSchemaFromNS(P.Schema); err == nil {
 		if len(info) == 0 {
-			fmt.Println(util.SetColor(DumpFailedNoSelectSchema, util.LightRed))
+			util.PrintColorTips(util.LightRed, DumpFailedNoSelectSchema)
 			return
 		}
 	}
 
 	//打开要生成的文件句柄
-	fileName := fmt.Sprintf("dump_schema_%s.pgi", P.Schema)
+	fileName := fmt.Sprintf("dump_schema_%s_%s.pgi", P.Schema, util.GetFormatDateTime())
 	if _, err := os.Stat(fileName); err == nil {
 		_ = os.Remove(fileName)
 	}
@@ -59,25 +59,25 @@ func DumpSchema() {
 	//写入文件
 	_, _ = f.Write(schemaStr)
 	//print success
-	fmt.Println(util.SetColor(fmt.Sprintf("%s [%s]", DumpSchemaSuccess, P.Schema), util.LightGreen))
+	util.PrintColorTips(util.LightGreen, fmt.Sprintf("%s [%s]", DumpSchemaSuccess, P.Schema))
 	//查询所有的表
 	if tbs, err := P.Tables(""); err == nil {
 		if len(tbs) == 0 {
-			fmt.Println(util.SetColor(DumpFailedSchemaNoTable, util.LightRed))
+			util.PrintColorTips(util.LightRed, DumpFailedSchemaNoTable)
 			return
 		}
 
 		for _, tb := range tbs {
 			tn, ok := tb["tablename"]
 			if !ok {
-				fmt.Println(util.SetColor(fmt.Sprintf("%s", DumpFailedNoTable), util.LightRed))
+				util.PrintColorTips(util.LightRed, DumpFailedNoTable)
 				continue
 			}
 
 			tbName := cast.ToString(tn)
 			//校验表是否存在
 			if tbInfo, err := P.GetTableByName(cast.ToString(tbName)); err != nil || len(tbInfo) == 0 {
-				fmt.Println(util.SetColor(DumpFailedNoTable, util.LightRed))
+				util.PrintColorTips(util.LightRed, DumpFailedNoTable)
 				return
 			}
 
@@ -88,7 +88,7 @@ func DumpSchema() {
 			//写入文件
 			_, _ = f.Write(tbsql)
 			//print success
-			fmt.Println(util.SetColor(fmt.Sprintf("%s [%s]", DumpTableStructSuccess, cast.ToString(tbName)), util.LightGreen))
+			util.PrintColorTips(util.LightGreen, fmt.Sprintf("%s [%s]", DumpTableStructSuccess, cast.ToString(tbName)))
 
 			//处理SQL语句
 			//获取表的行数
@@ -115,36 +115,37 @@ func DumpSchema() {
 				_, _ = f.Write(tbSqlByte)
 			}
 			//print success
-			fmt.Println(util.SetColor(fmt.Sprintf(" ->%s [%s]", DumpTableRecordSuccess, cast.ToString(tbName)), util.LightGrey))
+			util.PrintColorTips(util.LightBlue, fmt.Sprintf(" ->%s [%s]", DumpTableRecordSuccess, cast.ToString(tbName)))
 		}
 	}
 }
 
-func generateSchema(scName string) (scStr string) {
-	//print Create schema SQL
-	scStr = "========= Create Schema Success ============\n"
-	scStr += fmt.Sprintf("-- DROP SCHEMA %s;", scName)
-	scStr += fmt.Sprintf("CREATE SCHEMA \"%s\" AUTHORIZATION %s;", scName, *UserName)
-	return
-}
-
 // DumpTable 生成一个创建Table 的SQL
 // tbName 表名
-func DumpTable(tbName string) {
-	if tbName == "" {
+func (s *Params) DumpTable() {
+	//取表名
+	tbName := ""
+	if "" == s.Param[1] {
+		util.PrintColorTips(util.LightRed, DumpFailedNoTable)
 		return
+	} else {
+		tbName = s.Param[1]
 	}
+
 	//校验表是否存在
 	if tbInfo, err := P.GetTableByName(tbName); err != nil || len(tbInfo) == 0 {
-		fmt.Println(util.SetColor(DumpFailedNoTable, util.LightRed))
+		util.PrintColorTips(util.LightRed, DumpFailedNoTable)
 		return
 	}
 
-	//打开要生成的文件句柄
-	fileName := fmt.Sprintf("dump_table_%s.pgi", tbName)
+	//要生成的文件名
+	fileName := fmt.Sprintf("dump_table_%s_%s.pgi", tbName, util.GetFormatDateTime())
+	//是否存在文件
 	if _, err := os.Stat(fileName); err == nil {
 		_ = os.Remove(fileName)
 	}
+
+	//打开要生成的文件句柄
 	f, _ := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
 	defer f.Close()
 	//生成Table 的DDL
@@ -179,39 +180,8 @@ func DumpTable(tbName string) {
 		//写入文件
 		_, _ = f.Write(tbSqlByte)
 	}
-	fmt.Println(util.SetColor(DumpTableSuccess, util.LightGreen))
-}
-
-func generateBatchValue(idx int, tbName string, columnList []string, columnType map[string]string) (batchValue []string) {
-	//查询的SQL
-	querySQL := P.GetQuerySql(tbName, columnList, columnType, idx)
-	//run sql
-	data, err := P.RunSQL(querySQL)
-	if err != nil {
-		fmt.Println("value is null")
-		return
-	}
-
-	if len(data) == 0 {
-		fmt.Println("value is null")
-		return
-	}
-	//循环
-	for _, v := range data {
-		valSon := []string{}
-		l := 0
-		for _, sv := range columnList {
-			if _, ok := v[sv]; ok {
-				valSon = append(valSon, fmt.Sprintf("'%s'", cast.ToString(v[sv])))
-				l++
-			} else {
-				break
-			}
-		}
-		//加入数组
-		batchValue = append(batchValue, "("+strings.Join(valSon, ",")+")")
-	}
-	return
+	//打印
+	util.PrintColorTips(util.LightGreen, DumpTableSuccess)
 }
 
 // 获取
@@ -230,6 +200,6 @@ func getColumn(columnList []map[string]interface{}) (cols []string) {
 }
 
 // DumpDatabase 生成Database的备份
-func DumpDatabase() {
+func (s *Params) DumpDatabase() {
 
 }

@@ -2,65 +2,61 @@ package pg
 
 import (
 	"fmt"
-	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cast"
-	"os"
 	"pgii/src/util"
 	"strings"
 )
 
-func Show(cmdList []string) {
-	if len(cmdList) > 0 {
-		cmd := strings.ToLower(strings.Trim(cmdList[0], ""))
-		if cmd != "" {
-			switch cmd {
-			case "ver", "version":
-				ShowVersion()
-			case "db", "database":
-				ShowDatabases()
-			case "tb", "table", "view", "vw":
-				ShowTableView(cmd, cmdList)
-				return
-			case "sd", "selectdb":
-				fmt.Println("DataBase:", *Database, ";Schema:", P.Schema)
-			case "sc", "schema": //查询schema
-				ShowSchema()
-			case "tg", "trigger": //查询trigger
-				ShowTrigger(cmdList)
-			default:
-				fmt.Println("Failed:CmdLine is Wrong!")
-			}
-		}
-	} else {
-		fmt.Println("Failed:CmdLine is Wrong!")
+func (s *Params) Show() {
+	if len(s.Param) == ZeroCMDLength {
+		util.PrintColorTips(util.LightRed, CmdLineWrong)
+	}
+
+	//获取CMD
+	cmd := strings.ToLower(strings.Trim(s.Param[0], ""))
+	switch CheckParamType(cmd) {
+	case VersionStyle:
+		s.ShowVersion()
+	case DatabaseStyle:
+		s.ShowDatabases()
+	case TableStyle, ViewStyle:
+		s.ShowTableView(cmd)
+	case SelectStyle:
+		util.PrintColorTips(util.LightGreen, fmt.Sprintf("DataBase:%s;Schema:%s", *Database, P.Schema))
+	case SchemaStyle:
+		s.ShowSchema()
+	case TriggerStyle:
+		s.ShowTrigger()
+	default:
+		util.PrintColorTips(util.LightRed, CmdLineWrong)
 	}
 }
 
-func ShowTrigger(cmdList []string) {
-	triggerInfo := []map[string]interface{}{}
-	fqv := ""
+func (s *Params) ShowTrigger() {
+	//define
+	var triggerInfo []map[string]interface{}
 	var err error
-	if len(cmdList) == 3 {
+
+	if len(s.Param) == OneCMDLength {
+		triggerInfo, err = P.Trigger("", "")
+	} else {
+		util.PrintColorTips(util.LightRed, ShowTriggerCmdFailed)
+		return
+	}
+
+	fqv := ""
+	if len(s.Param) == ThreeCMDLength {
 		//带有like 或 filter
-		sonCmd := strings.ToLower(strings.Trim(cmdList[1], ""))
-		value := strings.ToLower(strings.Trim(cmdList[2], ""))
+		sonCmd := strings.ToLower(strings.Trim(s.Param[1], ""))
+		value := strings.ToLower(strings.Trim(s.Param[2], ""))
 		fqv = value
 		triggerInfo, err = P.Trigger(sonCmd, value)
-	} else {
-		if len(cmdList) == 1 {
-			triggerInfo, err = P.Trigger("", "")
-		} else {
-			fmt.Println(ShowTriggerCmdFailed)
-		}
 	}
 
 	//序列化输出
 	if err == nil && len(triggerInfo) > 0 {
 		//序列化输出
-		t := table.NewWriter()
-		t.SetOutputMirror(os.Stdout)
-		t.AppendHeader(TriggerHeader)
-		var tbs []table.Row
+		var trbs [][]interface{}
 		for _, v := range triggerInfo {
 			var sbs []interface{}
 			//
@@ -78,67 +74,54 @@ func ShowTrigger(cmdList []string) {
 				v["action_orientation"],
 				v["action_timing"],
 			)
-			tbs = append(tbs, sbs)
+			trbs = append(trbs, sbs)
 		}
-		t.AppendRows(tbs)
-		t.Render()
+		ShowTable(TriggerShowHeader, trbs)
 	}
 }
 
 // ShowSchema 获取模式
-func ShowSchema() {
+func (s *Params) ShowSchema() {
 	if scList, err := P.SchemaNS(); err == nil {
 		//序列化输出
-		t := table.NewWriter()
-		t.SetOutputMirror(os.Stdout)
-		t.SetStyle(table.StyleLight)
-		t.AppendHeader(table.Row{"#oid", "SchemaName", "Owner", "Acl"})
-		var dbs []table.Row
+		var scbs [][]interface{}
 		for _, v := range scList {
 			var sbs []interface{}
 			sbs = append(sbs,
 				v["oid"],
-				util.If(cast.ToString(v["nspname"]) == P.Schema, cast.ToString(v["nspname"])+"[✓]", cast.ToString(v["nspname"])),
+				util.If(cast.ToString(v["nspname"]) == P.Schema,
+					util.SetColor(cast.ToString(v["nspname"])+"[✓]", util.LightGreen),
+					cast.ToString(v["nspname"])),
 				P.GetRoleNameByOid(cast.ToInt(v["nspowner"])),
 				v["nspacl"],
 			)
 			//填入数组
-			dbs = append(dbs, sbs)
+			scbs = append(scbs, sbs)
 		}
-		t.AppendRows(dbs)
-		t.Render()
+		ShowTable(SchemaShowHeader, scbs)
 	}
 }
 
 // ShowVersion 获取版本
-func ShowVersion() {
+func (s *Params) ShowVersion() {
 	//获取版本
 	version, _ := P.Version()
 	//序列化输出
-	t := table.NewWriter()
-	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"#", "Version"})
-	t.AppendRows([]table.Row{
-		{"PostgresSql", version},
-	})
-	t.Render()
+	data := []interface{}{"PostgresSql", version}
+	ShowTable(VersionShowHeader, [][]interface{}{data})
 }
 
 // ShowDatabases 列出所有的数据库
-func ShowDatabases() {
+func (s *Params) ShowDatabases() {
 	if dbList, err := P.Database(); err == nil {
-		//序列化输出
-		t := table.NewWriter()
-		t.SetOutputMirror(os.Stdout)
-		t.AppendHeader(table.Row{"#oid", "DbName", "Auth", "Encoding", "LC_COLLATE", "LC_CTYPE", "AllowConn", "ConnLimit", "LastSysOid", "TableSpace", "size"})
-		var dbs []table.Row
+		var dbs [][]interface{}
 		for _, v := range dbList {
 			var sbs []interface{}
 			//oid
 			sbs = append(sbs,
 				v["oid"],
 				util.If(cast.ToString(v["datname"]) == *Database,
-					util.SetColor(cast.ToString(v["datname"])+"[✓]", util.LightSeaBlue),
+					util.SetColor(cast.ToString(v["datname"])+"[✓]", util.LightGreen),
 					cast.ToString(v["datname"])),
 				P.GetRoleNameByOid(cast.ToInt(v["datdba"])),
 				P.GetEncodingChar(cast.ToInt(v["encoding"])),
@@ -150,23 +133,22 @@ func ShowDatabases() {
 				P.GetTableSpaceNameByOid(cast.ToInt(v["dattablespace"])),
 				v["size"],
 			)
-			//
+			//加入数据列
 			dbs = append(dbs, sbs)
 		}
-		t.AppendRows(dbs)
-		t.Render()
+		ShowTable(DatabaseShowHeader, dbs)
 	} else {
-		fmt.Println("Failed:Show DataBase is Wrong! error ", err.Error())
+		util.PrintColorTips(util.LightRed, ShowDatabaseError, err.Error())
 	}
 }
 
-func ShowTableView(cmd string, cmdList []string) {
+func (s *Params) ShowTableView(cmd string) {
 	//增加过滤过功能
-	if len(cmdList) == 3 {
+	if len(s.Param) == ThreeCMDLength {
 		//带有like 或 filter
-		sonCmd := strings.ToLower(strings.Trim(cmdList[1], ""))
+		sonCmd := strings.ToLower(strings.Trim(s.Param[1], ""))
 		//过滤参数处理
-		param := strings.Replace(cmdList[2], "'", "", -1)
+		param := strings.Replace(s.Param[2], "'", "", -1)
 		param = strings.Replace(param, "\"", "", -1)
 		params := strings.Split(param, "|")
 
@@ -181,8 +163,8 @@ func ShowTableView(cmd string, cmdList []string) {
 			util.InArray(cmd, TableVar),
 			sonCmd,
 			params,
-			ShowTables,
-			ShowView,
+			s.ShowTables,
+			s.ShowView,
 		)
 
 	} else {
@@ -195,20 +177,18 @@ func ShowTableView(cmd string, cmdList []string) {
 			util.InArray(cmd, TableVar),
 			"",
 			nil,
-			ShowTables,
-			ShowView,
+			s.ShowTables,
+			s.ShowView,
 		)
 	}
 
 }
 
-func ShowTables(cmd string, filter ...string) {
+// ShowTables 查询表信息列表
+func (s *Params) ShowTables(cmd string, filter ...string) {
 	if tb, err := P.Tables(cmd, filter...); err == nil {
 		//序列化输出
-		t := table.NewWriter()
-		t.SetOutputMirror(os.Stdout)
-		t.AppendHeader(TableHeader)
-		var tbs []table.Row
+		var tbs [][]interface{}
 		for _, v := range tb {
 			var sbs []interface{}
 			//
@@ -222,25 +202,23 @@ func ShowTables(cmd string, filter ...string) {
 			sbs = append(sbs, v["schemaname"], tableName, v["tableowner"], v["tablespace"])
 			tbs = append(tbs, sbs)
 		}
-		t.AppendRows(tbs)
-		t.Render()
+		//打印表格
+		ShowTable(TableShowHeader, tbs)
 	}
 }
 
-func ShowView(cmd string, filter ...string) {
+// ShowView 查询视图
+func (s *Params) ShowView(cmd string, filter ...string) {
 	if tb, err := P.Views(cmd, filter...); err == nil {
 		//序列化输出
-		t := table.NewWriter()
-		t.SetOutputMirror(os.Stdout)
-		t.AppendHeader(ViewHeader)
-		var tbs []table.Row
+		var vbs [][]interface{}
 		for _, v := range tb {
 			var sbs []interface{}
 			//oid
 			sbs = append(sbs, v["schemaname"], v["viewname"], v["viewowner"])
-			tbs = append(tbs, sbs)
+			vbs = append(vbs, sbs)
 		}
-		t.AppendRows(tbs)
-		t.Render()
+		//打印表格
+		ShowTable(ViewShowHeader, vbs)
 	}
 }

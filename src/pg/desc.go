@@ -1,37 +1,33 @@
 package pg
 
 import (
-	"fmt"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"os"
 	"pgii/src/util"
 )
 
 // Desc 查看表结构
-func Desc(cms ...string) {
-	if len(cms) != 1 {
-		fmt.Println("Failed:Describe Table fail")
+func (s *Params) Desc() {
+	if len(s.Param) != OneCMDLength {
+		util.PrintColorTips(util.LightRed, DescTableFailed)
 		return
 	}
 	//获取表名
-	tableName := util.TrimLower(cms[0])
+	tableName := util.TrimLower(s.Param[0])
+
 	//校验是否存在表
-	if tbInfo, err := P.GetTableByName(tableName); err != nil {
-		fmt.Println("Failed:Describe Table fail!Error ", err.Error())
+	tbInfo, err := P.GetTableByName(tableName)
+	if err != nil {
+		util.PrintColorTips(util.LightRed, DescTableError, err.Error())
 		return
-	} else {
-		if len(tbInfo) == 0 {
-			fmt.Println("Failed:Describe Table fail!Table not exists")
-			return
-		}
+	}
+
+	if len(tbInfo) == 0 {
+		util.PrintColorTips(util.LightRed, DescTableNoExists)
+		return
 	}
 
 	if columnInfo, err := P.Column(tableName); err == nil {
 		//序列化输出
-		t := table.NewWriter()
-		t.SetOutputMirror(os.Stdout)
-		t.AppendHeader(table.Row{"#", "column", "dataType", "length", "isnull", "defaultValue"})
-		var tbs []table.Row
+		var desc [][]interface{}
 		for _, v := range columnInfo {
 			var sbs []interface{}
 			//oid
@@ -42,9 +38,8 @@ func Desc(cms ...string) {
 				v["character_maximum_length"],
 				v["is_nullable"],
 				v["column_default"])
-			tbs = append(tbs, sbs)
+			desc = append(desc, sbs)
 		}
-		t.AppendRows(tbs)
-		t.Render()
+		ShowTable(DescTableHeader, desc)
 	}
 }

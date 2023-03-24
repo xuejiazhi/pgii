@@ -5,41 +5,47 @@ import (
 	"pgii/src/util"
 )
 
-func Size(params ...string) {
+func (s *Params) Size() {
 	//参数长度为1位或2位
-	if len(params) > 2 || len(params) < 1 {
-		fmt.Println(SizeFailed)
+	if len(s.Param) > TwoCMDLength || len(s.Param) < OneCMDLength {
+		util.PrintColorTips(util.LightRed, SizeFailed)
 		return
 	}
 
 	//查看DDL的类型
-	types := util.TrimLower(params[0])
-	switch types {
-	case "database", "db": //查看数据库大小
-		SizeDatabase(params[1:]...)
-	case "table", "tb": //查看表大小
-		SizeTable(params[1:])
+	types := util.TrimLower(s.Param[0])
+	switch CheckParamType(types) {
+	case DatabaseStyle:
+		s.SizeDatabase(s.Param[1:]...)
+	case TableStyle:
+		s.SizeTable(s.Param[1:])
+	case IndexStyle:
+		s.SizeIndex()
 	default:
-		fmt.Println(SizeFailed)
+		util.PrintColorTips(util.LightRed, SizeFailed)
 	}
+}
+
+func (s *Params) SizeIndex() {
 
 }
 
-func SizeDatabase(dbName ...string) {
+// SizeDatabase 取database的size
+func (s *Params) SizeDatabase(dbName ...string) {
 	//如果没有指定数据库，查询当前数据库
 	useDb := ""
-	if len(dbName) == 0 {
+	if len(dbName) == ZeroCMDLength {
 		//数据库是否为空
 		if P.DataBase == "" {
-			fmt.Println(SizeFailedNull)
+			util.PrintColorTips(util.LightRed, SizeFailedNull)
 			return
 		}
 		useDb = P.DataBase
 	} else {
 		//判断指定的db是否存在
 		dbInfo, err := P.GetDatabaseInfoByName(dbName[0])
-		if err != nil || len(dbInfo) == 0 {
-			fmt.Println(SizeFailedNull)
+		if err != nil || len(dbInfo) == ZeroCMDLength {
+			util.PrintColorTips(util.LightRed, SizeFailedNull)
 			return
 		}
 		useDb = dbName[0]
@@ -48,39 +54,38 @@ func SizeDatabase(dbName ...string) {
 	//获取数据
 	if sizeInfo, err := P.GetSizeInfo("db", useDb); err == nil {
 		//开始打印
-		header := []interface{}{"database", "size"}
 		data := []interface{}{useDb, sizeInfo["size"]}
-		ShowTable(header, [][]interface{}{data})
+		ShowTable(DatabaseSizeHeader, [][]interface{}{data})
 	} else {
-		fmt.Println(SizeFailedDataNull)
+		util.PrintColorTips(util.LightRed, SizeFailedDataNull)
 	}
 }
 
-func SizeTable(param []string) {
+// SizeTable 取表的size
+func (s *Params) SizeTable(param []string) {
 	//必须要指定表
-	if len(param) == 0 {
-		fmt.Println(SizeFailedPointTable)
+	if len(param) == ZeroCMDLength {
+		util.PrintColorTips(util.LightRed, SizeFailedPointTable)
 		return
 	}
 
 	//判断指定的sc是否存在
-	if scInfo, err := P.GetSchemaFromNS(P.Schema); err != nil || len(scInfo) == 0 {
-		fmt.Println(SizeFailedNoSchema)
+	if scInfo, err := P.GetSchemaFromNS(P.Schema); err != nil || len(scInfo) == ZeroCMDLength {
+		util.PrintColorTips(util.LightRed, SizeFailedNoSchema)
 		return
 	}
 
 	//判断table是否存在
-	if tbInfo, err := P.GetTableByName(param[0]); err != nil || len(tbInfo) == 0 {
-		fmt.Println(SizeFailedNoTable)
+	if tbInfo, err := P.GetTableByName(param[0]); err != nil || len(tbInfo) == ZeroCMDLength {
+		util.PrintColorTips(util.LightRed, SizeFailedNoTable)
 		return
 	}
 
 	//获取数据
 	if sizeInfo, err := P.GetSizeInfo("tb", param[0]); err == nil {
 		//开始打印
-		header := []interface{}{"tablename", "size"}
 		data := []interface{}{param[0], sizeInfo["size"]}
-		ShowTable(header, [][]interface{}{data})
+		ShowTable(TableSizeHeader, [][]interface{}{data})
 	} else {
 		fmt.Println(SizeFailedDataNull)
 	}
