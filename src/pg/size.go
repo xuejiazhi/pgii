@@ -1,6 +1,7 @@
 package pg
 
 import (
+	"errors"
 	"fmt"
 	"pgii/src/util"
 )
@@ -26,8 +27,23 @@ func (s *Params) Size() {
 	}
 }
 
+// SizeIndex 取index索引大小
 func (s *Params) SizeIndex() {
+	//判断table信息
+	tbParam, juErrMsg, err := s.judgeTable()
+	if err != nil {
+		util.PrintColorTips(util.LightRed, juErrMsg)
+		return
+	}
 
+	//获取数据
+	if sizeInfo, err := P.GetSizeInfo(IndexStyle, tbParam[0]); err == nil {
+		//开始打印
+		data := []interface{}{tbParam[0], sizeInfo["size"]}
+		ShowTable(TableSizeHeader, [][]interface{}{data})
+	} else {
+		fmt.Println(SizeFailedDataNull)
+	}
 }
 
 // SizeDatabase 取database的size
@@ -52,7 +68,7 @@ func (s *Params) SizeDatabase(dbName ...string) {
 	}
 
 	//获取数据
-	if sizeInfo, err := P.GetSizeInfo("db", useDb); err == nil {
+	if sizeInfo, err := P.GetSizeInfo(DatabaseStyle, useDb); err == nil {
 		//开始打印
 		data := []interface{}{useDb, sizeInfo["size"]}
 		ShowTable(DatabaseSizeHeader, [][]interface{}{data})
@@ -82,11 +98,43 @@ func (s *Params) SizeTable(param []string) {
 	}
 
 	//获取数据
-	if sizeInfo, err := P.GetSizeInfo("tb", param[0]); err == nil {
+	if sizeInfo, err := P.GetSizeInfo(TableStyle, param[0]); err == nil {
 		//开始打印
 		data := []interface{}{param[0], sizeInfo["size"]}
 		ShowTable(TableSizeHeader, [][]interface{}{data})
 	} else {
 		fmt.Println(SizeFailedDataNull)
 	}
+}
+
+func (s *Params) judgeTable() (tbParam []string, errorMsg string, err error) {
+	//赋值
+	tbParam = s.Param[1:]
+	//必须要指定表
+	if len(tbParam) == ZeroCMDLength {
+		errorMsg = SizeFailedPointTable
+	}
+
+	//判断指定的sc是否存在
+	scInfo, err := P.GetSchemaFromNS(P.Schema)
+	if err != nil {
+		errorMsg = fmt.Sprintf("%s %s", SizeFailedNoSchema, err.Error())
+	}
+	if len(scInfo) == ZeroCMDLength {
+		errorMsg = SizeFailedNoSchema
+		return
+	}
+
+	//判断table是否存在
+	tbInfo, err := P.GetTableByName(tbParam[0])
+	if err != nil {
+		errorMsg = fmt.Sprintf("%s %s", SizeFailedNoTable, err.Error())
+	}
+	if len(tbInfo) == ZeroCMDLength {
+		errorMsg = SizeFailedNoTable
+	}
+
+	err = errors.New(errorMsg)
+	//
+	return
 }

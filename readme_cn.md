@@ -322,8 +322,7 @@ CREATE SCHEMA "public" AUTHORIZATION postgres;
   功能：
      用于dump当前模式和下面的表的建模式语句和建表语句,并将表下面数据生成批量插入的T-SQL语句，生成一个pgi文件；
   用法
-    pgii~[clouddb/common]# dump tb;
-      pgii~[clouddb/db_mcs.com]# dump sc;
+    pgii~[clouddb/db_mcs.com]# dump sc;
         Dump Schema Success [db_mcs.com]
         Dump Table Struct Success [dgna]
          ->Dump Table Record Success [dgna]

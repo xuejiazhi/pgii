@@ -30,26 +30,23 @@ pgii is a PostgreSql cli tool. PostgreSql is developed in CMD or Golang and can 
 # Related instruction
 ## use instruction
 ### use <db|database> <dbName>
-```bash
-  FUNCTION：
-    Used to select a database. After data is selected, you can run "show db" or "show selectdb" to view the selected database.
-  USAGE：
-    pgii~[postgres/]# use db benchmark
-	pgii~[postgres/]# use database benchmark
-      # Use Database Success!
-    pgii~[benchmark/]#
-```
+  ***FUNCTION：***<br/>
+ > Used to select a database. After data is selected, you can run "show db" or "show selectdb" to view the selected database.<br/>
+
+  ***USAGE：***<br/>
+> pgii~[postgres/]# use db benchmark<br/>
+> pgii~[postgres/]# use database benchmark
+>>    Use Database Success!<br/>
 
 ### use <sc|schema> <schemaName>
-```bash
-  FUNCTION：
-    Used to select a database schema. After selecting a schema, you can run the "show sc" or "show schema" command to view the selected schema
-  USAGE：
-    pgii~[benchmark/]# use sc  public;
-	pgii~[benchmark/]# use schema public;
-     # Use Schema Success!
-    pgii~[benchmark/public]#
-```
+
+***FUNCTION：***<br/>
+> Used to select a database schema. After selecting a schema, you can run the "show sc" or "show schema" command to view the selected schema
+
+***USAGE：***<br/>
+>   pgii~[benchmark/]# use sc  public;
+>	pgii~[benchmark/]# use schema public;
+>     # Use Schema Success!
 
 ## show instruction
 ### show <db|database>
@@ -322,7 +319,6 @@ CREATE SCHEMA "public" AUTHORIZATION postgres;
   FUNCTION：
      dump schema creation statements and table creation statements of the current schema and the following tables, and generate T-SQL statements inserted in batches from the data in the table to generate a pgi file；
   USAGE
-    pgii~[clouddb/common]# dump tb;
       pgii~[clouddb/db_mcs.com]# dump sc;
         Dump Schema Success [db_mcs.com]
         Dump Table Struct Success [dgna]

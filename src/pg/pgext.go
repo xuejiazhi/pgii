@@ -7,11 +7,22 @@ import (
 	"strings"
 )
 
-func (p *PgDsn) GetSizeInfo(style, Name string) (sizeInfo map[string]interface{}, err error) {
+func (p *PgDsn) GetSizeInfo(style int, Name string) (sizeInfo map[string]interface{}, err error) {
 	sqlStr := ""
 
 	// 获取哪种类型的size
-	sizeType := util.If(style == "db", "pg_database_size", "pg_total_relation_size")
+	sizeType := func() string {
+		switch style {
+		case DatabaseStyle:
+			return "pg_database_size"
+		case TableStyle:
+			return "pg_total_relation_size"
+		case IndexStyle:
+			return "pg_indexes_size"
+		default:
+			return "pg_database_size"
+		}
+	}()
 
 	//T-SQL
 	sqlStr = fmt.Sprintf("select pg_size_pretty( %s('%s') ) as size", sizeType, Name)
