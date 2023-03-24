@@ -51,10 +51,11 @@ pgii is a PostgreSql cli tool. PostgreSql is developed in CMD or Golang and can 
 
 ## show instruction
 ### show <db|database>
-```bash
-  FUNCTION：
-    Used to view information about the database, including the currently selected library and the size of the library
-  USAGE
+***FUNCTION：***<br/>
+  >  Used to view information about the database, including the currently selected library and the size of the library
+
+***USAGE：***<br/>
+~~~C
    pgii~[postgres/]# show database;
    pgii~[postgres/]# show db;
 +-------+-------------+----------+----------+------------+----------+-----------+-----------+------------+------------+---------+
@@ -66,7 +67,7 @@ pgii is a PostgreSql cli tool. PostgreSql is developed in CMD or Golang and can 
 | 13891 | template0   | postgres | UTF8     | C          | C        | false     |        -1 | 13891      | pg_default | 8385 kB |
 | 91966 | benchmark   | postgres | UTF8     | C          | C        | true      |        -1 | 13891      | pg_default | 3370 MB |
 +-------+-------------+----------+----------+------------+----------+-----------+-----------+------------+------------+---------+
-```
+~~~
 
 ### show <sc|schema>
 ```bash
