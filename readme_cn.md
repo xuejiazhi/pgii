@@ -1,6 +1,6 @@
 # 一个postgreSql的Cli工具
 [![imi License](https://img.shields.io/badge/license-MIT-green)](https://github.com/xuejiazhi/pgii/blob/main/LICENSE)
-
+简体中文 | [English](./readme.md) | [帮助文档](https://github.com/xuejiazhi/pgii/wiki/pgii-%E4%B8%AD%E6%96%87%E5%B8%AE%E5%8A%A9%E6%96%87%E6%A1%A3)<br/>
 pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进行开发,可以多平台下面编译使用：
 
 - **跨平台**： 可以在多平台下编译，跨平台使用；
@@ -302,4 +302,44 @@ CREATE SCHEMA "public" AUTHORIZATION postgres;
     cpu.additional_tags
    FROM cpu
   WHERE ((cpu."time" > '2023-03-01 08:00:00+08'::timestamp with time zone) AND (cpu.tags_id > 10) AND (cpu.tags_id < 1000) AND (cpu.usage_user = ANY (ARRAY[(21)::double precision, (22)::double precision, (23)::double precision, (24)::double precision, (25)::double precision, (26)::double precision, (27)::double precision, (28)::double precision, (29)::double precision])));
+```
+
+## dump 指令
+### dump <tb|table> <tableName>
+```bash
+  功能：
+     用于dump一个表的备份文件，可以用于后续的恢复；
+  用法
+    pgii~[clouddb/common]# dump tb role;
+      Dump Table Success
+    ## linux下查看
+    [root@localhost src]# ls *.pgi
+      dump_table_role_time.pgi
+```
+
+### dump <sc|schema>
+```bash
+  功能：
+     用于dump当前模式和下面的表的建模式语句和建表语句,并将表下面数据生成批量插入的T-SQL语句，生成一个pgi文件；
+  用法
+    pgii~[clouddb/common]# dump tb;
+      pgii~[clouddb/db_mcs.com]# dump sc;
+        Dump Schema Success [db_mcs.com]
+        Dump Table Struct Success [dgna]
+         ->Dump Table Record Success [dgna]
+        Dump Table Struct Success [dgna_member]
+         ->Dump Table Record Success [dgna_member]
+        Dump Table Struct Success [syspatch_info]
+         ->Dump Table Record Success [syspatch_info]
+        Dump Table Struct Success [syspatch_member]
+         ->Dump Table Record Success [syspatch_member]
+        Dump Table Struct Success [predefineddgna_info]
+         ->Dump Table Record Success [predefineddgna_info]
+        Dump Table Struct Success [simulselect_info]
+         ->Dump Table Record Success [simulselect_info]
+        Dump Table Struct Success [simulselect_member]
+         ->Dump Table Record Success [simulselect_member]
+    ## linux下查看
+    [root@localhost src]# ls *.pgi
+       dump_schema_db_mcs.com.pgi
 ```
