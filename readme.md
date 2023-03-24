@@ -1,38 +1,38 @@
-# 一个postgreSql的Cli工具
+# A postgreSql Cli tool
 [![imi License](https://img.shields.io/badge/license-MIT-green)](https://github.com/xuejiazhi/pgii/blob/main/LICENSE)
 
-pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进行开发,可以多平台下面编译使用：
+pgii is a PostgreSql cli tool. PostgreSql is developed in CMD or Golang and can be compiled for multiple platforms：
 
-- **跨平台**： 可以在多平台下编译，跨平台使用；
+- **cross-platform**： Can be compiled under multiple platforms, cross-platform use；
 
-- **零学习成本**：类似于MySQL Cli的指令,对熟悉mysql操作的人上手快；
+- **Zero-cost learning**：Similar to the MySQL Cli command, familiar with the mysql operation of the people on the hand；
 
-- **互动 Console**: 通过命令行 console。 
+- **Interactive Console**: Through the console command line。 
 
-# 登录
+# Login
 **cmd**: 
 ```bash
   ./pgii [-h|--host] [-u|--user] [-p|--password] [-d|--db] [--port]
-      [-h|--host] postgresql 数据库地址  # eg: -h localhost | --host=localhost
-      [-u|--user] 数据库用户名  # eg: -u postgres | --user=postgres
-      [-p|--password]  数据库密码  # eg: -p postgres | --password=postgres
-      [-d|--db] 选择的数据库 默认为postgres # eg: -d postgres | --db=postgres
-      [--port] 指定的端口 # eg: --port=5432
+      [-h|--host]  Database address  # eg: -h localhost | --host=localhost
+      [-u|--user] Database user  # eg: -u postgres | --user=postgres
+      [-p|--password]  Database password  # eg: -p postgres | --password=postgres
+      [-d|--db] select database Default:postgres # eg: -d postgres | --db=postgres
+      [--port] Specified port # eg: --port=5432
 
-  #### 示例
+  #### example
   $ pgii -h 127.0.0.1 -u postgres -p 123456 
     Connect Pgsql Success Host 127.0.0.1
     PostgresSql Version: 14.5
     pgii~[postgres/]#
 ```
 
-# 相关指令
-## use 指令
+# Related instruction
+## use instruction
 ### use <db|database> <dbName>
 ```bash
-  功能：
-    用于选择数据库,选中数据后，可以使用show db 或 show selectdb 查看当前选中的数据库
-  用法：
+  function：
+    Used to select a database. After data is selected, you can run "show db" or "show selectdb" to view the selected database.
+  usage：
     pgii~[postgres/]# use db benchmark
 	pgii~[postgres/]# use database benchmark
       # Use Database Success!
@@ -41,21 +41,21 @@ pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进
 
 ### use <sc|schema> <schemaName>
 ```bash
-  功能：
-    用于选择数据库模式,选中模式后，可以使用show sc 或 show schema 查看当前选中的模式
-  用法：
+  function：
+    Used to select a database schema. After selecting a schema, you can run the "show sc" or "show schema" command to view the selected schema
+  usage：
     pgii~[benchmark/]# use sc  public;
 	pgii~[benchmark/]# use schema public;
      # Use Schema Success!
     pgii~[benchmark/public]#
 ```
 
-## show 指令
+## show instruction
 ### show <db|database>
 ```bash
-  功能：
-    用于查看数据库的相关信息,包括当前选中的库,以及库的大小
-  用法
+  function：
+    Used to view information about the database, including the currently selected library and the size of the library
+  usage
    pgii~[postgres/]# show database;
    pgii~[postgres/]# show db;
 +-------+-------------+----------+----------+------------+----------+-----------+-----------+------------+------------+---------+
@@ -71,9 +71,9 @@ pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进
 
 ### show <sc|schema>
 ```bash
-  功能：
-    用于查看数据库的相关模式信息,包括当前选中的模式
-  用法
+  function：
+     Used to view schema information about the database, including the selected schema
+  usage
    pgii~[postgres/]# show schema;
    pgii~[postgres/]# show sc;
 ┌───────┬──────────────────────────┬──────────┬─────────────────────────────────────┐
@@ -94,9 +94,9 @@ pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进
 
 ### show <tb|table> [filter|equal] [value]
 ```bash
-  功能：
-    用于查看数据库的相关表信息,使用filter,可以过滤TABLENAME包含value的记录，equal 为全等于
-  用法
+  function：
+    This command is used to view information about tables in the database. If "filter" is used, the TABLENAME records containing value are filtered,and "equal" is all equal
+  usage
    pgii~[postgres/]# show table;
    pgii~[postgres/]# show tb;
 +--------+-----------+------------+------------+
@@ -115,9 +115,9 @@ pgii~[benchmark/public]# show tb filter c
 
 ### show <vw|view> [filter|equal] [value]
 ```bash
-  功能：
-    用于查看数据库的相关视图信息,使用filter,可以过滤VIEWNAME包含value的记录，equal 为全等于
-  用法
+  function：
+    This command is used to view view information about the database. The "filter" command is used to filter records whose VIEWNAME contains a value. "equal" is equal to all values
+  usage
    pgii~[postgres/]# show view;
    pgii~[postgres/]# show vw;
 +--------+----------+-----------+
@@ -135,9 +135,9 @@ pgii~[benchmark/public]# show tb filter c
 
 ### show <tg|trigger> [filter|equal] [value]
 ```bash
-  功能：
-    用于查看数据库的相关触发器信息,使用filter,可以过滤触发器包含value的记录，equal 为全等于
-  用法
+  function：
+    This command is used to view information about triggers in the database. If "filter" is used, you can filter the records that contain a value in the trigger. "equal" is all equal
+  usage
    pgii~[postgres/]# show tg;
    pgii~[postgres/]# show trigger;
 +-----------+--------+-------------------+--------------------+--------------------+--------------------+---------------+
@@ -155,9 +155,9 @@ pgii~[benchmark/public]# show trigger filter ts;
 
 ### show <ver|version>
 ```bash
-  功能：
-    用于查看数据库的相关版本信息
-  用法
+  function：
+    Used to view the version information about the database
+  usage
    pgii~[postgres/]# show version;
    pgii~[postgres/]# show ver;
 +-------------+---------+
@@ -169,20 +169,20 @@ pgii~[benchmark/public]# show trigger filter ts;
 
 ### show <sd|selectdb>
 ```bash
-  功能：
-    用于查看数据库的当前选中的database 和schema
-  用法
+  function：
+    Used to view the currently selected database and schema for the database
+  usage
    pgii~[benchmark/public]# show sd;
    pgii~[benchmark/public]# show selectdb;
      DataBase: benchmark ;Schema: public
 ```
 
-## desc 指令
+## desc instruction
 ### desc <tableName>
 ```bash
-  功能：
-     用于查看表结构
-  用法
+  function：
+     Used to view the table structure
+  usage
     pgii~[benchmark/public]# desc cpu;
 +----+------------------+-------------+--------+--------+--------------+
 | #  | COLUMN           | DATATYPE    | LENGTH | ISNULL | DEFAULTVALUE |
@@ -204,12 +204,12 @@ pgii~[benchmark/public]# show trigger filter ts;
 +----+------------------+-------------+--------+--------+--------------+
 ```
 
-## size 指令
+## size instruction
 ### size <db|database> <dbName>
 ```bash
-  功能：
-     用于查看数据库的大小
-  用法
+  function：
+     Used to view the size of the database
+  usage
     pgii~[benchmark/public]# size database benchmark;
     pgii~[benchmark/public]# size db benchmark;
 ┌───────────┬─────────┐
@@ -221,9 +221,9 @@ pgii~[benchmark/public]# show trigger filter ts;
 
 ### size <tb|table> <tableName>
 ```bash
-  功能：
-     用于查看数据库表的大小
-  用法
+  function：
+     Used to view the size of a database table
+  usage
   pgii~[benchmark/public]# size table cpu;
   pgii~[benchmark/public]# size tb cpu;
 ┌───────────┬───────┐
@@ -233,12 +233,12 @@ pgii~[benchmark/public]# show trigger filter ts;
 └───────────┴───────┘
 ```
 
-## ddl 指令
+## ddl instruction
 ### ddl <tb|table> <tableName>
 ```bash
-  功能：
-     用于查看表的ddl建表语句
-  用法
+  function：
+     A ddl construct clause for viewing the table
+  usage
   pgii~[benchmark/public]# ddl table cpu;
   pgii~[benchmark/public]# ddl tb cpu;
 ========= Create Table Success ============
@@ -267,9 +267,9 @@ CREATE INDEX cpu_hostname_time_idx ON public.cpu USING btree (hostname, "time" D
 
 ### ddl <sc|schema> <schemaName>
 ```bash
-  功能：
-     用于查看模式的ddl建表语句
-  用法
+  function：
+     A ddl constructor clause for viewing the schema
+  usage
   pgii~[benchmark/public]# ddl schema public;
   pgii~[benchmark/public]# ddl sc public;
 ========= Create Schema Success ============
@@ -279,9 +279,9 @@ CREATE SCHEMA "public" AUTHORIZATION postgres;
 
 ### ddl <vw|view> <viewName>
 ```bash
-  功能：
-     用于查看视图的ddl建表语句
-  用法
+  function：
+     The ddl constructor clause for viewing the view
+  usage
   pgii~[benchmark/public]# ddl view cpu_view;
   pgii~[benchmark/public]# ddl vw cpu_view;
 ========= Create View Success ============
