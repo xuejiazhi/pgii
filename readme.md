@@ -178,9 +178,9 @@ pgii~[postgres/]# show ver;
 
 ***USAGE：***<br/>
 ~~~C
-   pgii~[benchmark/public]# show sd;
-   pgii~[benchmark/public]# show selectdb;
-     DataBase: benchmark ;Schema: public
+pgii~[benchmark/public]# show sd;
+pgii~[benchmark/public]# show selectdb;
+    DataBase: benchmark ;Schema: public
 ~~~
 
 ## desc instruction
@@ -190,7 +190,7 @@ pgii~[postgres/]# show ver;
 
 ***USAGE：***<br/>
 ~~~C
-    pgii~[benchmark/public]# desc cpu;
+pgii~[benchmark/public]# desc cpu;
 +----+------------------+-------------+--------+--------+--------------+
 | #  | COLUMN           | DATATYPE    | LENGTH | ISNULL | DEFAULTVALUE |
 +----+------------------+-------------+--------+--------+--------------+
@@ -281,8 +281,8 @@ CREATE INDEX cpu_hostname_time_idx ON public.cpu USING btree (hostname, "time" D
 
 ***USAGE：***<br/>
 ~~~C
-  pgii~[benchmark/public]# ddl schema public;
-  pgii~[benchmark/public]# ddl sc public;
+pgii~[benchmark/public]# ddl schema public;
+pgii~[benchmark/public]# ddl sc public;
 ========= Create Schema Success ============
 -- DROP SCHEMA public;
 CREATE SCHEMA "public" AUTHORIZATION postgres;
@@ -294,8 +294,8 @@ CREATE SCHEMA "public" AUTHORIZATION postgres;
 
 ***USAGE：***<br/>
 ~~~C
-  pgii~[benchmark/public]# ddl view cpu_view;
-  pgii~[benchmark/public]# ddl vw cpu_view;
+pgii~[benchmark/public]# ddl view cpu_view;
+pgii~[benchmark/public]# ddl vw cpu_view;
 ========= Create View Success ============
  CREATE OR REPLACE VIEW "public".cpu_view
  AS SELECT cpu."time",
@@ -323,11 +323,11 @@ CREATE SCHEMA "public" AUTHORIZATION postgres;
 
 ***USAGE：***<br/>
 ~~~C
-    pgii~[clouddb/common]# dump tb role;
-      Dump Table Success
-    ## View in linux
-    [root@localhost src]# ls *.pgi
-      dump_table_role_time.pgi
+pgii~[clouddb/common]# dump tb role;
+ Dump Table Success
+## View in linux
+[root@localhost src]# ls *.pgi
+ dump_table_role_time.pgi
 ~~~
 
 ### dump <sc|schema>
@@ -336,23 +336,27 @@ CREATE SCHEMA "public" AUTHORIZATION postgres;
 
 ***USAGE：***<br/>
 ~~~C
-      pgii~[clouddb/db_mcs.com]# dump sc;
-        Dump Schema Success [db_mcs.com]
-        Dump Table Struct Success [dgna]
-         ->Dump Table Record Success [dgna]
-        Dump Table Struct Success [dgna_member]
-         ->Dump Table Record Success [dgna_member]
-        Dump Table Struct Success [syspatch_info]
-         ->Dump Table Record Success [syspatch_info]
-        Dump Table Struct Success [syspatch_member]
-         ->Dump Table Record Success [syspatch_member]
-        Dump Table Struct Success [predefineddgna_info]
-         ->Dump Table Record Success [predefineddgna_info]
-        Dump Table Struct Success [simulselect_info]
-         ->Dump Table Record Success [simulselect_info]
-        Dump Table Struct Success [simulselect_member]
-         ->Dump Table Record Success [simulselect_member]
-    ## linux下查看
-    [root@localhost src]# ls *.pgi
-       dump_schema_db_mcs.com.pgi
+pgii~[clouddb/db_mcs.com]# dump sc;
+    Dump Schema Success [db_mcs.com]
+    Dump Table Struct Success [dgna]
+     ->Dump Table Record Success [dgna]
+    Dump Table Struct Success [dgna_member]
+     ->Dump Table Record Success [dgna_member]
+    Dump Table Struct Success [syspatch_info]
+     ->Dump Table Record Success [syspatch_info]
+    Dump Table Struct Success [syspatch_member]
+     ->Dump Table Record Success [syspatch_member]
+    Dump Table Struct Success [predefineddgna_info]
+     ->Dump Table Record Success [predefineddgna_info]
+    Dump Table Struct Success [simulselect_info]
+     ->Dump Table Record Success [simulselect_info]
+    Dump Table Struct Success [simulselect_member]
+     ->Dump Table Record Success [simulselect_member]
+## linux下查看
+[root@localhost src]# ls *.pgi
+   dump_schema_db_mcs.com.pgi
 ~~~
+
+
+## TODO
+-  dump database

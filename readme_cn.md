@@ -342,3 +342,7 @@ CREATE SCHEMA "public" AUTHORIZATION postgres;
     [root@localhost src]# ls *.pgi
        dump_schema_db_mcs.com.pgi
 ```
+
+
+## TODO
+-  dump database
