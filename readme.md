@@ -56,8 +56,8 @@ pgii is a PostgreSql cli tool. PostgreSql is developed in CMD or Golang and can 
 
 ***USAGE：***<br/>
 ~~~C
-   pgii~[postgres/]# show database;
-   pgii~[postgres/]# show db;
+pgii~[postgres/]# show database;
+pgii~[postgres/]# show db;
 +-------+-------------+----------+----------+------------+----------+-----------+-----------+------------+------------+---------+
 | #OID  | DBNAME      | AUTH     | ENCODING | LC_COLLATE | LC_CTYPE | ALLOWCONN | CONNLIMIT | LASTSYSOID | TABLESPACE | SIZE    |
 +-------+-------------+----------+----------+------------+----------+-----------+-----------+------------+------------+---------+
@@ -70,12 +70,13 @@ pgii is a PostgreSql cli tool. PostgreSql is developed in CMD or Golang and can 
 ~~~
 
 ### show <sc|schema>
-```bash
-  FUNCTION：
-     Used to view schema information about the database, including the selected schema
-  USAGE
-   pgii~[postgres/]# show schema;
-   pgii~[postgres/]# show sc;
+***FUNCTION：***<br/>
+> Used to view schema information about the database, including the selected schema
+
+***USAGE：***<br/>
+~~~C
+pgii~[postgres/]# show schema;
+pgii~[postgres/]# show sc;
 ┌───────┬──────────────────────────┬──────────┬─────────────────────────────────────┐
 │ #OID  │ SCHEMANAME               │ OWNER    │ ACL                                 │
 ├───────┼──────────────────────────┼──────────┼─────────────────────────────────────┤
@@ -90,15 +91,16 @@ pgii is a PostgreSql cli tool. PostgreSql is developed in CMD or Golang and can 
 │ 91992 │ timescaledb_information  │ postgres │ {postgres=UC/postgres,=U/postgres}  │
 │ 91991 │ timescaledb_experimental │ postgres │ {postgres=UC/postgres,=U/postgres}  │
 └───────┴──────────────────────────┴──────────┴─────────────────────────────────────┘
-```
+~~~
 
 ### show <tb|table> [filter|equal] [value]
-```bash
-  FUNCTION：
-    This command is used to view information about tables in the database. If "filter" is used, the TABLENAME records containing value are filtered,and "equal" is all equal
-  USAGE
-   pgii~[postgres/]# show table;
-   pgii~[postgres/]# show tb;
+***FUNCTION：***<br/>
+> This command is used to view information about tables in the database. If "filter" is used, the TABLENAME records containing value are filtered,and "equal" is all equal
+
+***USAGE：***<br/>
+~~~C
+pgii~[postgres/]# show table;
+pgii~[postgres/]# show tb;
 +--------+-----------+------------+------------+
 | SCHEMA | TABLENAME | TABLEOWNER | TABLESPACE |
 +--------+-----------+------------+------------+
@@ -111,15 +113,16 @@ pgii~[benchmark/public]# show tb filter c
 +--------+-----------+------------+------------+
 | public | cpu       | postgres   | <nil>      |
 +--------+-----------+------------+------------+
-```
+~~~
 
 ### show <vw|view> [filter|equal] [value]
-```bash
-  FUNCTION：
-    This command is used to view view information about the database. The "filter" command is used to filter records whose VIEWNAME contains a value. "equal" is equal to all values
-  USAGE
-   pgii~[postgres/]# show view;
-   pgii~[postgres/]# show vw;
+***FUNCTION：***<br/>
+> This command is used to  view information about the database. The "filter" command is used to filter records whose VIEWNAME contains a value. "equal" is equal to all values
+
+***USAGE：***<br/>
+~~~C
+pgii~[postgres/]# show view;
+pgii~[postgres/]# show vw;
 +--------+----------+-----------+
 | SCHEMA | VIEWNAME | VIEWOWNER |
 +--------+----------+-----------+
@@ -131,15 +134,16 @@ pgii~[benchmark/public]# show tb filter c
 +--------+----------+-----------+
 | public | cpu_view | postgres  |
 +--------+----------+-----------+
-```
+~~~
 
 ### show <tg|trigger> [filter|equal] [value]
-```bash
-  FUNCTION：
-    This command is used to view information about triggers in the database. If "filter" is used, you can filter the records that contain a value in the trigger. "equal" is all equal
-  USAGE
-   pgii~[postgres/]# show tg;
-   pgii~[postgres/]# show trigger;
+***FUNCTION：***<br/>
+>  This command is used to view information about triggers in the database. If "filter" is used, you can filter the records that contain a value in the trigger. "equal" is all equal
+
+***USAGE：***<br/>
+~~~C
+pgii~[postgres/]# show tg;
+pgii~[postgres/]# show trigger;
 +-----------+--------+-------------------+--------------------+--------------------+--------------------+---------------+
 | DATABASE  | SCHEMA | TRIGGER_NAME      | EVENT_MANIPULATION | EVENT_OBJECT_TABLE | ACTION_ORIENTATION | ACTION_TIMING |
 +-----------+--------+-------------------+--------------------+--------------------+--------------------+---------------+
@@ -151,38 +155,41 @@ pgii~[benchmark/public]# show trigger filter ts;
 +-----------+--------+-------------------+--------------------+--------------------+--------------------+---------------+
 | benchmark | public | ts_insert_blocker | INSERT             | cpu                | ROW                | BEFORE        |
 +-----------+--------+-------------------+--------------------+--------------------+--------------------+---------------+
-```
+~~~
 
 ### show <ver|version>
-```bash
-  FUNCTION：
-    Used to view the version information about the database
-  USAGE
-   pgii~[postgres/]# show version;
-   pgii~[postgres/]# show ver;
+***FUNCTION：***<br/>
+>    Used to view the version information about the database
+
+***USAGE：***<br/>
+~~~C
+pgii~[postgres/]# show version;
+pgii~[postgres/]# show ver;
 +-------------+---------+
 | #           | VERSION |
 +-------------+---------+
 | PostgresSql | 14.5    |
 +-------------+---------+
-```
+~~~
 
 ### show <sd|selectdb>
-```bash
-  FUNCTION：
-    Used to view the currently selected database and schema for the database
-  USAGE
+***FUNCTION：***<br/>
+>    Used to view the currently selected database and schema for the database
+
+***USAGE：***<br/>
+~~~C
    pgii~[benchmark/public]# show sd;
    pgii~[benchmark/public]# show selectdb;
      DataBase: benchmark ;Schema: public
-```
+~~~
 
 ## desc instruction
 ### desc <tableName>
-```bash
-  FUNCTION：
+***FUNCTION：***<br/>
      Used to view the table structure
-  USAGE
+
+***USAGE：***<br/>
+~~~C
     pgii~[benchmark/public]# desc cpu;
 +----+------------------+-------------+--------+--------+--------------+
 | #  | COLUMN           | DATATYPE    | LENGTH | ISNULL | DEFAULTVALUE |
@@ -202,45 +209,48 @@ pgii~[benchmark/public]# show trigger filter ts;
 | 13 | usage_guest_nice | float8      | <nil>  | YES    | <nil>        |
 | 14 | additional_tags  | jsonb       | <nil>  | YES    | <nil>        |
 +----+------------------+-------------+--------+--------+--------------+
-```
+~~~
 
 ## size instruction
 ### size <db|database> <dbName>
-```bash
-  FUNCTION：
-     Used to view the size of the database
-  USAGE
-    pgii~[benchmark/public]# size database benchmark;
-    pgii~[benchmark/public]# size db benchmark;
+***FUNCTION：***<br/>
+>     Used to view the size of the database
+
+***USAGE：***<br/>
+~~~C
+pgii~[benchmark/public]# size database benchmark;
+pgii~[benchmark/public]# size db benchmark;
 ┌───────────┬─────────┐
 │ DATABASE  │ SIZE    │
 ├───────────┼─────────┤
 │ benchmark │ 3370 MB │
 └───────────┴─────────┘
-```
+~~~
 
 ### size <tb|table> <tableName>
-```bash
-  FUNCTION：
-     Used to view the size of a database table
-  USAGE
-  pgii~[benchmark/public]# size table cpu;
-  pgii~[benchmark/public]# size tb cpu;
+***FUNCTION：***<br/>
+>     Used to view the size of a database table
+
+***USAGE：***<br/>
+~~~C
+pgii~[benchmark/public]# size table cpu;
+pgii~[benchmark/public]# size tb cpu;
 ┌───────────┬───────┐
 │ TABLENAME │ SIZE  │
 ├───────────┼───────┤
 │ cpu       │ 32 kB │
 └───────────┴───────┘
-```
+~~~
 
 ## ddl instruction
 ### ddl <tb|table> <tableName>
-```bash
-  FUNCTION：
-     A ddl construct clause for viewing the table
-  USAGE
-  pgii~[benchmark/public]# ddl table cpu;
-  pgii~[benchmark/public]# ddl tb cpu;
+***FUNCTION：***<br/>
+>     A ddl construct clause for viewing the table
+
+***USAGE：***<br/>
+~~~C
+pgii~[benchmark/public]# ddl table cpu;
+pgii~[benchmark/public]# ddl tb cpu;
 ========= Create Table Success ============
 -- DROP Table;
 -- DROP Table cpu;
@@ -263,25 +273,27 @@ CREATE TABLE "public".cpu (
 CREATE INDEX cpu_usage_user_time_idx ON public.cpu USING btree (usage_user, "time" DESC);
 CREATE INDEX cpu_time_idx ON public.cpu USING btree ("time" DESC);
 CREATE INDEX cpu_hostname_time_idx ON public.cpu USING btree (hostname, "time" DESC);
-```
+~~~
 
 ### ddl <sc|schema> <schemaName>
-```bash
-  FUNCTION：
-     A ddl constructor clause for viewing the schema
-  USAGE
+***FUNCTION：***<br/>
+>     A ddl constructor clause for viewing the schema
+
+***USAGE：***<br/>
+~~~C
   pgii~[benchmark/public]# ddl schema public;
   pgii~[benchmark/public]# ddl sc public;
 ========= Create Schema Success ============
 -- DROP SCHEMA public;
 CREATE SCHEMA "public" AUTHORIZATION postgres;
-```
+~~~
 
 ### ddl <vw|view> <viewName>
-```bash
-  FUNCTION：
-     The ddl constructor clause for viewing the view
-  USAGE
+***FUNCTION：***<br/>
+>     The ddl constructor clause for viewing the view
+
+***USAGE：***<br/>
+~~~C
   pgii~[benchmark/public]# ddl view cpu_view;
   pgii~[benchmark/public]# ddl vw cpu_view;
 ========= Create View Success ============
@@ -302,25 +314,28 @@ CREATE SCHEMA "public" AUTHORIZATION postgres;
     cpu.additional_tags
    FROM cpu
   WHERE ((cpu."time" > '2023-03-01 08:00:00+08'::timestamp with time zone) AND (cpu.tags_id > 10) AND (cpu.tags_id < 1000) AND (cpu.usage_user = ANY (ARRAY[(21)::double precision, (22)::double precision, (23)::double precision, (24)::double precision, (25)::double precision, (26)::double precision, (27)::double precision, (28)::double precision, (29)::double precision])));
-```
+~~~
+
 ## dump 指令
 ### dump <tb|table> <tableName>
-```bash
-  FUNCTION：
-     dump the backup file of a table, which can be used for subsequent restoration；
-  USAGE
+***FUNCTION：***<br/>
+>   dump the backup file of a table, which can be used for subsequent restoration；
+
+***USAGE：***<br/>
+~~~C
     pgii~[clouddb/common]# dump tb role;
       Dump Table Success
     ## View in linux
     [root@localhost src]# ls *.pgi
       dump_table_role_time.pgi
-```
+~~~
 
 ### dump <sc|schema>
-```bash
-  FUNCTION：
-     dump schema creation statements and table creation statements of the current schema and the following tables, and generate T-SQL statements inserted in batches from the data in the table to generate a pgi file；
-  USAGE
+***FUNCTION：***<br/>
+> dump schema creation statements and table creation statements of the current schema and the following tables, and generate T-SQL statements inserted in batches from the data in the table to generate a pgi file；
+
+***USAGE：***<br/>
+~~~C
       pgii~[clouddb/db_mcs.com]# dump sc;
         Dump Schema Success [db_mcs.com]
         Dump Table Struct Success [dgna]
@@ -340,4 +355,4 @@ CREATE SCHEMA "public" AUTHORIZATION postgres;
     ## linux下查看
     [root@localhost src]# ls *.pgi
        dump_schema_db_mcs.com.pgi
-```
+~~~
