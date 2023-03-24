@@ -11,21 +11,22 @@ pgii is a PostgreSql cli tool. PostgreSql is developed in CMD or Golang and can 
 - **Interactive Console**: Through the console command line。 
 
 # Login
-**cmd**: 
-```bash
-  ./pgii [-h|--host] [-u|--user] [-p|--password] [-d|--db] [--port]
-      [-h|--host]  Database address  # eg: -h localhost | --host=localhost
-      [-u|--user] Database user  # eg: -u postgres | --user=postgres
-      [-p|--password]  Database password  # eg: -p postgres | --password=postgres
-      [-d|--db] select database Default:postgres # eg: -d postgres | --db=postgres
-      [--port] Specified port # eg: --port=5432
-
+**cmd**:
+~~~C
+  ./pgii [-h|--host] [-u|--user] [-p|--password] [-d|--db] [--port]<br/>
+         [-h|--host]  Database address  # eg: -h localhost | --host=localhost<br/>
+         [-u|--user] Database user  # eg: -u postgres | --user=postgres<br/>
+         [-p|--password]  Database password  # eg: -p postgres | --password=postgres<br/>
+         [-d|--db] select database Default:postgres # eg: -d postgres | --db=postgres<br/>
+         [--port] Specified port # eg: --port=5432<br/>
+~~~
   #### example
+~~~C
   $ pgii -h 127.0.0.1 -u postgres -p 123456 
     Connect Pgsql Success Host 127.0.0.1
     PostgresSql Version: 14.5
     pgii~[postgres/]#
-```
+~~~
 
 # Related instruction
 ## use instruction
