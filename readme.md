@@ -189,11 +189,11 @@ pgii~[benchmark/public]# show selectdb;
 
 ### show <connection|conn>
 ***FUNCTION：***<br/>
-> Some parameters to view the link
-> MAX_CONNECTION  ：  Maximum connection number
-> SUPERUSER_RESERVED_CONNECTIONS  ：   Number of connections reserved by the superuser
-> REMAINING_CONNECTIONS  ： Number of remaining connections
-> INUSE_CONNECTIONS   ： The number of connections currently in use
+> Some parameters to view the link<br/>
+> MAX_CONNECTION  ：  Maximum connection number<br/>
+> SUPERUSER_RESERVED_CONNECTIONS  ：   Number of connections reserved by the superuser<br/>
+> REMAINING_CONNECTIONS  ： Number of remaining connections<br/>
+> INUSE_CONNECTIONS   ： The number of connections currently in use<br/>
 
 ***USAGE：***<br/>
 ~~~C

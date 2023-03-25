@@ -101,18 +101,19 @@ pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进
   用法
    pgii~[postgres/]# show table;
    pgii~[postgres/]# show tb;
-+--------+-----------+------------+------------+
-| SCHEMA | TABLENAME | TABLEOWNER | TABLESPACE |
-+--------+-----------+------------+------------+
-| public | tags      | postgres   | <nil>      |
-| public | cpu       | postgres   | <nil>      |
-+--------+-----------+------------+------------+
++--------+-----------+------------+------------+-----------+-----------+
+| SCHEMA | TABLENAME | TABLEOWNER | TABLESPACE | TABLESIZE | INDEXSIZE |
++--------+-----------+------------+------------+-----------+-----------+
+| public | tags      | postgres   | <nil>      | 400 kB    | 264 kB    |
++--------+-----------+------------+------------+-----------+-----------+
+| public | cpu       | postgres   | <nil>      | 32 kB     | 24 kB     |
++--------+-----------+------------+------------+-----------+-----------+
 pgii~[benchmark/public]# show tb filter c
-+--------+-----------+------------+------------+
-| SCHEMA | TABLENAME | TABLEOWNER | TABLESPACE |
-+--------+-----------+------------+------------+
-| public | cpu       | postgres   | <nil>      |
-+--------+-----------+------------+------------+
++--------+-----------+------------+------------+-----------+-----------+
+| SCHEMA | TABLENAME | TABLEOWNER | TABLESPACE | TABLESIZE | INDEXSIZE |
++--------+-----------+------------+------------+-----------+-----------+
+| public | cpu       | postgres   | <nil>      | <nil>     | <nil>     |
++--------+-----------+------------+------------+-----------+-----------+
 ```
 
 ### show <vw|view> [filter|equal] [value]
