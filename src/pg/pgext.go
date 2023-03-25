@@ -19,6 +19,8 @@ func (p *PgDsn) GetSizeInfo(style int, Name string) (sizeInfo map[string]interfa
 			return "pg_total_relation_size"
 		case IndexStyle:
 			return "pg_indexes_size"
+		case TableSpaceStyle: //表空间
+			return "pg_tablespace_size"
 		default:
 			return "pg_database_size"
 		}

@@ -28,6 +28,7 @@ const (
 	VersionStyle
 	ConnectionStyle
 	ProcessStyle
+	TableSpaceStyle //表空间
 )
 
 const (
@@ -60,6 +61,8 @@ func CheckParamType(types string) int {
 		return ConnectionStyle
 	case "proc", "process": //当前进程
 		return ProcessStyle
+	case "tablespace", "tbsp": //表空间
+		return TableSpaceStyle
 	default:
 		return NoneStyle
 	}

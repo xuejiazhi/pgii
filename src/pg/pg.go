@@ -265,6 +265,12 @@ func (p *PgDsn) GetTableSpaceNameByOid(oid int) string {
 	}
 }
 
+func (p *PgDsn) GetTableSpaceNameBySpcName(spcName string) (spcData []map[string]interface{}, err error) {
+	sqlStr := fmt.Sprintf("select * from pg_tablespace where spcname='%s'", spcName)
+	err = p.PgConn.Raw(sqlStr).Scan(&spcData).Error
+	return
+}
+
 func (p *PgDsn) GetDatabaseInfoByName(dbName string) (pgDatabase map[string]interface{}, err error) {
 	sqlStr := fmt.Sprintf(`
 				select 

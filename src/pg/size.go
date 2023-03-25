@@ -22,8 +22,29 @@ func (s *Params) Size() {
 		s.SizeTable(s.Param[1:])
 	case IndexStyle:
 		s.SizeIndex()
+	case TableSpaceStyle:
+		s.SizeTableSpace()
 	default:
 		util.PrintColorTips(util.LightRed, SizeFailed)
+	}
+}
+
+// SizeTableSpace 取表空间大小
+func (s *Params) SizeTableSpace() {
+	//判断table信息
+	tbParam, juErrMsg, err := s.judgeTableSpace()
+	if err != nil {
+		util.PrintColorTips(util.LightRed, juErrMsg)
+		return
+	}
+
+	//获取数据
+	if sizeInfo, err := P.GetSizeInfo(TableSpaceStyle, tbParam[0]); err == nil {
+		//开始打印
+		data := []interface{}{tbParam[0], sizeInfo["size"]}
+		ShowTable(TableSpaceHeader, [][]interface{}{data})
+	} else {
+		fmt.Println(SizeFailedDataNull)
 	}
 }
 
@@ -112,7 +133,6 @@ func (s *Params) judgeTable() (tbParam []string, errorMsg string, err error) {
 	if len(scInfo) == ZeroCMDLength {
 		errorMsg = SizeFailedNoSchema
 	}
-
 	//判断table是否存在
 	tbInfo, err := P.GetTableByName(tbParam[0])
 	if err != nil {
@@ -126,5 +146,45 @@ func (s *Params) judgeTable() (tbParam []string, errorMsg string, err error) {
 		err = errors.New(errorMsg)
 	}
 	//
+	return
+}
+
+func (s *Params) judgeTableSpace() (tbParam []string, errorMsg string, err error) {
+	//赋值
+	tbParam = s.Param[1:]
+	//必须要指定表
+	if len(tbParam) == ZeroCMDLength {
+		errorMsg = SizeFailedPointTable
+	}
+	//判断table是否存在
+	tbInfo, err := P.GetTableSpaceNameBySpcName(tbParam[0])
+	if err != nil {
+		errorMsg = fmt.Sprintf("%s %s", SizeFailedNoTable, err.Error())
+	}
+	if len(tbInfo) == ZeroCMDLength {
+		errorMsg = SizeFailedNoTable
+	}
+
+	if errorMsg != "" {
+		err = errors.New(errorMsg)
+	}
+	//
+	return
+}
+
+func _judgeCommon(tbParam []string) (errorMsg string) {
+	//必须要指定表
+	if len(tbParam) == ZeroCMDLength {
+		errorMsg = SizeFailedPointTable
+	}
+
+	//判断指定的sc是否存在
+	scInfo, err := P.GetSchemaFromNS(P.Schema)
+	if err != nil {
+		errorMsg = fmt.Sprintf("%s %s", SizeFailedNoSchema, err.Error())
+	}
+	if len(scInfo) == ZeroCMDLength {
+		errorMsg = SizeFailedNoSchema
+	}
 	return
 }

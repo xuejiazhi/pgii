@@ -17,6 +17,7 @@ var (
 	DatabaseSizeHeader = []interface{}{"database", "database_size"}
 	TableSizeHeader    = []interface{}{"tablename", "table_size"}
 	IndexSizeHeader    = []interface{}{"tablename", "index_size"}
+	TableSpaceHeader   = []interface{}{"tablespace_name", "tablespace_size"}
 
 	//DESC Header
 	DescTableHeader = []interface{}{"#", "column", "dataType", "length", "isnull", "defaultValue"}
