@@ -384,3 +384,6 @@ CREATE SCHEMA "public" AUTHORIZATION postgres;
 ## TODO
 -  dump database
 -  kill pid
+-  load table
+-  load schema
+-  load database
