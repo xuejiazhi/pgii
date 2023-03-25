@@ -397,3 +397,7 @@ pgii~[clouddb/db_mcs.com]# dump sc;
 ## TODO
 -  dump database
 -  kill pid
+-  load table
+-  load schema
+-  load database
+
