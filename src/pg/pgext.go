@@ -201,3 +201,53 @@ from
 	//return
 	return
 }
+
+func (p *PgDsn) getTableViewCondition(style, cmd string, param ...string) (condition string) {
+	if p.Schema != "" {
+		condition += fmt.Sprintf(" schemaname='%s'", p.Schema)
+	}
+
+	//查表还是查视图
+	useName := util.If(style == "view", "viewname", "tablename")
+
+	//加上过滤条件
+	if util.InArray(cmd, EqualAndFilter) {
+		if len(param) == 0 {
+			return
+		}
+
+		inParam := ""
+		for k, v := range param {
+			//eq
+			if util.InArray(cmd, EqualVar) {
+				inParam += cast.ToString(util.If(len(param)-1 == k,
+					fmt.Sprintf("'%s'", v),
+					fmt.Sprintf("'%s',", v)))
+			}
+
+			//filter
+			if util.InArray(cmd, FilterVar) {
+				inParam += cast.ToString(util.If(len(param)-1 == k,
+					fmt.Sprintf("%s like '%%%s%%'", useName, v),
+					fmt.Sprintf("%s like '%%%s%%' or ", useName, v)))
+			}
+		}
+		inParam = fmt.Sprintf("(%s)", inParam)
+		//eq的处理
+		if util.InArray(cmd, EqualVar) {
+			condition += cast.ToString(util.If(condition == "",
+				fmt.Sprintf(" %s in %s", useName, inParam),
+				fmt.Sprintf(" and %s in %s", useName, inParam)))
+		}
+
+		//filter的处理
+		if util.InArray(cmd, FilterVar) {
+			condition += cast.ToString(
+				util.If(condition == "",
+					fmt.Sprintf("  %s", inParam),
+					fmt.Sprintf(" and %s", inParam)))
+		}
+
+	}
+	return
+}

@@ -29,16 +29,53 @@ func (s *Params) Show() {
 		s.ShowTrigger()
 	case ConnectionStyle:
 		s.ShowConnection()
+	case ProcessStyle:
+		s.ShowProcess()
 	default:
 		util.PrintColorTips(util.LightRed, CmdLineWrong)
 	}
 }
 
+// ShowProcess 查看当前进程
+func (s *Params) ShowProcess() {
+	if procList, err := P.Process(); err == nil {
+		var ps [][]interface{}
+		for _, v := range procList {
+			var sbs []interface{}
+			//oid
+			pid := cast.ToString(v["pid"])
+			datname := cast.ToString(v["datname"])
+			application_name := cast.ToString(v["application_name"])
+			state := cast.ToString(v["state"])
+			if cast.ToString(v["state"]) == "active" {
+				pid = util.SetColor(pid, util.LightGreen)
+				datname = util.SetColor(datname, util.LightGreen)
+				application_name = util.SetColor(application_name, util.LightGreen)
+				state = util.SetColor(state, util.LightGreen)
+			}
+			//加入数据
+			sbs = append(sbs,
+				pid,
+				datname,
+				application_name,
+				state,
+			)
+			//加入数据列
+			ps = append(ps, sbs)
+		}
+		ShowTable(ProcessHeader, ps)
+	} else {
+		util.PrintColorTips(util.LightRed, ShowDatabaseError, err.Error())
+	}
+}
+
+// ShowConnection 当看当前链接
 func (s *Params) ShowConnection() {
 	//define
 	//maxConnection 最大连接数
 	//superConnection 超级用户保留的连接数
 	//remainingConnection 剩余连接数
+	//当前正使用的连接数
 	maxConnection := 0
 	superConnection := 0
 	remainingConnection := 0

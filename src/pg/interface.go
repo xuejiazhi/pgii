@@ -42,6 +42,7 @@ type ShowInterface interface {
 	ShowTables(string, ...string)
 	ShowView(string, ...string)
 	ShowConnection()
+	ShowProcess()
 }
 
 type UserInterface interface {

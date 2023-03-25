@@ -27,6 +27,7 @@ const (
 	TriggerStyle
 	VersionStyle
 	ConnectionStyle
+	ProcessStyle
 )
 
 const (
@@ -57,6 +58,8 @@ func CheckParamType(types string) int {
 		return VersionStyle
 	case "conn", "connection":
 		return ConnectionStyle
+	case "proc", "process": //当前进程
+		return ProcessStyle
 	default:
 		return NoneStyle
 	}
@@ -64,7 +67,7 @@ func CheckParamType(types string) int {
 
 func ShowTable(header []interface{}, data [][]interface{}) {
 	prettyTable := table.NewWriter()
-	prettyTable.SetStyle(table.StyleLight)
+	//prettyTable.SetStyle(table.StyleLight)
 	prettyTable.SetColumnConfigs([]table.ColumnConfig{
 		{
 			Name:         "total",
