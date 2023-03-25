@@ -7,6 +7,7 @@ type HandlerInterface interface {
 	DescInterface
 	DDLInterface
 	DumpInterface
+	KillInterface
 }
 
 func Handler(param ...string) HandlerInterface {
@@ -67,4 +68,8 @@ type DumpInterface interface {
 	DumpSchema()
 	DumpTable()
 	DumpDatabase()
+}
+
+type KillInterface interface {
+	Kill()
 }

@@ -204,6 +204,15 @@ from
 	return
 }
 
+func (p *PgDsn) GetProcessByPid(pid int) (process map[string]interface{}, err error) {
+	///Get Column TSQL
+	sqlStr := fmt.Sprintf("select pid,datname,application_name,state from pg_stat_activity where pid=%d", pid)
+	//query
+	err = p.PgConn.Raw(sqlStr).First(&process).Error
+	//return
+	return
+}
+
 func (p *PgDsn) getTableViewCondition(style, cmd string, param ...string) (condition string) {
 	if p.Schema != "" {
 		condition += fmt.Sprintf(" schemaname='%s'", p.Schema)

@@ -15,7 +15,7 @@ func Route(cmd string) {
 	cmdRun := strings.ToLower(cmdList[0])
 
 	//需要去掉多余空格的指令
-	if util.InArray(cmdRun, []string{"show", "use", "desc", "help", "ddl", "dump", "size"}) {
+	if util.InArray(cmdRun, []string{"show", "use", "desc", "help", "ddl", "dump", "size", "kill"}) {
 		util.RemoveNullStr(&cmdList)
 	}
 
@@ -35,6 +35,8 @@ func Route(cmd string) {
 		Handler(cmdList[1:]...).Size()
 	case "dump": //备份数据
 		Handler(cmdList[1:]...).Dump()
+	case "kill":
+		Handler(cmdList[1:]...).Kill()
 	case "exit":
 		os.Exit(0)
 	default:
