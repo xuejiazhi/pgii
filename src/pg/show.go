@@ -193,13 +193,31 @@ func (s *Params) ShowTables(cmd string, filter ...string) {
 			var sbs []interface{}
 			//
 			tableName := cast.ToString(v["tablename"])
+			schemaName := cast.ToString(v["schemaname"])
 			if len(filter) > 0 {
 				for _, v := range filter {
 					tableName = strings.Replace(tableName, v, util.SetColor(v, util.LightGreen), -1)
 				}
 			}
+
+			//获取tableSize
+			var tableSize interface{}
+			var indexSzie interface{}
+			//判断relation是否存在
+			if classInfo, err := P.GetPgClassForTbName(tableName); err == nil {
+				if len(classInfo) > 0 && !util.InArray(schemaName, []string{"information_schema", "_timescaledb_catalog"}) {
+					if sizeInfo, err := P.GetSizeInfo(TableStyle, tableName); err == nil {
+						tableSize = sizeInfo["size"]
+					}
+
+					if sizeInfo, err := P.GetSizeInfo(IndexStyle, tableName); err == nil {
+						indexSzie = sizeInfo["size"]
+					}
+				}
+			}
+
 			//oid
-			sbs = append(sbs, v["schemaname"], tableName, v["tableowner"], v["tablespace"])
+			sbs = append(sbs, v["schemaname"], tableName, v["tableowner"], v["tablespace"], tableSize, indexSzie)
 			tbs = append(tbs, sbs)
 		}
 		//打印表格

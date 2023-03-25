@@ -40,7 +40,7 @@ func (s *Params) SizeIndex() {
 	if sizeInfo, err := P.GetSizeInfo(IndexStyle, tbParam[0]); err == nil {
 		//开始打印
 		data := []interface{}{tbParam[0], sizeInfo["size"]}
-		ShowTable(TableSizeHeader, [][]interface{}{data})
+		ShowTable(IndexSizeHeader, [][]interface{}{data})
 	} else {
 		fmt.Println(SizeFailedDataNull)
 	}
@@ -79,26 +79,15 @@ func (s *Params) SizeDatabase(dbName ...string) {
 
 // SizeTable 取表的size
 func (s *Params) SizeTable(param []string) {
-	//必须要指定表
-	if len(param) == ZeroCMDLength {
-		util.PrintColorTips(util.LightRed, SizeFailedPointTable)
-		return
-	}
-
-	//判断指定的sc是否存在
-	if scInfo, err := P.GetSchemaFromNS(P.Schema); err != nil || len(scInfo) == ZeroCMDLength {
-		util.PrintColorTips(util.LightRed, SizeFailedNoSchema)
-		return
-	}
-
-	//判断table是否存在
-	if tbInfo, err := P.GetTableByName(param[0]); err != nil || len(tbInfo) == ZeroCMDLength {
-		util.PrintColorTips(util.LightRed, SizeFailedNoTable)
+	//判断table信息
+	tbParam, juErrMsg, err := s.judgeTable()
+	if err != nil {
+		util.PrintColorTips(util.LightRed, juErrMsg)
 		return
 	}
 
 	//获取数据
-	if sizeInfo, err := P.GetSizeInfo(TableStyle, param[0]); err == nil {
+	if sizeInfo, err := P.GetSizeInfo(TableStyle, tbParam[0]); err == nil {
 		//开始打印
 		data := []interface{}{param[0], sizeInfo["size"]}
 		ShowTable(TableSizeHeader, [][]interface{}{data})
@@ -134,7 +123,9 @@ func (s *Params) judgeTable() (tbParam []string, errorMsg string, err error) {
 		errorMsg = SizeFailedNoTable
 	}
 
-	err = errors.New(errorMsg)
+	if errorMsg != "" {
+		err = errors.New(errorMsg)
+	}
 	//
 	return
 }
