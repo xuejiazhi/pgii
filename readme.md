@@ -187,6 +187,24 @@ pgii~[benchmark/public]# show selectdb;
     DataBase: benchmark ;Schema: public
 ~~~
 
+### show <connection|conn>
+***FUNCTION：***<br/>
+> Some parameters to view the link
+> MAX_CONNECTION  ：  Maximum connection number
+> SUPERUSER_RESERVED_CONNECTIONS  ：   Number of connections reserved by the superuser
+> REMAINING_CONNECTIONS  ： Number of remaining connections
+> INUSE_CONNECTIONS   ： The number of connections currently in use
+
+***USAGE：***<br/>
+~~~C
+pgii~[benchmark/public]# show connection;
++----------------+--------------------------------+-----------------------+-------------------+
+| MAX_CONNECTION | SUPERUSER_RESERVED_CONNECTIONS | REMAINING_CONNECTIONS | INUSE_CONNECTIONS |
++----------------+--------------------------------+-----------------------+-------------------+
+|            800 |                             13 |                   760 |                40 |
++----------------+--------------------------------+-----------------------+-------------------+
+~~~
+
 ## desc instruction
 ### desc <tableName>
 ***FUNCTION：***<br/>
@@ -244,6 +262,20 @@ pgii~[benchmark/public]# size tb cpu;
 ├───────────┼───────┤
 │ cpu       │ 32 kB │
 └───────────┴───────┘
+~~~
+
+### size <tbsp|tablespace> <tableSpaceName>
+***FUNCTION：***<br/>
+>     Used to view the size of a table space name
+
+***USAGE：***<br/>
+~~~C
+pgii~[benchmark/public]# size tablespace pg_default;
++-----------------+-----------------+
+| TABLESPACE_NAME | TABLESPACE_SIZE |
++-----------------+-----------------+
+| pg_default      | 60 MB           |
++-----------------+-----------------+
 ~~~
 
 ## ddl instruction
@@ -364,3 +396,4 @@ pgii~[clouddb/db_mcs.com]# dump sc;
 
 ## TODO
 -  dump database
+-  kill pid

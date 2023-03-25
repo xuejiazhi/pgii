@@ -179,6 +179,25 @@ pgii~[benchmark/public]# show trigger filter ts;
      DataBase: benchmark ;Schema: public
 ```
 
+### show <connection|conn>
+***功能：***<br/>
+> 用于查看链接的一些参数
+> MAX_CONNECTION  最大连接数
+> SUPERUSER_RESERVED_CONNECTIONS 超级用户保留的连接数
+> REMAINING_CONNECTIONS 剩余连接数
+> INUSE_CONNECTIONS 当前正使用的连接数
+
+***方法：***<br/>
+~~~C
+pgii~[benchmark/public]# show connection;
++----------------+--------------------------------+-----------------------+-------------------+
+| MAX_CONNECTION | SUPERUSER_RESERVED_CONNECTIONS | REMAINING_CONNECTIONS | INUSE_CONNECTIONS |
++----------------+--------------------------------+-----------------------+-------------------+
+|            800 |                             13 |                   760 |                40 |
++----------------+--------------------------------+-----------------------+-------------------+
+~~~
+
+
 ## desc 指令
 ### desc <tableName>
 ```bash
@@ -222,10 +241,11 @@ pgii~[benchmark/public]# show trigger filter ts;
 ```
 
 ### size <tb|table> <tableName>
-```bash
-  功能：
-     用于查看数据库表的大小
-  用法
+***功能：***<br/>
+> 用于查看数据库表的大小
+
+***方法：***<br/>
+~~~C
   pgii~[benchmark/public]# size table cpu;
   pgii~[benchmark/public]# size tb cpu;
 ┌───────────┬───────┐
@@ -233,7 +253,21 @@ pgii~[benchmark/public]# show trigger filter ts;
 ├───────────┼───────┤
 │ cpu       │ 32 kB │
 └───────────┴───────┘
-```
+~~~
+
+### size <tbsp|tablespace> <tableSpaceName>
+***功能：***<br/>
+>     用于查看表空间的大小
+
+***方法：***<br/>
+~~~C
+pgii~[benchmark/public]# size tablespace pg_default;
++-----------------+-----------------+
+| TABLESPACE_NAME | TABLESPACE_SIZE |
++-----------------+-----------------+
+| pg_default      | 60 MB           |
++-----------------+-----------------+
+~~~
 
 ## ddl 指令
 ### ddl <tb|table> <tableName>
@@ -348,3 +382,4 @@ CREATE SCHEMA "public" AUTHORIZATION postgres;
 
 ## TODO
 -  dump database
+-  kill pid
