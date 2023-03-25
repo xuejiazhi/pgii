@@ -1,3 +1,5 @@
+![image](https://user-images.githubusercontent.com/16795993/227710078-62d94904-c5df-46b2-a861-711eea7aee25.png)
+
 # A postgreSql Cli tool
 [![imi License](https://img.shields.io/badge/license-MIT-green)](https://github.com/xuejiazhi/pgii/blob/main/LICENSE)
 English | [简体中文](./readme_cn.md)| [Help Document](https://github.com/xuejiazhi/pgii/wiki/pgii--postgreSql-Cli--Help-document)
