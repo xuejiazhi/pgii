@@ -27,9 +27,57 @@ func (s *Params) Show() {
 		s.ShowSchema()
 	case TriggerStyle:
 		s.ShowTrigger()
+	case ConnectionStyle:
+		s.ShowConnection()
 	default:
 		util.PrintColorTips(util.LightRed, CmdLineWrong)
 	}
+}
+
+func (s *Params) ShowConnection() {
+	//define
+	//maxConnection 最大连接数
+	//superConnection 超级用户保留的连接数
+	//remainingConnection 剩余连接数
+	maxConnection := 0
+	superConnection := 0
+	remainingConnection := 0
+	inUseConnection := 0
+	mc, err := P.GetConnectionNums(MaxConnections)
+	if err == nil {
+		if _, ok := mc["max_connections"]; ok {
+			maxConnection = cast.ToInt(mc["max_connections"])
+		}
+	}
+
+	sc, err := P.GetConnectionNums(SuperuserReservedConnections)
+	if err == nil {
+		if _, ok := sc["superuser_reserved_connections"]; ok {
+			superConnection = cast.ToInt(sc["superuser_reserved_connections"])
+		}
+	}
+
+	//查剩余连接数
+	rc, err := P.GetUseConnection(RemainingConnections)
+	if err == nil {
+		if _, ok := rc["conn_nums"]; ok {
+			remainingConnection = cast.ToInt(rc["conn_nums"])
+		}
+	}
+
+	//正在使用连接数
+	uc, err := P.GetUseConnection(InUseConnections)
+	if err == nil {
+		if _, ok := uc["conn_nums"]; ok {
+			inUseConnection = cast.ToInt(uc["conn_nums"])
+		}
+	}
+
+	//get data
+	data := []interface{}{maxConnection, superConnection, remainingConnection, inUseConnection}
+
+	//show table
+	ShowTable(ConnectionHeader, [][]interface{}{data})
 }
 
 func (s *Params) ShowTrigger() {
@@ -205,12 +253,12 @@ func (s *Params) ShowTables(cmd string, filter ...string) {
 			var indexSzie interface{}
 			//判断relation是否存在
 			if classInfo, err := P.GetPgClassForTbName(tableName); err == nil {
-				if len(classInfo) > 0 && !util.InArray(schemaName, []string{"information_schema", "_timescaledb_catalog"}) {
-					if sizeInfo, err := P.GetSizeInfo(TableStyle, tableName); err == nil {
+				if len(classInfo) > 0 {
+					if sizeInfo, err := P.GetSizeInfo(TableStyle, fmt.Sprintf(`"%s".%s`, schemaName, tableName)); err == nil {
 						tableSize = sizeInfo["size"]
 					}
 
-					if sizeInfo, err := P.GetSizeInfo(IndexStyle, tableName); err == nil {
+					if sizeInfo, err := P.GetSizeInfo(IndexStyle, fmt.Sprintf(`"%s".%s`, schemaName, tableName)); err == nil {
 						indexSzie = sizeInfo["size"]
 					}
 				}

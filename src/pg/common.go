@@ -26,6 +26,14 @@ const (
 	SchemaStyle
 	TriggerStyle
 	VersionStyle
+	ConnectionStyle
+)
+
+const (
+	MaxConnections               = iota //最大连接数
+	SuperuserReservedConnections        //超级用户保留的连接数
+	RemainingConnections                //剩余连接数
+	InUseConnections                    //正在使用的链接数
 )
 
 // CheckParamType 检查传过来的参数
@@ -47,6 +55,8 @@ func CheckParamType(types string) int {
 		return TriggerStyle
 	case "ver", "version":
 		return VersionStyle
+	case "conn", "connection":
+		return ConnectionStyle
 	default:
 		return NoneStyle
 	}

@@ -111,7 +111,6 @@ func (s *Params) judgeTable() (tbParam []string, errorMsg string, err error) {
 	}
 	if len(scInfo) == ZeroCMDLength {
 		errorMsg = SizeFailedNoSchema
-		return
 	}
 
 	//判断table是否存在

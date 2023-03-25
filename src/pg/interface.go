@@ -41,6 +41,7 @@ type ShowInterface interface {
 	ShowTableView(string)
 	ShowTables(string, ...string)
 	ShowView(string, ...string)
+	ShowConnection()
 }
 
 type UserInterface interface {

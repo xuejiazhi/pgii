@@ -143,3 +143,61 @@ func (p *PgDsn) GetQuerySql(tbName string, fieldList []string, columnTypes map[s
 		PgLimit)
 	return
 }
+
+// 获取最链接数
+func (p *PgDsn) GetConnectionNums(types int) (connection map[string]interface{}, err error) {
+	//T-SQL
+	prefixStr := func() string {
+		switch types {
+		case MaxConnections:
+			return "max_connections"
+		case SuperuserReservedConnections:
+			return "superuser_reserved_connections"
+		default:
+			return "max_connections"
+		}
+	}()
+
+	sqlStr := fmt.Sprintf("show %s", prefixStr)
+	//query
+	err = p.PgConn.Raw(sqlStr).Scan(&connection).Error
+	//return
+	return
+}
+
+// GetUseConnection 获取剩余连接数
+func (p *PgDsn) GetUseConnection(types int) (resiConn map[string]interface{}, err error) {
+	//
+	sqlStr := ""
+	switch types {
+	case RemainingConnections:
+		sqlStr = `
+select
+	max_conn-now_conn as conn_nums
+from
+	(
+	select
+		setting::int8 as max_conn,
+		(
+		select
+			count(*)
+		from
+			pg_stat_activity) as now_conn
+	from
+		pg_settings
+	where
+		name = 'max_connections') t;
+`
+	case InUseConnections:
+		sqlStr = `select
+			count(*) as conn_nums
+		from
+			pg_stat_activity
+`
+	}
+
+	//query
+	err = p.PgConn.Raw(sqlStr).Scan(&resiConn).Error
+	//return
+	return
+}

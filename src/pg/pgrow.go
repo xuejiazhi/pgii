@@ -10,6 +10,7 @@ var (
 	ViewShowHeader     = table.Row{"Schema", "viewname", "viewowner"}
 	DatabaseShowHeader = []interface{}{"#oid", "DbName", "Auth", "Encoding", "LC_COLLATE", "LC_CTYPE", "AllowConn", "ConnLimit", "LastSysOid", "TableSpace", "size"}
 	SchemaShowHeader   = []interface{}{"#oid", "SchemaName", "Owner", "Acl"}
+	ConnectionHeader   = []interface{}{"max_connection", "superuser_reserved_connections", "remaining_connections", "inuse_connections"}
 
 	//Size Show Header
 	DatabaseSizeHeader = []interface{}{"database", "database_size"}
