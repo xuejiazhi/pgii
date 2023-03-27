@@ -51,4 +51,8 @@ var (
 	DescTableError    = "Failed:Describe Table fail!Error"
 	DescTableNoExists = "Failed:Describe Table fail!Table not exists"
 	DescTableFailed   = "Failed:Describe Table fail"
+
+	//KILL
+	KillProcessSuccess = "Kill Process Success"
+	KillProcessFailed  = "Kill Process Failed"
 )

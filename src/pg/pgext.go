@@ -1,6 +1,7 @@
 package pg
 
 import (
+	"errors"
 	"fmt"
 	"github.com/spf13/cast"
 	"pgii/src/util"
@@ -208,8 +209,24 @@ func (p *PgDsn) GetProcessByPid(pid int) (process map[string]interface{}, err er
 	///Get Column TSQL
 	sqlStr := fmt.Sprintf("select pid,datname,application_name,state from pg_stat_activity where pid=%d", pid)
 	//query
-	err = p.PgConn.Raw(sqlStr).First(&process).Error
+	err = p.PgConn.Raw(sqlStr).Scan(&process).Error
 	//return
+	return
+}
+
+// CancelProcessByPid 终止一个后台服务进程，同时释放此后台服务进程的资源
+func (p *PgDsn) CancelProcessByPid(pid int) (err error) {
+	//pg_terminate_backend
+	if pInfo, e := p.GetProcessByPid(pid); e == nil {
+		if len(pInfo) == 0 {
+			err = errors.New(fmt.Sprintf("process %d is not exists", pid))
+		} else {
+			sqlStr := fmt.Sprintf("select pg_terminate_backend(%d)", pid)
+			err = p.PgConn.Exec(sqlStr).Error
+		}
+	} else {
+		err = e
+	}
 	return
 }
 

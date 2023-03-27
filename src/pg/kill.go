@@ -33,13 +33,19 @@ func (s *Params) KillPid() {
 	pid := cast.ToInt(s.Param[1])
 	procInfo, err := P.GetProcessByPid(pid)
 	if err != nil {
-		fmt.Println()
+		util.PrintColorTips(util.LightRed, KillProcessFailed)
 		return
 	}
 
 	if len(procInfo) == 0 {
-		fmt.Println()
+		util.PrintColorTips(util.LightRed, fmt.Sprintf("%s pid not exists", KillProcessFailed))
 		return
 	}
 
+	//kill pid
+	if err := P.CancelProcessByPid(pid); err == nil {
+		util.PrintColorTips(util.LightGreen, fmt.Sprintf("%s,pid[%d]", KillProcessSuccess, pid))
+	} else {
+		util.PrintColorTips(util.LightRed, KillProcessFailed)
+	}
 }

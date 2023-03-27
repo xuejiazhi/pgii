@@ -170,19 +170,19 @@ func (p *PgDsn) Process(param ...interface{}) (process []map[string]interface{},
 		cmd := cast.ToString(param[0])
 		switch cmd {
 		case "all":
-			sqlStr = "select pid,datname,application_name,state from pg_stat_activity"
+			sqlStr = "select pid,datname,usename,client_addr,client_port,application_name,state from pg_stat_activity"
 		case "pid":
 			if len(param) != ThreeCMDLength {
 				err = errors.New("show proc pid param error")
 				return
 			} else {
-				sqlStr = fmt.Sprintf(`select pid,datname,application_name,state 
+				sqlStr = fmt.Sprintf(`select pid,datname,usename,client_addr,client_port,application_name,state 
 					from pg_stat_activity 
 					where pid>=%d and pid<=%d`, cast.ToInt(param[1]), cast.ToInt(param[2]))
 			}
 		}
 	} else {
-		sqlStr = fmt.Sprintf(`select pid,datname,application_name,state 
+		sqlStr = fmt.Sprintf(`select pid,datname,usename,client_addr,client_port,application_name,state 
 			from pg_stat_activity where datname='%s'`, P.DataBase)
 	}
 	//query

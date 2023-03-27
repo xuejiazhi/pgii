@@ -11,7 +11,7 @@ var (
 	DatabaseShowHeader = []interface{}{"#oid", "DbName", "Auth", "Encoding", "LC_COLLATE", "LC_CTYPE", "AllowConn", "ConnLimit", "LastSysOid", "TableSpace", "size"}
 	SchemaShowHeader   = []interface{}{"#oid", "SchemaName", "Owner", "Acl"}
 	ConnectionHeader   = []interface{}{"max_connection", "superuser_reserved_connections", "remaining_connections", "inuse_connections"}
-	ProcessHeader      = []interface{}{"pid", "database_name", "application_name", "state"}
+	ProcessHeader      = []interface{}{"pid", "database_name", "user_name", "client_addr", "client_port", "application_name", "state"}
 
 	//Size Show Header
 	DatabaseSizeHeader = []interface{}{"database", "database_size"}

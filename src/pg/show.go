@@ -80,6 +80,9 @@ func (s *Params) ShowProcess() {
 			datName := cast.ToString(v["datname"])
 			applicationName := cast.ToString(v["application_name"])
 			state := cast.ToString(v["state"])
+			userName := cast.ToString(v["usename"])
+			clientAddr := cast.ToString(v["client_addr"])
+			clientPort := cast.ToString(v["client_port"])
 			//状态为active
 			if cast.ToString(v["state"]) == "active" {
 				pid = util.SetColor(pid, util.LightGreen)
@@ -91,6 +94,9 @@ func (s *Params) ShowProcess() {
 			sbs = append(sbs,
 				pid,
 				datName,
+				userName,
+				clientAddr,
+				clientPort,
 				applicationName,
 				state,
 			)
