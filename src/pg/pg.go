@@ -3,6 +3,7 @@ package pg
 import (
 	"errors"
 	"fmt"
+	"github.com/spf13/cast"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -159,12 +160,34 @@ func (p *PgDsn) Column(tableName string) (tbColumns []map[string]interface{}, er
 	return
 }
 
-func (p *PgDsn) Process() (process []map[string]interface{}, err error) {
-	///Get Column TSQL
-	sqlStr := "select pid,datname,application_name,state from pg_stat_activity"
+// Process 查看数据库列表
+// all 参数 查看所有的proc; 不加只显示当前数据库下面的.
+func (p *PgDsn) Process(param ...interface{}) (process []map[string]interface{}, err error) {
+	//T-SQL
+	var sqlStr string
+	if len(param) > 0 {
+		//sonCMD
+		cmd := cast.ToString(param[0])
+		switch cmd {
+		case "all":
+			sqlStr = "select pid,datname,application_name,state from pg_stat_activity"
+		case "pid":
+			if len(param) != ThreeCMDLength {
+				err = errors.New("show proc pid param error")
+				return
+			} else {
+				sqlStr = fmt.Sprintf(`select pid,datname,application_name,state 
+					from pg_stat_activity 
+					where pid>=%d and pid<=%d`, cast.ToInt(param[1]), cast.ToInt(param[2]))
+			}
+		}
+	} else {
+		sqlStr = fmt.Sprintf(`select pid,datname,application_name,state 
+			from pg_stat_activity where datname='%s'`, P.DataBase)
+	}
 	//query
 	err = p.PgConn.Raw(sqlStr).Scan(&process).Error
-
+	//return
 	return
 }
 

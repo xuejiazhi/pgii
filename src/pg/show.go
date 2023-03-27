@@ -38,26 +38,60 @@ func (s *Params) Show() {
 
 // ShowProcess 查看当前进程
 func (s *Params) ShowProcess() {
-	if procList, err := P.Process(); err == nil {
+	//存在第三个
+	var param []interface{}
+	if len(s.Param) > OneCMDLength {
+		//sCMD
+		thirdCmd := strings.ToLower(strings.Trim(s.Param[1], ""))
+		param = append(param, thirdCmd)
+		//查询PID的范围
+		if thirdCmd == "pid" {
+			//len
+			if len(s.Param) != FiveCMDLength {
+				util.PrintColorTips(util.LightRed, CmdLineWrong)
+				return
+			}
+
+			//judge start end
+			startPid := cast.ToInt(s.Param[2])
+			endPid := cast.ToInt(s.Param[4])
+			if startPid > endPid {
+				util.PrintColorTips(util.LightRed, StartThanEndError)
+				return
+			}
+
+			midCmd := strings.ToLower(strings.Trim(s.Param[3], ""))
+			if midCmd != "and" {
+				util.PrintColorTips(util.LightRed, CmdLineWrong)
+				return
+			}
+
+			param = append(param, startPid, endPid)
+		}
+	}
+
+	//proc
+	if procList, err := P.Process(param...); err == nil {
 		var ps [][]interface{}
 		for _, v := range procList {
 			var sbs []interface{}
 			//oid
 			pid := cast.ToString(v["pid"])
-			datname := cast.ToString(v["datname"])
-			application_name := cast.ToString(v["application_name"])
+			datName := cast.ToString(v["datname"])
+			applicationName := cast.ToString(v["application_name"])
 			state := cast.ToString(v["state"])
+			//状态为active
 			if cast.ToString(v["state"]) == "active" {
 				pid = util.SetColor(pid, util.LightGreen)
-				datname = util.SetColor(datname, util.LightGreen)
-				application_name = util.SetColor(application_name, util.LightGreen)
+				datName = util.SetColor(datName, util.LightGreen)
+				applicationName = util.SetColor(applicationName, util.LightGreen)
 				state = util.SetColor(state, util.LightGreen)
 			}
 			//加入数据
 			sbs = append(sbs,
 				pid,
-				datname,
-				application_name,
+				datName,
+				applicationName,
 				state,
 			)
 			//加入数据列

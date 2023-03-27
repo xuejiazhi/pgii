@@ -45,6 +45,7 @@ var (
 	ShowDatabaseError    = "Failed:Show DataBase is Wrong! error"
 	CmdLineError         = "CmdLine Must be With ; ending"
 	CmdLineWrong         = "Failed:CmdLine is Wrong!"
+	StartThanEndError    = "Failed:End Pid Must Than Start Pid"
 
 	//DESC
 	DescTableError    = "Failed:Describe Table fail!Error"

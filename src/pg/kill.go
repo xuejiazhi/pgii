@@ -17,7 +17,7 @@ func (s *Params) Kill() {
 	sCmd := util.TrimLower(s.Param[0])
 	switch sCmd {
 	case "pid":
-
+		s.KillPid()
 	}
 }
 

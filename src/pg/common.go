@@ -14,6 +14,8 @@ const (
 	OneCMDLength
 	TwoCMDLength
 	ThreeCMDLength
+	FourCMDLength
+	FiveCMDLength
 )
 
 const (
