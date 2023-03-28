@@ -8,6 +8,7 @@ type HandlerInterface interface {
 	DDLInterface
 	DumpInterface
 	KillInterface
+	SetInterface
 }
 
 func Handler(param ...string) HandlerInterface {
@@ -72,4 +73,9 @@ type DumpInterface interface {
 
 type KillInterface interface {
 	Kill()
+}
+
+type SetInterface interface {
+	Set()
+	SetLanguage()
 }

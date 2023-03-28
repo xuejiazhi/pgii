@@ -37,6 +37,8 @@ func Route(cmd string) {
 		Handler(cmdList[1:]...).Dump()
 	case "kill":
 		Handler(cmdList[1:]...).Kill()
+	case "set":
+		Handler(cmdList[1:]...).Set()
 	case "exit":
 		os.Exit(0)
 	default:

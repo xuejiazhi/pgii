@@ -55,4 +55,8 @@ var (
 	//KILL
 	KillProcessSuccess = "Kill Process Success"
 	KillProcessFailed  = "Kill Process Failed"
+
+	//Set
+	SetError           = "Set Cmd fail"
+	SetLanguageSuccess = "Set Language Success"
 )

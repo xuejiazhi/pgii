@@ -6,6 +6,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cast"
 	"os"
+	"pgii/src/util"
 	"strings"
 )
 
@@ -70,7 +71,12 @@ func CheckParamType(types string) int {
 	}
 }
 
-func ShowTable(header []interface{}, data [][]interface{}) {
+func ShowTable(header string, data [][]interface{}) {
+	//默认为英文
+	if !util.InArray(Language, []string{"cn", "en"}) {
+		Language = "en"
+	}
+	showHeader := ShowPrettyHeader[Language][header]
 	prettyTable := table.NewWriter()
 	//prettyTable.SetStyle(table.StyleLight)
 	prettyTable.SetColumnConfigs([]table.ColumnConfig{
@@ -88,7 +94,7 @@ func ShowTable(header []interface{}, data [][]interface{}) {
 		},
 	})
 	prettyTable.SetOutputMirror(os.Stdout)
-	prettyTable.AppendHeader(header)
+	prettyTable.AppendHeader(showHeader)
 	if len(data) > 0 {
 		for _, v := range data {
 			prettyTable.AppendRow(v)

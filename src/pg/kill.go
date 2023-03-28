@@ -9,7 +9,7 @@ import (
 func (s *Params) Kill() {
 	//参数长度为2位
 	if len(s.Param) != TwoCMDLength {
-		util.PrintColorTips(util.LightRed, SizeFailed)
+		util.PrintColorTips(util.LightRed, KillProcessFailed)
 		return
 	}
 

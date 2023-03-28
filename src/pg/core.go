@@ -10,14 +10,15 @@ import (
 	"strings"
 )
 
-var ColorGreenPrint *color.Color
-
-// Host UserName PassWord Database Port (flag)
-var Host = flag.StringP("host", "h", "127.0.0.1", "Input Your Postgresql Host")
-var UserName = flag.StringP("user", "u", "postgres", "Input Your Postgresql User")
-var PassWord = flag.StringP("password", "p", "123456", "Input Your Postgresql Password")
-var Database = flag.StringP("db", "d", "postgres", "Input Your Postgresql databases")
-var Port = flag.Int("port", 5432, "Input Your Postgresql Password")
+var (
+	ColorGreenPrint *color.Color
+	Host            = flag.StringP("host", "h", "127.0.0.1", "Input Your Postgresql Host")
+	UserName        = flag.StringP("user", "u", "postgres", "Input Your Postgresql User")
+	PassWord        = flag.StringP("password", "p", "123456", "Input Your Postgresql Password")
+	Database        = flag.StringP("db", "d", "postgres", "Input Your Postgresql databases")
+	Port            = flag.Int("port", 5432, "Input Your Postgresql Password")
+	Language        = "en"
+)
 
 func wordSepNormalizeFunc(f *flag.FlagSet, name string) flag.NormalizedName {
 	from := []string{"-", "_"}
