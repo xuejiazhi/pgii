@@ -2,17 +2,22 @@ package pg
 
 var (
 	//COMMON
-
+	LineOperate = "----------------------------------------"
 	// Dump
-	DumpFailed               = "Failed:Dump Cmd is failed"
-	DumpFailedNoTable        = "Failed:Dump Cmd Table fail,Table not exists!"
-	DumpFailedNoSelectSchema = "Failed:Dump Cmd Table fail,Schema not Selected!"
-	DumpFailedSchemaNoTable  = "Failed:Dump Cmd Table fail,Schema not Selected!"
-	DumpTableSuccess         = "Dump Table Success"
-	DumpTableStructSuccess   = "Dump Table Struct Success"
-	DumpTableRecordSuccess   = "Dump Table Record Success"
-	DumpSchemaSuccess        = "Dump Schema Success"
-	DumpTableNotExists       = "Dump Table Not Exists"
+	DumpFailed                 = "Failed:Dump Cmd is failed"
+	DumpFailedNoTable          = "Failed:Dump Cmd Table fail,Table not exists!"
+	DumpFailedNoSelectSchema   = "Failed:Dump Cmd Schema fail,Schema not Selected!"
+	DumpFailedNoSelectDatabase = "Failed:Dump Cmd Database fail,Database not Selected!"
+	DumpDatabaseFailedNoSchema = "Failed:Dump Cmd Database fail,No Schema!"
+	DumpFailedSchemaNoTable    = "tips:Dump Cmd Table fail,no table in Schema!"
+	DumpTableSuccess           = "Dump Table Success"
+	DumpTableStructSuccess     = "Dump Table Struct Success"
+	DumpTableRecordSuccess     = "Dump Table Record Success"
+	DumpSchemaSuccess          = "Dump Schema Success"
+	DumpTableNotExists         = "Dump Table Not Exists"
+	DumpSchemaNotExists        = "Dump Schema Not Exists"
+	DumpDataBaseBegin          = "Dump DataBase Begin"
+	DumpDataBaseStructSuccess  = "Dump DataBase Struct Success"
 
 	// Size
 	SizeFailed           = "Failed:SIZE Cmd fail"

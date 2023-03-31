@@ -86,9 +86,12 @@ func (p *PgDsn) GetPgTriggerDef(oid int) (triggerDef map[string]interface{}, err
 }
 
 // GetColumnList 获取字段列表
-func (p *PgDsn) GetColumnList(tbName string) (cols []string) {
+func (p *PgDsn) GetColumnList(schema, tbName string) (cols []string) {
 	//取co
-	if columnList, err := p.Column(tbName); err == nil {
+	if schema == "" {
+		schema = p.Schema
+	}
+	if columnList, err := p.Column(schema, tbName); err == nil {
 		if len(columnList) == 0 {
 			return
 		}
@@ -108,7 +111,7 @@ func (p *PgDsn) GetColumnList(tbName string) (cols []string) {
 func (p *PgDsn) GetColumnsType(tbName string, columns ...string) (types map[string]string) {
 	//取co
 	newType := map[string]string{}
-	if columnList, err := p.Column(tbName); err == nil {
+	if columnList, err := p.Column(p.Schema, tbName); err == nil {
 		if len(columnList) == 0 {
 			return
 		}

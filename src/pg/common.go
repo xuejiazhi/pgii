@@ -41,6 +41,8 @@ const (
 	InUseConnections                    //正在使用的链接数
 )
 
+var SystemSchemaList = []string{"'pg_toast'", "'pg_temp_1'", "'pg_toast_temp_1'", "'pg_catalog'", "'information_schema'"}
+
 // CheckParamType 检查传过来的参数
 func CheckParamType(types string) int {
 	switch types {
@@ -107,7 +109,7 @@ func ShowTable(header string, data [][]interface{}) {
 // ================DDL DUMP 使用===============================//
 func generateSchema(scName string) (scStr string) {
 	//print Create schema SQL
-	scStr = "========= Create Schema Success ============\n"
+	scStr = "-- Create Schema Success \n"
 	scStr += fmt.Sprintf("-- DROP SCHEMA %s;\n", scName)
 	scStr += fmt.Sprintf("CREATE SCHEMA \"%s\" AUTHORIZATION %s;", scName, *UserName)
 	return
