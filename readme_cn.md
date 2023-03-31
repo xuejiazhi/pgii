@@ -495,9 +495,109 @@ Kill Process Success,pid[33134]
        dump_schema_db_mcs.com.pgi
 ```
 
+### dump <db|database>
+***功能：***<br/>
+>  用于dump当前选择的数据库下面,并生成创建库,模式,表的语句，并将表里的数据生成批量插入的数据，生成一个压缩的pgi文件；
+
+***方法：***<br/>
+~~~C
+pgii~[clouddb/]# dump db;
+>Dump DataBase Begin
+Dump DataBase Struct Success            
+----------------------------------------
+>>Dump Schema Success[db_mcs1.com]      
+>>>Dump Table Struct Success [pub_vpn]
+ >>>>Dump Table Record Success ["db_mcs1.com".pub_vpn]
+>>>Dump Table Struct Success [userprofile]
+ >>>>Dump Table Record Success ["db_mcs1.com".userprofile]
+>>>Dump Table Struct Success [pub_groupprofile]
+ >>>>Dump Table Record Success ["db_mcs1.com".pub_groupprofile]
+>>>Dump Table Struct Success [mcs_groupprofile]
+ >>>>Dump Table Record Success ["db_mcs1.com".mcs_groupprofile]
+>>>Dump Table Struct Success [pub_groupmember]
+ >>>>Dump Table Record Success ["db_mcs1.com".pub_groupmember]
+>>>Dump Table Struct Success [mcs_blacklist]
+ >>>>Dump Table Record Success ["db_mcs1.com".mcs_blacklist]
+>>>Dump Table Struct Success [mcs_groupareaconfig]
+ >>>>Dump Table Record Success ["db_mcs1.com".mcs_groupareaconfig]
+>>>Dump Table Struct Success [mcs_groupgpsareaconfig]
+ >>>>Dump Table Record Success ["db_mcs1.com".mcs_groupgpsareaconfig]
+>>>Dump Table Struct Success [pub_ldsvpn]
+ >>>>Dump Table Record Success ["db_mcs1.com".pub_ldsvpn]
+>>>Dump Table Struct Success [pub_record_user]
+ >>>>Dump Table Record Success ["db_mcs1.com".pub_record_user]
+>>>Dump Table Struct Success [pub_record_group]
+ >>>>Dump Table Record Success ["db_mcs1.com".pub_record_group]
+>>>Dump Table Struct Success [pub_record_vpn]
+ >>>>Dump Table Record Success ["db_mcs1.com".pub_record_vpn]
+>>>Dump Table Struct Success [mcs_user_area_authorize]
+ >>>>Dump Table Record Success ["db_mcs1.com".mcs_user_area_authorize]
+>>>Dump Table Struct Success [pub_ldsgmk]
+ >>>>Dump Table Record Success ["db_mcs1.com".pub_ldsgmk]
+>>>Dump Table Struct Success [pub_grouppatch_gmk]
+ >>>>Dump Table Record Success ["db_mcs1.com".pub_grouppatch_gmk]
+>>>Dump Table Struct Success [kms_random]
+ >>>>Dump Table Record Success ["db_mcs1.com".kms_random]
+>>>Dump Table Struct Success [callrecord]
+ >>>>Dump Table Record Success ["db_mcs1.com".callrecord]
+>>>Dump Table Struct Success [datarecord]
+ >>>>Dump Table Record Success ["db_mcs1.com".datarecord]
+>>>Dump Table Struct Success [t_frs_fileinfo]
+ >>>>Dump Table Record Success ["db_mcs1.com".t_frs_fileinfo]
+>>>Dump Table Struct Success [ue_register_backup]
+ >>>>Dump Table Record Success ["db_mcs1.com".ue_register_backup]
+>>>Dump Table Struct Success [mcs_user_contact_list]
+ >>>>Dump Table Record Success ["db_mcs1.com".mcs_user_contact_list]
+>>>Dump Table Struct Success [fa_info]
+ >>>>Dump Table Record Success ["db_mcs1.com".fa_info]
+>>>Dump Table Struct Success [fa_users]
+ >>>>Dump Table Record Success ["db_mcs1.com".fa_users]
+>>>Dump Table Struct Success [fa_history]
+ >>>>Dump Table Record Success ["db_mcs1.com".fa_history]
+>>>Dump Table Struct Success [user_roles]
+ >>>>Dump Table Record Success ["db_mcs1.com".user_roles]
+>>>Dump Table Struct Success [group_roles]
+ >>>>Dump Table Record Success ["db_mcs1.com".group_roles]
+>>>Dump Table Struct Success [pcall_role_pri]
+ >>>>Dump Table Record Success ["db_mcs1.com".pcall_role_pri]
+>>>Dump Table Struct Success [gcall_role_pri]
+ >>>>Dump Table Record Success ["db_mcs1.com".gcall_role_pri]
+>>>Dump Table Struct Success [mcs_user_common_sms_list]
+ >>>>Dump Table Record Success ["db_mcs1.com".mcs_user_common_sms_list]
+>>>Dump Table Struct Success [tetra_gid]
+ >>>>Dump Table Record Success ["db_mcs1.com".tetra_gid]
+>>>Dump Table Struct Success [service_priority]
+ >>>>Dump Table Record Success ["db_mcs1.com".service_priority]
+----------------------------------------
+>>Dump Schema Success[public]
+tips:Dump Cmd Table fail,no table in Schema!
+----------------------------------------
+>>Dump Schema Success[common]
+>>>Dump Table Struct Success [app_cfg]
+ >>>>Dump Table Record Success ["common".app_cfg]
+>>>Dump Table Struct Success [gw_info]
+ >>>>Dump Table Record Success ["common".gw_info]
+>>>Dump Table Struct Success [listening_info]
+ >>>>Dump Table Record Success ["common".listening_info]
+>>>Dump Table Struct Success [mcs_user_area]
+ >>>>Dump Table Record Success ["common".mcs_user_area]
+>>>Dump Table Struct Success [tenant_info]
+ >>>>Dump Table Record Success ["common".tenant_info]
+>>>Dump Table Struct Success [pstn_info]
+ >>>>Dump Table Record Success ["common".pstn_info]
+>>>Dump Table Struct Success [terminal_statistic]
+ >>>>Dump Table Record Success ["common".terminal_statistic]
+>>>Dump Table Struct Success [tetra_cfg]
+ >>>>Dump Table Record Success ["common".tetra_cfg]
+----------------------------------------
+## linux下查看
+[root@localhost src]# ls *.pgi
+dump_Database_clouddb_1680227905.pgi
+~~~
+
 
 ## TODO
--  dump database
+-  dump database ✅
 -  kill pid ✅
 -  show process ✅
 -  load table
