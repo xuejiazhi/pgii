@@ -151,9 +151,12 @@ func (p *PgDsn) Views(cmd string, param ...string) (pgTables []map[string]interf
 	return
 }
 
-func (p *PgDsn) Column(tableName string) (tbColumns []map[string]interface{}, err error) {
+func (p *PgDsn) Column(schemaName, tableName string) (tbColumns []map[string]interface{}, err error) {
 	///Get Column TSQL
-	sqlStr := fmt.Sprintf("select * from information_schema.columns where table_schema='%s' and table_name='%s'", p.Schema, tableName)
+	if schemaName == "" {
+		schemaName = p.Schema
+	}
+	sqlStr := fmt.Sprintf("select * from information_schema.columns where table_schema='%s' and table_name='%s'", schemaName, tableName)
 	//query
 	err = p.PgConn.Raw(sqlStr).Scan(&tbColumns).Error
 
@@ -238,8 +241,12 @@ func (p *PgDsn) Trigger(cmd, value string) (triggerInfo []map[string]interface{}
 // SchemaNS 取Schema
 func (p *PgDsn) SchemaNS() (pgSchema []map[string]interface{}, err error) {
 	//query
-	err = p.PgConn.Raw("select oid,* from pg_namespace").Scan(&pgSchema).Error
-
+	err = p.PgConn.Raw(
+		fmt.Sprintf(`select oid,* from pg_namespace where nspname not in(%s)`,
+			strings.Join(SystemSchemaList, ","))).
+		Scan(&pgSchema).
+		Error
+	//return
 	return
 }
 
@@ -321,6 +328,35 @@ func (p *PgDsn) GetTableByName(name string) (tbInfo map[string]interface{}, err 
 	sqlStr := fmt.Sprintf("select schemaname,tablename,tableowner,tablespace from pg_tables where tablename='%s'", name)
 	//query
 	err = p.PgConn.Raw(sqlStr).Scan(&tbInfo).Error
+
+	return
+}
+
+func (p *PgDsn) GetTableBySchema(schema string) (pgTables []map[string]interface{}, err error) {
+	/**
+	pg_tables 提供对数据库中每个表的信息的访问
+		schemaname  包含表的模式名
+		tablename   表名  	pg_class.relname
+		tableowner  表拥有者的名字  pg_authid.rolname
+		tablespace  包含表的表空间的名字（如果使用数据库的默认表空间，此列为空） pg_tablespace.spcname
+	*/
+	if schema == "" {
+		err = errors.New("schema is null")
+		return
+	}
+
+	sqlStr := fmt.Sprintf(`select 
+    			  schemaname,
+    			  tablename,
+    			  tableowner,
+    			  tablespace
+				from 
+				  pg_tables 
+				 where schemaname ='%s' 
+				  `, schema)
+
+	//query
+	err = p.PgConn.Raw(sqlStr).Scan(&pgTables).Error
 
 	return
 }

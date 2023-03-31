@@ -62,7 +62,7 @@ func (s *Params) DDLTable(name string) {
 	}
 
 	//print
-	util.PrintColorTips(util.LightSeaBlue, getTableDdlSql(name))
+	util.PrintColorTips(util.LightSeaBlue, getTableDdlSql(P.Schema, name))
 }
 
 // DDLView 生成view视图的DDL
@@ -209,14 +209,18 @@ func getSerial(nextval, types string, dv interface{}) string {
 }
 
 // 获取DDL T-SQL
-func getTableDdlSql(tbName string) (sqlStr string) {
+func getTableDdlSql(schema, tbName string) (sqlStr string) {
+	//schema 不能为空
+	if schema == "" {
+		schema = P.Schema
+	}
 	//print Create Table SQL
 	sqlStr = fmt.Sprintf(`========= Create Table Success ============
 -- DROP Table;
 DROP Table %s;`, tbName) + "\n"
 
 	//获取column
-	column, err := P.Column(tbName)
+	column, err := P.Column(schema, tbName)
 	if err != nil {
 		fmt.Println(util.SetColor(DDLColumnNoExists, util.LightRed))
 		return
@@ -234,7 +238,7 @@ DROP Table %s;`, tbName) + "\n"
 
 	//获取建表语句
 	sqlStr += fmt.Sprintf("CREATE TABLE \"%s\".%s (\n%s\n);\n",
-		P.Schema,
+		schema,
 		tbName,
 		strings.Join(columnList, ",\n"))
 

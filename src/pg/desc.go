@@ -25,7 +25,7 @@ func (s *Params) Desc() {
 		return
 	}
 
-	if columnInfo, err := P.Column(tableName); err == nil {
+	if columnInfo, err := P.Column(P.Schema, tableName); err == nil {
 		//序列化输出
 		var desc [][]interface{}
 		for _, v := range columnInfo {
