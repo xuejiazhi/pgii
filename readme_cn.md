@@ -595,6 +595,31 @@ tips:Dump Cmd Table fail,no table in Schema!
 dump_Database_clouddb_1680227905.pgi
 ~~~
 
+### explain <T-SQL>
+***功能：***<br/>
+>  用于分析T-SQL执行计划
+
+***方法：***<br/>
+~~~C
+pgii~[clouddb/db_mcs.com]# explain ANALYZE select * from userprofile;
++---------------------------------------------------------------------------------------------------------------+
+| QUERY PLAN                                                                                                    |
++---------------------------------------------------------------------------------------------------------------+
+| Seq Scan on userprofile  (cost=0.00..105.41 rows=2241 width=230) (actual time=0.024..0.705 rows=2241 loops=1) |
+| Planning time: 0.131 ms                                                                                       |
+| Execution time: 0.882 ms                                                                                      |
++---------------------------------------------------------------------------------------------------------------+
+[Total: 3 Rows]  [RunTimes 3.50s]
+
+pgii~[clouddb/db_mcs.com]# explain  select * from userprofile;        
++------------------------------------------------------------------+
+| QUERY PLAN                                                       |
++------------------------------------------------------------------+
+| Seq Scan on userprofile  (cost=0.00..105.41 rows=2241 width=230) |
++------------------------------------------------------------------+
+[Total: 1 Rows]  [RunTimes 2.18s]
+~~~
+
 
 ## TODO
 -  dump database ✅

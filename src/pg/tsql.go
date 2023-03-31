@@ -13,7 +13,7 @@ func Psql(cmdRun, cmdStr string) {
 	bTime := time.Now().UnixMilli()
 	//执行指令
 	switch cmdRun {
-	case "select":
+	case "select", "explain":
 		if val, err := P.RunSQL(cmdStr); err != nil {
 			fmt.Println("Run T-SQL Error,error ", err.Error())
 		} else {
