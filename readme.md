@@ -10,6 +10,7 @@ pgii is a PostgreSql cli tool. PostgreSql is developed in CMD or Golang and can 
 - **Zero-cost learning**：Similar to the MySQL Cli command, familiar with the mysql operation of the people on the hand；
 - **Interactive Console**: Through the console command line。 
 - **Added interactive prompts**: Prompts for commands to be entered
+![image](https://user-images.githubusercontent.com/16795993/229277870-b495a0e3-2a96-4af2-82f1-51c8ee8c3545.png)
 
 **Welcome to join us to develop**
 
