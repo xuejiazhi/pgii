@@ -330,3 +330,7 @@ func genDumpFile(style int, param ...string) (fileName string, err error) {
 func genDataBaseSQL(dbName string) (genDBSQL string) {
 	return fmt.Sprintf("drop database if exists %s;create database %s;\n", dbName, dbName)
 }
+
+func writeFile() {
+
+}
