@@ -6,10 +6,10 @@
 pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进行开发,可以多平台下面编译使用：
 
 - **跨平台**： 可以在多平台下编译，跨平台使用；
-
 - **零学习成本**：类似于MySQL Cli的指令,对熟悉mysql操作的人上手快；
-
 - **互动 Console**: 通过命令行 console。 
+- **增加了交互式提示**: 可以提示要输入的命令
+ 
 
 # 登录
 **cmd**: 

@@ -7,10 +7,9 @@ English | [简体中文](./readme_cn.md)| [Help Document](https://github.com/xue
 pgii is a PostgreSql cli tool. PostgreSql is developed in CMD or Golang and can be compiled for multiple platforms：
 
 - **cross-platform**： Can be compiled under multiple platforms, cross-platform use；
-
 - **Zero-cost learning**：Similar to the MySQL Cli command, familiar with the mysql operation of the people on the hand；
-
 - **Interactive Console**: Through the console command line。 
+- **Added interactive prompts**: Prompts for commands to be entered
 
 **Welcome to join us to develop**
 
