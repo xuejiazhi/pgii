@@ -41,7 +41,17 @@ const (
 	InUseConnections                    //正在使用的链接数
 )
 
-var SystemSchemaList = []string{"'pg_toast'", "'pg_temp_1'", "'pg_toast_temp_1'", "'pg_catalog'", "'information_schema'"}
+var (
+	DefaultHost     = "127.0.0.1"
+	DefaultUser     = "postgres"
+	DefaultPassword = "123456"
+	DefaultDB       = "postgres"
+	DefaultPort     = 5432
+)
+var (
+	SystemSchemaList = []string{"'pg_toast'", "'pg_temp_1'", "'pg_toast_temp_1'", "'pg_catalog'", "'information_schema'"}
+	SystemCmd        = []string{"show", "use", "desc", "help", "ddl", "dump", "size", "kill", "explain"}
+)
 
 // CheckParamType 检查传过来的参数
 func CheckParamType(types string) int {
