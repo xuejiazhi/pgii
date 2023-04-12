@@ -64,4 +64,11 @@ var (
 	//Set
 	SetError           = "Set Cmd fail"
 	SetLanguageSuccess = "Set Language Success"
+
+	//cmd
+	CmdTipsHost     = "Input Your Postgresql Host"
+	CmdTipsUser     = "Input Your Postgresql User"
+	CmdTipsPassword = "Input Your Postgresql Password"
+	CmdTipsDatabase = "Input Your Postgresql database"
+	CmdTipsPort     = "Input Your Postgresql Port"
 )

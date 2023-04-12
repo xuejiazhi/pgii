@@ -11,11 +11,11 @@ import (
 
 var (
 	ColorGreenPrint *color.Color
-	Host            = flag.StringP("host", "h", "127.0.0.1", "Input Your Postgresql Host")
-	UserName        = flag.StringP("user", "u", "postgres", "Input Your Postgresql User")
-	PassWord        = flag.StringP("password", "p", "123456", "Input Your Postgresql Password")
-	Database        = flag.StringP("db", "d", "postgres", "Input Your Postgresql databases")
-	Port            = flag.Int("port", 5432, "Input Your Postgresql Password")
+	Host            = flag.StringP("host", "h", DefaultHost, CmdTipsHost)
+	UserName        = flag.StringP("user", "u", DefaultUser, CmdTipsUser)
+	PassWord        = flag.StringP("password", "p", DefaultPassword, CmdTipsPassword)
+	Database        = flag.StringP("db", "d", DefaultDB, CmdTipsDatabase)
+	Port            = flag.Int("port", DefaultPort, CmdTipsPort)
 	Language        = "en"
 )
 
