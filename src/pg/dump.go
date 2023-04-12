@@ -153,12 +153,7 @@ func (s *Params) DumpTable() {
 	f, _ := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
 	defer f.Close()
 	//生成Table 的DDL
-	tbsql := []byte(getTableDdlSql(P.Schema, tbName))
-
-	//压缩数据
-	util.Compress(&tbsql)
-	//写入文件
-	_, _ = f.Write(tbsql)
+	tbsql := getTableDdlSql(P.Schema, tbName)
 
 	//处理SQL语句
 	//获取表的行数
@@ -172,18 +167,26 @@ func (s *Params) DumpTable() {
 	columnList := P.GetColumnList(P.Schema, tbName)
 	columnType := P.GetColumnsType(tbName, columnList...)
 	for i := 0; i < pgCount; i++ {
+		//get batchSQL
 		batchSql := ""
 		//定义定入的SQL
 		batchValue := generateBatchValue(i, fmt.Sprintf("%s.%s", P.Schema, tbName), columnList, columnType)
 		if len(batchValue) > 0 {
-			batchSql = fmt.Sprintf("Insert into %s.%s(%s) values %s;", P.Schema, tbName, strings.Join(columnList, ","), strings.Join(batchValue, ","))
+			batchSql = fmt.Sprintf("Insert into %s.%s(%s) values %s;",
+				P.Schema,
+				tbName,
+				strings.Join(columnList, ","),
+				strings.Join(batchValue, ","))
 		}
-		//压缩数据
-		tbSqlByte := []byte(batchSql)
-		util.Compress(&tbSqlByte)
-		//写入文件
-		_, _ = f.Write(tbSqlByte)
+
+		//join tbsql
+		tbsql = string(append([]byte(tbsql), batchSql...))
 	}
+	//压缩数据
+	tbSqlByte := []byte(tbsql)
+	util.Compress(&tbSqlByte)
+	//写入文件
+	_, _ = f.Write(tbSqlByte)
 	//打印
 	util.PrintColorTips(util.LightGreen, DumpTableSuccess)
 }
