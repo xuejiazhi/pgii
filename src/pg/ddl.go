@@ -215,9 +215,9 @@ func getTableDdlSql(schema, tbName string) (sqlStr string) {
 		schema = P.Schema
 	}
 	//print Create Table SQL
-	sqlStr = fmt.Sprintf(`========= Create Table Success ============
+	sqlStr = fmt.Sprintf(`-- ========= Create Table Success ============
 -- DROP Table;
-DROP Table %s;`, tbName) + "\n"
+DROP table  IF exists "%s"."%s" cascade;`, schema, tbName) + "\n"
 
 	//获取column
 	column, err := P.Column(schema, tbName)
