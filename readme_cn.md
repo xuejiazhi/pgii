@@ -626,6 +626,6 @@ pgii~[clouddb/db_mcs.com]# explain  select * from userprofile;
 -  dump database ✅
 -  kill pid ✅
 -  show process ✅
--  load table
+-  load table ✅
 -  load schema
 -  load database
