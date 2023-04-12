@@ -643,7 +643,7 @@ pgii~[clouddb/db_mcs.com]# explain  select * from userprofile;
 ~~~
 
 ## TODO
--  dump database
+-  dump database ✅
 -  kill pid ✅
 -  show process ✅
 -  load table
