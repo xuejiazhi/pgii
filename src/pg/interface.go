@@ -9,6 +9,7 @@ type HandlerInterface interface {
 	DumpInterface
 	KillInterface
 	SetInterface
+	LoadInterface
 }
 
 func Handler(param ...string) HandlerInterface {
@@ -25,7 +26,7 @@ type Params struct {
 	Param []string
 }
 
-// Size指令 Interface
+// SizeInterface Size指令 Interface
 type SizeInterface interface {
 	Size()
 	SizeIndex()
@@ -33,7 +34,7 @@ type SizeInterface interface {
 	SizeTable([]string)
 }
 
-// show 指令
+// ShowInterface show 指令
 type ShowInterface interface {
 	Show()
 	ShowTrigger()
@@ -78,4 +79,11 @@ type KillInterface interface {
 type SetInterface interface {
 	Set()
 	SetLanguage()
+}
+
+type LoadInterface interface {
+	Load()
+	LoadTable(string)
+	LoadSchema(string)
+	LoadDataBase(string)
 }
