@@ -83,7 +83,7 @@ type SetInterface interface {
 
 type LoadInterface interface {
 	Load()
-	LoadTable(string)
-	LoadSchema(string)
-	LoadDataBase(string)
+	LoadTable()
+	LoadSchema()
+	LoadDataBase()
 }

@@ -19,6 +19,12 @@ var (
 	DumpDataBaseBegin          = "Dump DataBase Begin"
 	DumpDataBaseStructSuccess  = "Dump DataBase Struct Success"
 
+	//Load
+	LoadFailed             = "Failed:Load Cmd is failed"
+	LoadTableNOFile        = "Failed:Table Pgii File is not exists"
+	LoadNoFile             = "cannot read the file"
+	LoadTableExecSQLFailed = "Failed:Table Exec SQL Failed"
+	LoadTableSQLSuccess    = "Load Table Success"
 	// Size
 	SizeFailed           = "Failed:SIZE Cmd fail"
 	SizeFailedNull       = "Failed:Size Database is Nil!"
