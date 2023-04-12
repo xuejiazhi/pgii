@@ -143,7 +143,7 @@ func (s *Params) DumpTable() {
 	}
 
 	//要生成的文件名
-	fileName, _ := genDumpFile(TableStyle)
+	fileName, _ := genDumpFile(TableStyle, tbName)
 	//是否存在文件
 	if _, err := os.Stat(fileName); err == nil {
 		_ = os.Remove(fileName)
@@ -162,7 +162,7 @@ func (s *Params) DumpTable() {
 
 	//处理SQL语句
 	//获取表的行数
-	cnt := P.QueryTableNums(tbName)
+	cnt := P.QueryTableNums(fmt.Sprintf("%s.%s", P.Schema, tbName))
 	pgCount := 0
 	if cnt > 0 {
 		pgCount = cnt/PgLimit + 1
@@ -174,7 +174,7 @@ func (s *Params) DumpTable() {
 	for i := 0; i < pgCount; i++ {
 		batchSql := ""
 		//定义定入的SQL
-		batchValue := generateBatchValue(i, tbName, columnList, columnType)
+		batchValue := generateBatchValue(i, fmt.Sprintf("%s.%s", P.Schema, tbName), columnList, columnType)
 		if len(batchValue) > 0 {
 			batchSql = fmt.Sprintf("Insert into %s.%s(%s) values %s;", P.Schema, tbName, strings.Join(columnList, ","), strings.Join(batchValue, ","))
 		}
