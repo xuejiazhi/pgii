@@ -13,3 +13,11 @@ func Compress(str *[]byte) {
 	n, _ := C.CompressBlock(data, buf)
 	*str = buf[:n]
 }
+
+// UnCompress 解压缩数据
+func UnCompress(str *[]byte) ([]byte, error) {
+	out := make([]byte, 10*len(*str))
+	n, err := lz4.UncompressBlock(*str, out)
+	out = out[:n]
+	return out, err
+}
