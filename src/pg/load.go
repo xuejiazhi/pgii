@@ -29,6 +29,11 @@ func (s *Params) Load() {
 
 // LoadTable 载入表
 func (s *Params) LoadTable() {
+	//必须选中模式
+	if P.Schema == "" {
+		util.PrintColorTips(util.LightRed, LoadFailedNoSelectSchema)
+		return
+	}
 	//todo:
 	pgFile := s.Param[1]
 	//pgFile := "../dump_load/dump_table_user_1681300666.pgi"

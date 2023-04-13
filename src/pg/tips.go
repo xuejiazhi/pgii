@@ -22,11 +22,12 @@ var (
 	DumpDataBaseStructSuccess  = "Dump DataBase Struct Success"
 
 	// LoadFailed Load
-	LoadFailed             = "Failed:Load Cmd is failed"
-	LoadTableNOFile        = "Failed:Table Pgi File is not exists"
-	LoadNoFile             = "cannot read the file"
-	LoadTableExecSQLFailed = "Failed:Table Exec SQL Failed"
-	LoadTableSQLSuccess    = "Load Table Success"
+	LoadFailed               = "Failed:Load Cmd is failed"
+	LoadTableNOFile          = "Failed:Table Pgi File is not exists"
+	LoadNoFile               = "cannot read the file"
+	LoadTableExecSQLFailed   = "Failed:Table Exec SQL Failed"
+	LoadTableSQLSuccess      = "Load Table Success"
+	LoadFailedNoSelectSchema = "Failed:Load Cmd Schema fail,Schema not Selected!"
 
 	// SizeFailed Size
 	SizeFailed           = "Failed:SIZE Cmd fail"

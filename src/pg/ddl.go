@@ -264,6 +264,54 @@ DROP table  IF exists "%s"."%s" cascade;`, schema, tbName) + "\n"
 	return
 }
 
+// 获取Create SQL
+func getCreateTableSql(tbName string) (sqlStr string) {
+	//print Create Table SQL
+	sqlStr = fmt.Sprintf(`DROP table  IF exists %s cascade;`, tbName) + "\n"
+
+	//获取column
+	column, err := P.Column(P.Schema, tbName)
+	if err != nil {
+		fmt.Println(util.SetColor(DDLColumnNoExists, util.LightRed))
+		return
+	}
+
+	columnList := generateColumn(column)
+
+	//获取主键或唯一约束
+	puInfo, err := P.GetPriMaryUniqueKey(tbName)
+	constraintList, indexList := generateConstraint(puInfo)
+	if err == nil {
+		//加上约束
+		columnList = append(columnList, constraintList...)
+	}
+
+	//获取建表语句
+	sqlStr += fmt.Sprintf("CREATE TABLE %s (\n%s\n);\n",
+		tbName,
+		strings.Join(columnList, ",\n"))
+
+	replySchema := fmt.Sprintf("\"%s\".", P.Schema)
+	//获取Index
+	indexDef, err := P.GetIndexDef(tbName, indexList)
+	if err == nil {
+		for _, v := range indexDef {
+			if def, ok := v["indexdef"]; ok {
+				defStr := strings.Replace(cast.ToString(def), replySchema, "", -1)
+				sqlStr += fmt.Sprintf("%v;", defStr)
+			}
+		}
+	}
+	//判断是否有触发器
+	if triggerDef, err := getTriggerDef(tbName); err == nil {
+		if triggerDef != "" {
+			sqlStr += "\n" + strings.Replace(triggerDef, replySchema, "", -1) + ";\n"
+		}
+	}
+
+	return
+}
+
 func getTriggerDef(tbName string) (triggerDef string, err error) {
 	//判断是否有触发器
 	pgcData, err := P.GetPgClassValueForTbName(tbName, "relhastriggers", "oid")
