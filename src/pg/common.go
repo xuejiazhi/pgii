@@ -145,12 +145,15 @@ func generateBatchValue(idx int, tbName string, columnList []string, columnType 
 		valSon := []string{}
 		l := 0
 		for _, sv := range columnList {
-			if _, ok := v[sv]; ok {
-				valSon = append(valSon, fmt.Sprintf("'%s'", cast.ToString(v[sv])))
-				l++
-			} else {
+			//judge
+			if _, ok := v[sv]; !ok {
 				break
 			}
+			//处理当数据中存在' 符号的存在
+			//Handles errors raised when the ' symbol is present in the data
+			valStr := strings.Replace(cast.ToString(v[sv]), "'", "''", -1)
+			valSon = append(valSon, fmt.Sprintf("'%s'", valStr))
+			l++
 		}
 		//加入数组
 		batchValue = append(batchValue, "("+strings.Join(valSon, ",")+")")

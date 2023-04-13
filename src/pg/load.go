@@ -48,6 +48,7 @@ func (s *Params) LoadTable() {
 	defer f.Close() //
 
 	content, err := ioutil.ReadAll(f)
+
 	//解压
 	unZipSQL, err := util.UnCompress(content)
 	affect, err := P.ExecSQL(string(unZipSQL))

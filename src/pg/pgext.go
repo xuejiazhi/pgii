@@ -142,7 +142,7 @@ func (p *PgDsn) GetQuerySql(tbName string, fieldList []string, columnTypes map[s
 		}
 	}
 	//生成SQL
-	sqlStr = fmt.Sprintf("SELECT %s FROM %s  OFFSET %d LIMIT %d",
+	sqlStr = fmt.Sprintf(`SELECT %s FROM %s  OFFSET %d LIMIT %d`,
 		strings.Join(newFiledList, ","),
 		tbName,
 		pageSize*PgLimit,

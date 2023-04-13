@@ -315,34 +315,45 @@ func (s *Params) ShowTables(cmd string, filter ...string) {
 		//序列化输出
 		var tbs [][]interface{}
 		for _, v := range tb {
+			//define
 			var sbs []interface{}
-			//
-			tableName := cast.ToString(v["tablename"])
+
+			//get schemaName  tableName
 			schemaName := cast.ToString(v["schemaname"])
-			if len(filter) > 0 {
-				for _, v := range filter {
-					tableName = strings.Replace(tableName, v, util.SetColor(v, util.LightGreen), -1)
+			tableName := func() (tbName string) {
+				tbName = cast.ToString(v["tablename"])
+				if len(filter) > 0 {
+					for _, v := range filter {
+						tbName = strings.Replace(tbName, v, util.SetColor(v, util.LightGreen), -1)
+					}
 				}
-			}
+				return
+			}()
 
-			//获取tableSize
-			var tableSize interface{}
-			var indexSzie interface{}
 			//判断relation是否存在
-			if classInfo, err := P.GetPgClassForTbName(tableName); err == nil {
-				if len(classInfo) > 0 {
-					if sizeInfo, err := P.GetSizeInfo(TableStyle, fmt.Sprintf(`"%s".%s`, schemaName, tableName)); err == nil {
-						tableSize = sizeInfo["size"]
-					}
-
-					if sizeInfo, err := P.GetSizeInfo(IndexStyle, fmt.Sprintf(`"%s".%s`, schemaName, tableName)); err == nil {
-						indexSzie = sizeInfo["size"]
+			tableSize, indexSize := func() (tbSize, idxSize interface{}) {
+				classInfo, err := P.GetPgClassForTbName(tableName)
+				//judge
+				if err != nil && len(classInfo) == 0 {
+					return
+				}
+				//range
+				for _, st := range []int{TableStyle, IndexStyle} {
+					if sizeInfo, err := P.GetSizeInfo(st, fmt.Sprintf(`"%s".%s`, schemaName, tableName)); err == nil {
+						switch st {
+						case TableStyle:
+							tbSize = sizeInfo["size"]
+						case IndexStyle:
+							idxSize = sizeInfo["size"]
+						}
 					}
 				}
-			}
+				//return
+				return
+			}()
 
 			//oid
-			sbs = append(sbs, v["schemaname"], tableName, v["tableowner"], v["tablespace"], tableSize, indexSzie)
+			sbs = append(sbs, v["schemaname"], tableName, v["tableowner"], v["tablespace"], tableSize, indexSize)
 			tbs = append(tbs, sbs)
 		}
 		//打印表格
