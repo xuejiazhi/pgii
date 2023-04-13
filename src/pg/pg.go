@@ -45,8 +45,8 @@ func (p *PgDsn) Connect() error {
 	})
 
 	if err != nil {
-		fmt.Println("PostgresSQL  Connect Is Faled! ")
-		err = errors.New("PostgresSQL  Connect Is Faled! ")
+		fmt.Println("PostgresSQL  Connect Is failed! ")
+		err = errors.New("PostgresSQL  Connect Is failed! ")
 		return err
 	}
 	p.PgConn = PgConn
@@ -199,7 +199,7 @@ func (p *PgDsn) Trigger(cmd, value string) (triggerInfo []map[string]interface{}
 	sqlStr := "select * from information_schema.triggers "
 
 	//设置的条件值
-	conditionList := []string{}
+	var conditionList []string
 
 	//是否选择了DB
 	//trigger_catalog

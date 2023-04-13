@@ -56,7 +56,7 @@ func (s *Params) DumpSchema() {
 	}
 
 	f, _ := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
-	defer f.Close()
+	defer fileClose(f)
 	//生成schema
 	schemaStr := []byte(generateSchema(P.Schema))
 	util.Compress(&schemaStr)
@@ -151,7 +151,7 @@ func (s *Params) DumpTable() {
 
 	//打开要生成的文件句柄
 	f, _ := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
-	defer f.Close()
+	defer fileClose(f)
 	//生成Table 的DDL
 	tbsql := getTableDdlSql(P.Schema, tbName)
 
@@ -215,8 +215,12 @@ func (s *Params) DumpDatabase() {
 
 	util.PrintColorTips(util.LightGreen, ">"+DumpDataBaseBegin)
 	//打开要生成的文件句柄
-	f, _ := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
-	defer f.Close()
+	f, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
+	if err != nil {
+		util.PrintColorTips(util.LightRed, DumpFailed)
+		return
+	}
+	defer fileClose(f)
 
 	//generate db sql
 	dbSQL := []byte(genDataBaseSQL(P.DataBase))
@@ -320,7 +324,7 @@ func genDumpFile(style int, param ...string) (fileName string, err error) {
 			fileName = fmt.Sprintf("dump_table_null_%d.pgi", time.Now().Unix())
 		}
 	default:
-		err = errors.New("Dump Style is error")
+		err = errors.New("dump Style is error")
 	}
 
 	if _, err := os.Stat(fileName); err == nil {
@@ -334,6 +338,6 @@ func genDataBaseSQL(dbName string) (genDBSQL string) {
 	return fmt.Sprintf("drop database if exists %s;create database %s;\n", dbName, dbName)
 }
 
-func writeFile() {
-
-}
+//func writeFile() {
+//
+//}

@@ -42,7 +42,7 @@ func (s *Params) UseDatabase(dbName string) {
 	if err := P.Connect(); err == nil {
 		*Database = dbName
 		P.Schema = ""
-		util.PrintColorTips(util.LightGreen, UseDBSucc)
+		util.PrintColorTips(util.LightGreen, UseDBSuch)
 	}
 }
 
@@ -61,6 +61,6 @@ func (s *Params) UseSchema(schema string) {
 	}
 	P.Schema = schema
 	if err := P.Connect(); err == nil {
-		util.PrintColorTips(util.LightGreen, UseSchemaSucc)
+		util.PrintColorTips(util.LightGreen, UseSchemaSuch)
 	}
 }

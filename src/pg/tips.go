@@ -1,9 +1,11 @@
 package pg
 
 var (
-	//COMMON
-	LineOperate = "----------------------------------------"
-	// Dump
+	// LineOperate CloseFileFailed COMMON
+	LineOperate     = "----------------------------------------"
+	CloseFileFailed = "Close File Failed"
+
+	// DumpFailed Dump
 	DumpFailed                 = "Failed:Dump Cmd is failed"
 	DumpFailedNoTable          = "Failed:Dump Cmd Table fail,Table not exists!"
 	DumpFailedNoSelectSchema   = "Failed:Dump Cmd Schema fail,Schema not Selected!"
@@ -19,13 +21,14 @@ var (
 	DumpDataBaseBegin          = "Dump DataBase Begin"
 	DumpDataBaseStructSuccess  = "Dump DataBase Struct Success"
 
-	//Load
+	// LoadFailed Load
 	LoadFailed             = "Failed:Load Cmd is failed"
-	LoadTableNOFile        = "Failed:Table Pgii File is not exists"
+	LoadTableNOFile        = "Failed:Table Pgi File is not exists"
 	LoadNoFile             = "cannot read the file"
 	LoadTableExecSQLFailed = "Failed:Table Exec SQL Failed"
 	LoadTableSQLSuccess    = "Load Table Success"
-	// Size
+
+	// SizeFailed Size
 	SizeFailed           = "Failed:SIZE Cmd fail"
 	SizeFailedNull       = "Failed:Size Database is Nil!"
 	SizeFailedDataNull   = "Failed:Size Database Get Data Nil!"
@@ -33,16 +36,16 @@ var (
 	SizeFailedNoSchema   = "Failed:Size Cmd Schema fail,Schema not exists!"
 	SizeFailedNoTable    = "Failed:Size Cmd Table fail,Table not exists!"
 
-	//USE
+	// UseFailed USE
 	UseFailed          = "Failed:Use Cmd is failed"
 	UseDBFailed        = "Failed:Use Database failed"
 	UseDBNotExists     = "Failed:Use Database fail,DataBase Not Exists!"
-	UseDBSucc          = "Use Database Success!"
+	UseDBSuch          = "Use Database Success!"
 	UseSchemaFailed    = "Failed:Use Schema fail!"
 	UseSchemaNotExists = "Failed:Use Schema fail,Schema Not Exists!"
-	UseSchemaSucc      = "Use Schema Success!"
+	UseSchemaSuch      = "Use Schema Success!"
 
-	//DDL
+	// DDLTableNoExists DDL
 	DDLTableNoExists   = "Failed:DDL Cmd Table fail,Table not exists!"
 	DDLColumnNoExists  = "Failed:DDL Cmd Table fail,Column not exists!"
 	DDLViewNoExists    = "Failed:DDL Cmd View fail,View not exists!"
@@ -51,27 +54,27 @@ var (
 	DDLSchemaError     = "Failed:DDL Cmd Schema fail,error "
 	DDLSchemaNotExists = "Failed:DDL Cmd Schema fail,Schema not exists!"
 
-	//SHOW
+	// ShowTriggerCmdFailed SHOW
 	ShowTriggerCmdFailed = "Failed Show Trigger CMD is Failed"
 	ShowDatabaseError    = "Failed:Show DataBase is Wrong! error"
 	CmdLineError         = "CmdLine Must be With ; ending"
 	CmdLineWrong         = "Failed:CmdLine is Wrong!"
 	StartThanEndError    = "Failed:End Pid Must Than Start Pid"
 
-	//DESC
+	// DescTableError DESC
 	DescTableError    = "Failed:Describe Table fail!Error"
 	DescTableNoExists = "Failed:Describe Table fail!Table not exists"
 	DescTableFailed   = "Failed:Describe Table fail"
 
-	//KILL
+	// KillProcessSuccess KILL
 	KillProcessSuccess = "Kill Process Success"
 	KillProcessFailed  = "Kill Process Failed"
 
-	//Set
+	// SetError Set
 	SetError           = "Set Cmd fail"
 	SetLanguageSuccess = "Set Language Success"
 
-	//cmd
+	// CmdTipsHost cmd
 	CmdTipsHost     = "Input Your Postgresql Host"
 	CmdTipsUser     = "Input Your Postgresql User"
 	CmdTipsPassword = "Input Your Postgresql Password"
