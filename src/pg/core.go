@@ -64,11 +64,11 @@ func WelCome(v string) {
 
 // ReadLine 获取键盘输入
 func ReadLine() {
-	//t := prompt.Input(util.SetColor(fmt.Sprintf("pgii~[%s/%s]# ", *Database, P.Schema), util.LightBlue), completer)
+	//t := prompt.Input(util.SetColor(fmt.Sprintf("pgi~[%s/%s]# ", *Database, P.Schema), util.LightBlue), completer)
 	//fmt.Println("You selected " + t)
 	//
 	////print header
-	//fmt.Print(util.SetColor(fmt.Sprintf("pgii~[%s/%s]# ", *Database, P.Schema), util.LightBlue))
+	//fmt.Print(util.SetColor(fmt.Sprintf("pgi~[%s/%s]# ", *Database, P.Schema), util.LightBlue))
 	//CMD
 	cmdLine := ""
 	//获取输入的值
@@ -98,7 +98,7 @@ func ReadLine() {
 	}
 
 	//键盘输入
-	//scanner := bufio.NewScanner(os.Stdin)
+	//scanner := bu-fio.NewScanner(os.Stdin)
 	//for scanner.Scan() {
 	//
 	//	//t := strings.Trim(scanner.Text(), "")

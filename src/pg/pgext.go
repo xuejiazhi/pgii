@@ -209,7 +209,7 @@ from
 }
 
 func (p *PgDsn) GetProcessByPid(pid int) (process map[string]interface{}, err error) {
-	///Get Column TSQL
+	///Get Column SQL
 	sqlStr := fmt.Sprintf("select pid,datname,application_name,state from pg_stat_activity where pid=%d", pid)
 	//query
 	err = p.PgConn.Raw(sqlStr).First(&process).Error

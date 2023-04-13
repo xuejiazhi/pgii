@@ -29,7 +29,7 @@ func (s *Params) DDL() {
 	}
 }
 
-// DDLSchema 生成SCHEAM的DDL
+// DDLSchema 生成SCHEMA的DDL
 func (s *Params) DDLSchema(name string) {
 	//校验schema 是否存在
 	info, err := P.GetSchemaFromNS(name)

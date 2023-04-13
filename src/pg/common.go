@@ -142,7 +142,7 @@ func generateBatchValue(idx int, tbName string, columnList []string, columnType 
 	}
 	//循环
 	for _, v := range data {
-		valSon := []string{}
+		var valSon []string
 		l := 0
 		for _, sv := range columnList {
 			//judge
@@ -159,4 +159,11 @@ func generateBatchValue(idx int, tbName string, columnList []string, columnType 
 		batchValue = append(batchValue, "("+strings.Join(valSon, ",")+")")
 	}
 	return
+}
+
+func fileClose(f *os.File) {
+	err := f.Close()
+	if err != nil {
+		util.PrintColorTips(util.LightRed, CloseFileFailed)
+	}
 }
