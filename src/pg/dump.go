@@ -136,6 +136,12 @@ func (s *Params) DumpTable() {
 		tbName = s.Param[1]
 	}
 
+	//必须选中模式
+	if P.Schema == "" {
+		util.PrintColorTips(util.LightRed, DumpFailedNoSelectSchema)
+		return
+	}
+
 	//校验表是否存在
 	if tbInfo, err := P.GetTableByName(tbName); err != nil || len(tbInfo) == 0 {
 		util.PrintColorTips(util.LightRed, DumpFailedNoTable)
@@ -153,11 +159,11 @@ func (s *Params) DumpTable() {
 	f, _ := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
 	defer fileClose(f)
 	//生成Table 的DDL
-	tbsql := getTableDdlSql(P.Schema, tbName)
+	tbsql := getCreateTableSql(tbName)
 
 	//处理SQL语句
 	//获取表的行数
-	cnt := P.QueryTableNums(fmt.Sprintf("%s.%s", P.Schema, tbName))
+	cnt := P.QueryTableNums(fmt.Sprintf(`"%s"."%s"`, P.Schema, tbName))
 	pgCount := 0
 	if cnt > 0 {
 		pgCount = cnt/PgLimit + 1
@@ -170,10 +176,9 @@ func (s *Params) DumpTable() {
 		//get batchSQL
 		batchSql := ""
 		//定义定入的SQL
-		batchValue := generateBatchValue(i, fmt.Sprintf("%s.%s", P.Schema, tbName), columnList, columnType)
+		batchValue := generateBatchValue(i, fmt.Sprintf(`"%s"."%s"`, P.Schema, tbName), columnList, columnType)
 		if len(batchValue) > 0 {
-			batchSql = fmt.Sprintf("Insert into %s.%s(%s) values %s;",
-				P.Schema,
+			batchSql = fmt.Sprintf("Insert into %s(%s) values %s;",
 				tbName,
 				strings.Join(columnList, ","),
 				strings.Join(batchValue, ","))

@@ -621,11 +621,30 @@ pgii~[clouddb/db_mcs.com]# explain  select * from userprofile;
 [Total: 1 Rows]  [RunTimes 2.18s]
 ~~~
 
+	## load instruction
+### load <tb|table> <pgi file name>
+***功能：***<br/>
+>     导入由dump table指令生成的备份文件
+
+***方法：***<br/>
+~~~C
+pgii~[benchmark/public]# load table ../dump_table_spatial_ref_sys_1681366410.pgi;
+pgii~[benchmark/public]# load tb ../dump_table_spatial_ref_sys_1681366410.pgi;
+  Load Table Success Affect Nums:8500
+~~~
+
+***View table***<br/>
+> 导入的表名是 "spatial_ref_sys"
+![image](https://user-images.githubusercontent.com/16795993/231673276-e48eb76a-5f96-4bb7-aa57-62ca0c04ac8d.png)
+> 在工具上查看,已生成spatial_ref_sys表，已导入8500条记录
+![image](https://user-images.githubusercontent.com/16795993/231674142-df137b49-ee15-42c3-97cc-adbffa3fe3d7.png)
+
+  
 
 ## TODO
 -  dump database ✅
 -  kill pid ✅
 -  show process ✅
--  load table
+-  load table ✅
 -  load schema
 -  load database
