@@ -80,20 +80,21 @@ func (p *PgDsn) Database() (pgDatabases []map[string]interface{}, err error) {
 		dattablespace  此数据库的默认表空间。在此数据库中，所有pg_class.reltablespace为0的表都将被存储在这个表空间中，尤其是非共享系统目录都会在其中。
 		datacl   访问权限，更多信息参见 GRANT和 REVOKE
 	*/
-	sqlStr := `select 
-    			  oid,
-    			  datname,
-    			  datdba,
-    			  encoding,
-    			  datcollate,
-    			  datctype,
-    			  datallowconn,
-    			  datconnlimit,
-    			  datlastsysoid,
-    			  dattablespace, 
-    			  (select pg_size_pretty( pg_database_size(datname) ) ) as size 
-			   from 
-				  pg_database`
+	sqlStr := `
+		select 
+			oid,
+			datname,
+			datdba,
+			encoding,
+			datcollate,
+			datctype,
+			datallowconn,
+			datconnlimit,
+			datlastsysoid,
+			dattablespace, 
+			(select pg_size_pretty( pg_database_size(datname) ) ) as size 
+		from 
+			pg_database`
 
 	//query
 	err = p.PgConn.Raw(sqlStr).Scan(&pgDatabases).Error
@@ -109,13 +110,15 @@ func (p *PgDsn) Tables(cmd string, param ...string) (pgTables []map[string]inter
 		tableowner  表拥有者的名字  pg_authid.rolname
 		tablespace  包含表的表空间的名字（如果使用数据库的默认表空间，此列为空） pg_tablespace.spcname
 	*/
-	sqlStr := `select 
-    			  schemaname,
-    			  tablename,
-    			  tableowner,
-    			  tablespace
-				from 
-				  pg_tables `
+	sqlStr := `
+		select
+			schemaname,
+			tablename,
+			tableowner,
+			tablespace
+		from 
+			pg_tables 
+`
 
 	//是否选择Schema
 	condition := p.getTableViewCondition("table", cmd, param...)
@@ -179,14 +182,23 @@ func (p *PgDsn) Process(param ...interface{}) (process []map[string]interface{},
 				err = errors.New("show proc pid param error")
 				return
 			} else {
-				sqlStr = fmt.Sprintf(`select pid,datname,usename,client_addr,client_port,application_name,state 
-					from pg_stat_activity 
-					where pid>=%d and pid<=%d`, cast.ToInt(param[1]), cast.ToInt(param[2]))
+				sqlStr = fmt.Sprintf(`
+					select 
+						pid,datname,usename,client_addr,client_port,application_name,state 
+					from 
+						pg_stat_activity 
+					where 
+						pid>=%d and pid<=%d`,
+					cast.ToInt(param[1]), cast.ToInt(param[2]))
 			}
 		}
 	} else {
-		sqlStr = fmt.Sprintf(`select pid,datname,usename,client_addr,client_port,application_name,state 
-			from pg_stat_activity where datname='%s'`, P.DataBase)
+		sqlStr = fmt.Sprintf(`
+				select 
+					pid,datname,usename,client_addr,client_port,application_name,state 
+				from 
+					pg_stat_activity 
+				where datname='%s'`, P.DataBase)
 	}
 	//query
 	err = p.PgConn.Raw(sqlStr).Scan(&process).Error
@@ -345,15 +357,15 @@ func (p *PgDsn) GetTableBySchema(schema string) (pgTables []map[string]interface
 		return
 	}
 
-	sqlStr := fmt.Sprintf(`select 
-    			  schemaname,
-    			  tablename,
-    			  tableowner,
-    			  tablespace
+	sqlStr := fmt.Sprintf(`
+				select 
+					schemaname,
+					tablename,
+					tableowner,
+					tablespace
 				from 
-				  pg_tables 
-				 where schemaname ='%s' 
-				  `, schema)
+					pg_tables 
+ 				where schemaname ='%s'`, schema)
 
 	//query
 	err = p.PgConn.Raw(sqlStr).Scan(&pgTables).Error
@@ -396,23 +408,23 @@ func (p *PgDsn) GetIndexDef(tbName string, notIName []string) (indexInfo []map[s
 	// indexname 索引名字
 	//取创建索引的值
 	sqlStr := fmt.Sprintf(`
-							select
-							    b.indexrelid,
-						  		a.indexdef,
-						  		a.indexname 
-							from
-						  		PG_INDEXES a
-							left join 
-								PG_STAT_ALL_INDEXES b
-							on  a.indexname = b.indexrelname 
-						 	where
-								a.schemaname ='%s'
-							and
-            					a.tablename ='%s'
-            				and 
-						 	    b.schemaname = '%s' 
-							and 
-						 	    b.relname  ='%s'`,
+			select
+				b.indexrelid,
+				a.indexdef,
+				a.indexname 
+			from
+				PG_INDEXES a
+			left join 
+				PG_STAT_ALL_INDEXES b
+			on  a.indexname = b.indexrelname 
+			where
+				a.schemaname ='%s'
+			and
+				a.tablename ='%s'
+			and 
+				b.schemaname = '%s' 
+			and 
+				b.relname  ='%s'`,
 		p.Schema, tbName, p.Schema, tbName)
 
 	if len(notIName) > 0 {
