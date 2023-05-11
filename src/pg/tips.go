@@ -24,10 +24,12 @@ var (
 	// LoadFailed Load
 	LoadFailed               = "Failed:Load Cmd is failed"
 	LoadTableNOFile          = "Failed:Table Pgi File is not exists"
+	LoadSchemaNOPath         = "Failed:Schema Pgi File Path is not exists"
 	LoadNoFile               = "cannot read the file"
 	LoadTableExecSQLFailed   = "Failed:Table Exec SQL Failed"
 	LoadTableSQLSuccess      = "Load Table Success"
 	LoadFailedNoSelectSchema = "Failed:Load Cmd Schema fail,Schema not Selected!"
+	LoadFailedNoSelectDB     = "Failed:Load Cmd Database fail,Database not Selected!"
 
 	// SizeFailed Size
 	SizeFailed           = "Failed:SIZE Cmd fail"

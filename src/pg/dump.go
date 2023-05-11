@@ -61,7 +61,7 @@ func (s *Params) DumpSchema() {
 
 	//step2 生成schema文件
 	scFile := filePath + "/schema.pgi"
-	f.Write(util.String2Bytes(scFile))
+	f.Write(util.String2Bytes(scFile + "\n"))
 	fs, _ := os.OpenFile(scFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
 	defer fileClose(fs)
 
@@ -89,9 +89,12 @@ func (s *Params) DumpSchema() {
 
 			//校验表是否存在
 			tbName := cast.ToString(tn)
-			if f, err := saveTableFile(filePath, tbName); err != nil {
-				util.PrintColorTips(util.LightRed, DumpFailedNoTable+f)
+			fn, err := saveTableFile(filePath, tbName)
+			if err != nil {
+				util.PrintColorTips(util.LightRed, DumpFailedNoTable+fn)
+				continue
 			}
+			f.Write(util.String2Bytes(fn + "\n"))
 		}
 	}
 }
