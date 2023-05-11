@@ -47,30 +47,39 @@ func (s *Params) DumpSchema() {
 		}
 	}
 
-	//要生成的文件名
-	fileName, _ := genDumpFile(SchemaStyle)
-
-	//是否存在文件
-	if _, err := os.Stat(fileName); err == nil {
-		_ = os.Remove(fileName)
+	//创建一个文件夹
+	filePath := fmt.Sprintf("dump_schema_%s_%d", P.Schema, time.Now().Unix())
+	if err := util.CreateDir(filePath); err != nil {
+		util.PrintColorTips(util.LightRed, DumpFailedNoSelectSchema)
+		return
 	}
 
-	f, _ := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
+	//step1 生成init文件
+	initFile := filePath + "/_init_"
+	f, _ := os.OpenFile(initFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
 	defer fileClose(f)
+
+	//step2 生成schema文件
+	scFile := filePath + "/schema.pgi"
+	f.Write(util.String2Bytes(scFile))
+	fs, _ := os.OpenFile(scFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
+	defer fileClose(fs)
+
 	//生成schema
-	schemaStr := []byte(generateSchema(P.Schema))
-	util.Compress(&schemaStr)
-	//写入文件
-	_, _ = f.Write(schemaStr)
+	scStr := util.String2Bytes(generateSchema(P.Schema))
+	util.Compress(&scStr)
+	fs.Write(scStr)
 	//print success
 	util.PrintColorTips(util.LightGreen, fmt.Sprintf("%s [%s]", DumpSchemaSuccess, P.Schema))
-	//查询所有的表
+
+	//生成table
 	if tbs, err := P.Tables(""); err == nil {
 		if len(tbs) == 0 {
 			util.PrintColorTips(util.LightRed, DumpFailedSchemaNoTable)
+
 			return
 		}
-
+		//range table
 		for _, tb := range tbs {
 			tn, ok := tb["tablename"]
 			if !ok {
@@ -78,48 +87,11 @@ func (s *Params) DumpSchema() {
 				continue
 			}
 
-			tbName := cast.ToString(tn)
 			//校验表是否存在
-			if tbInfo, err := P.GetTableByName(cast.ToString(tbName)); err != nil || len(tbInfo) == 0 {
-				util.PrintColorTips(util.LightRed, DumpFailedNoTable)
-				return
+			tbName := cast.ToString(tn)
+			if f, err := saveTableFile(filePath, tbName); err != nil {
+				util.PrintColorTips(util.LightRed, DumpFailedNoTable+f)
 			}
-
-			//生成Table 的DDL
-			tbsql := []byte(getTableDdlSql(P.Schema, cast.ToString(tbName)))
-			//压缩数据
-			util.Compress(&tbsql)
-			//写入文件
-			_, _ = f.Write(tbsql)
-			//print success
-			util.PrintColorTips(util.LightGreen, fmt.Sprintf("%s [%s]", DumpTableStructSuccess, cast.ToString(tbName)))
-
-			//处理SQL语句
-			//获取表的行数
-			cnt := P.QueryTableNums(tbName)
-			pgCount := 0
-			if cnt > 0 {
-				pgCount = cnt/PgLimit + 1
-			}
-			//开始处理表的数据
-			//获取表的column
-			columnList := P.GetColumnList(P.Schema, tbName)
-			columnType := P.GetColumnsType(tbName, columnList...)
-			for i := 0; i < pgCount; i++ {
-				batchSql := ""
-				//定义定入的SQL
-				batchValue := generateBatchValue(i, tbName, columnList, columnType)
-				if len(batchValue) > 0 {
-					batchSql = fmt.Sprintf("Insert into %s.%s(%s) values %s;", P.Schema, tbName, strings.Join(columnList, ","), strings.Join(batchValue, ","))
-				}
-				//压缩数据
-				tbSqlByte := []byte(batchSql)
-				util.Compress(&tbSqlByte)
-				//写入文件
-				_, _ = f.Write(tbSqlByte)
-			}
-			//print success
-			util.PrintColorTips(util.LightBlue, fmt.Sprintf(" ->%s [%s]", DumpTableRecordSuccess, cast.ToString(tbName)))
 		}
 	}
 }
@@ -142,58 +114,9 @@ func (s *Params) DumpTable() {
 		return
 	}
 
-	//校验表是否存在
-	if tbInfo, err := P.GetTableByName(tbName); err != nil || len(tbInfo) == 0 {
-		util.PrintColorTips(util.LightRed, DumpFailedNoTable)
-		return
+	if f, err := saveTableFile("./", tbName); err != nil {
+		util.PrintColorTips(util.LightRed, DumpFailedNoTable+f)
 	}
-
-	//要生成的文件名
-	fileName, _ := genDumpFile(TableStyle, tbName)
-	//是否存在文件
-	if _, err := os.Stat(fileName); err == nil {
-		_ = os.Remove(fileName)
-	}
-
-	//打开要生成的文件句柄
-	f, _ := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
-	defer fileClose(f)
-	//生成Table 的DDL
-	tbsql := getCreateTableSql(tbName)
-
-	//处理SQL语句
-	//获取表的行数
-	cnt := P.QueryTableNums(fmt.Sprintf(`"%s"."%s"`, P.Schema, tbName))
-	pgCount := 0
-	if cnt > 0 {
-		pgCount = cnt/PgLimit + 1
-	}
-	//开始处理表的数据
-	//获取表的column
-	columnList := P.GetColumnList(P.Schema, tbName)
-	columnType := P.GetColumnsType(tbName, columnList...)
-	for i := 0; i < pgCount; i++ {
-		//get batchSQL
-		batchSql := ""
-		//定义定入的SQL
-		batchValue := generateBatchValue(i, fmt.Sprintf(`"%s"."%s"`, P.Schema, tbName), columnList, columnType)
-		if len(batchValue) > 0 {
-			batchSql = fmt.Sprintf("Insert into %s(%s) values %s;",
-				tbName,
-				strings.Join(columnList, ","),
-				strings.Join(batchValue, ","))
-		}
-
-		//join tbsql
-		tbsql = string(append([]byte(tbsql), batchSql...))
-	}
-	//压缩数据
-	tbSqlByte := []byte(tbsql)
-	util.Compress(&tbSqlByte)
-	//写入文件
-	_, _ = f.Write(tbSqlByte)
-	//打印
-	util.PrintColorTips(util.LightGreen, DumpTableSuccess)
 }
 
 // DumpDatabase 生成Database的备份
@@ -346,3 +269,56 @@ func genDataBaseSQL(dbName string) (genDBSQL string) {
 //func writeFile() {
 //
 //}
+
+func saveTableFile(filePath, tbName string) (fileName string, err error) {
+	var tbInfo map[string]interface{}
+	if tbInfo, err = P.GetTableByName(tbName); err != nil || len(tbInfo) == 0 {
+		util.PrintColorTips(util.LightRed, DumpFailedNoTable)
+		return
+	}
+
+	//打开要生成的文件句柄
+	fileName = fmt.Sprintf("%s/%s%s%s", filePath, "tb_", tbName, ".pgi")
+	ft, _ := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
+	defer fileClose(ft)
+
+	//生成Table 的DDL
+	tbSql := getCreateTableSql(tbName)
+
+	//处理SQL语句
+	//获取表的行数
+	cnt := P.QueryTableNums(fmt.Sprintf(`"%s"."%s"`, P.Schema, tbName))
+	pgCount := 0
+	if cnt > 0 {
+		pgCount = cnt/PgLimit + 1
+	}
+	//开始处理表的数据
+	//获取表的column
+	columnList := P.GetColumnList(P.Schema, tbName)
+	columnType := P.GetColumnsType(tbName, columnList...)
+	for i := 0; i < pgCount; i++ {
+		//get batchSQL
+		batchSql := ""
+		//定义定入的SQL
+		batchValue := generateBatchValue(i, fmt.Sprintf(`"%s"."%s"`, P.Schema, tbName), columnList, columnType)
+		if len(batchValue) > 0 {
+			batchSql = fmt.Sprintf(`Insert into "%s"(%s) values %s;`,
+				tbName,
+				strings.Join(columnList, ","),
+				strings.Join(batchValue, ","))
+		}
+
+		//join tbsql
+		tbSql = string(append([]byte(tbSql), batchSql...))
+	}
+	//压缩数据
+	tbSqlByte := util.String2Bytes(tbSql)
+	util.Compress(&tbSqlByte)
+	//写入文件
+	_, _ = ft.Write(tbSqlByte)
+
+	//打印
+	util.PrintColorTips(util.LightGreen, fmt.Sprintf("Table[%s] %s", tbName, DumpTableSuccess))
+
+	return
+}

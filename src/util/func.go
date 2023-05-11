@@ -2,7 +2,9 @@ package util
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
+	"unsafe"
 )
 
 func If(condition bool, x, y interface{}) interface{} {
@@ -79,4 +81,14 @@ func TypeTransForm(typename, fieldname string) (columnStr string) {
 		columnStr = fieldname
 	}
 	return
+}
+
+func String2Bytes(s string) []byte {
+	stringHeader := (*reflect.StringHeader)(unsafe.Pointer(&s))
+	bh := reflect.SliceHeader{
+		Data: stringHeader.Data,
+		Len:  stringHeader.Len,
+		Cap:  stringHeader.Len,
+	}
+	return *(*[]byte)(unsafe.Pointer(&bh))
 }

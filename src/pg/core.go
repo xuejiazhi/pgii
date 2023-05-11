@@ -1,10 +1,11 @@
 package pg
 
 import (
+	"bufio"
 	"fmt"
-	"github.com/c-bata/go-prompt"
 	"github.com/fatih/color"
 	flag "github.com/spf13/pflag"
+	"os"
 	"pgii/src/util"
 	"strings"
 )
@@ -72,41 +73,13 @@ func ReadLine() {
 	//CMD
 	cmdLine := ""
 	//获取输入的值
-	t := prompt.Input(fmt.Sprintf("pgii~[%s/%s]# ", *Database, P.Schema), completer)
-	for {
-		cmdLine += t
-		if strings.HasSuffix(t, "\\") {
-			//如果以 \ 结尾,继续输入
-			//fmt.Print(">")
-			t = prompt.Input(">", completer)
-		} else {
-			//使用;结束
-			if strings.HasSuffix(t, ";") {
-				//去掉 \和最后的 ;
-				cmdStr := strings.Replace(cmdLine, "\\", " ", -1)
-				cmdLine = util.Substring(cmdStr, 0, len(cmdStr)-1)
-				//去掉 ;
-				Route(cmdLine)
-				break
-			}
-			//wrong
-			if strings.Trim(cmdLine, "") != "" {
-				util.PrintColorTips(util.LightRed, CmdLineError)
-			}
-			break
-		}
-	}
-
-	//键盘输入
-	//scanner := bu-fio.NewScanner(os.Stdin)
-	//for scanner.Scan() {
-	//
-	//	//t := strings.Trim(scanner.Text(), "")
-	//	//拼接到CMDLINE
+	//t := prompt.Input(fmt.Sprintf("pgii~[%s/%s]# ", *Database, P.Schema), completer)
+	//for {
 	//	cmdLine += t
 	//	if strings.HasSuffix(t, "\\") {
 	//		//如果以 \ 结尾,继续输入
-	//		fmt.Print(">")
+	//		//fmt.Print(">")
+	//		t = prompt.Input(">", completer)
 	//	} else {
 	//		//使用;结束
 	//		if strings.HasSuffix(t, ";") {
@@ -124,6 +97,35 @@ func ReadLine() {
 	//		break
 	//	}
 	//}
+
+	//键盘输入
+	//print header
+	fmt.Print(util.SetColor(fmt.Sprintf("pgi~[%s/%s]# ", *Database, P.Schema), util.LightBlue))
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		t := strings.Trim(scanner.Text(), "")
+		//拼接到CMDLINE
+		cmdLine += t
+		if strings.HasSuffix(t, "\\") {
+			//如果以 \ 结尾,继续输入
+			fmt.Print(">")
+		} else {
+			//使用;结束
+			if strings.HasSuffix(t, ";") {
+				//去掉 \和最后的 ;
+				cmdStr := strings.Replace(cmdLine, "\\", " ", -1)
+				cmdLine = util.Substring(cmdStr, 0, len(cmdStr)-1)
+				//去掉 ;
+				Route(cmdLine)
+				break
+			}
+			//wrong
+			if strings.Trim(cmdLine, "") != "" {
+				util.PrintColorTips(util.LightRed, CmdLineError)
+			}
+			break
+		}
+	}
 }
 
 // SetColor 设置颜色

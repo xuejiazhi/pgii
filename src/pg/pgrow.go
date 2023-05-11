@@ -41,7 +41,7 @@ var (
 			DescTableHeader: []interface{}{"#", "column", "dataType", "length", "isnull", "defaultValue"},
 		},
 	}
-	//Show
+	// VersionShowHeader Show
 	VersionShowHeader  = "VersionShowHeader"
 	TriggerShowHeader  = "TriggerShowHeader"
 	TableShowHeader    = "TableShowHeader"
@@ -51,12 +51,12 @@ var (
 	ConnectionHeader   = "ConnectionHeader"
 	ProcessHeader      = "ProcessHeader"
 
-	//Size Show Header
+	// DatabaseSizeHeader Size Show Header
 	DatabaseSizeHeader = "DatabaseSizeHeader"
 	TableSizeHeader    = "TableSizeHeader"
 	IndexSizeHeader    = "IndexSizeHeader"
 	TableSpaceHeader   = "TableSpaceHeader"
 
-	//DESC Header
+	// DescTableHeader DESC Header
 	DescTableHeader = "DescTableHeader"
 )

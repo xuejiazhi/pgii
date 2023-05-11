@@ -267,7 +267,7 @@ DROP table  IF exists "%s"."%s" cascade;`, schema, tbName) + "\n"
 // 获取Create SQL
 func getCreateTableSql(tbName string) (sqlStr string) {
 	//print Create Table SQL
-	sqlStr = fmt.Sprintf(`DROP table  IF exists %s cascade;`, tbName) + "\n"
+	sqlStr = fmt.Sprintf(`DROP table  IF exists "%s" cascade;`, tbName) + "\n"
 
 	//获取column
 	column, err := P.Column(P.Schema, tbName)
@@ -287,9 +287,9 @@ func getCreateTableSql(tbName string) (sqlStr string) {
 	}
 
 	//获取建表语句
-	sqlStr += fmt.Sprintf("CREATE TABLE %s (\n%s\n);\n",
+	sqlStr += fmt.Sprintf(`CREATE TABLE "%s"(%s);`,
 		tbName,
-		strings.Join(columnList, ",\n"))
+		strings.Join(columnList, ","))
 
 	replySchema := fmt.Sprintf("\"%s\".", P.Schema)
 	//获取Index
@@ -305,7 +305,7 @@ func getCreateTableSql(tbName string) (sqlStr string) {
 	//判断是否有触发器
 	if triggerDef, err := getTriggerDef(tbName); err == nil {
 		if triggerDef != "" {
-			sqlStr += "\n" + strings.Replace(triggerDef, replySchema, "", -1) + ";\n"
+			sqlStr += strings.Replace(triggerDef, replySchema, "", -1) + ";"
 		}
 	}
 

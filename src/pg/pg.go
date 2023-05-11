@@ -11,17 +11,6 @@ import (
 	"strings"
 )
 
-type PgDsn struct {
-	Host     string
-	User     string
-	Password string
-	Port     int
-	DataBase string
-	TimeZone string
-	Schema   string
-	PgConn   *gorm.DB
-}
-
 var P PgDsn
 
 // Connect 链接数据库

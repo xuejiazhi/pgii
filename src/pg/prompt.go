@@ -62,5 +62,5 @@ var suggestions = []prompt.Suggest{
 }
 
 func completer(d prompt.Document) []prompt.Suggest {
-	return prompt.FilterHasPrefix(suggestions, d.GetWordBeforeCursor(), true)
+	return prompt.FilterHasSuffix(suggestions, d.GetWordBeforeCursor(), true)
 }
