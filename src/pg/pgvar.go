@@ -9,5 +9,5 @@ var (
 )
 
 var (
-	PgLimit = 10000 //每次
+	PgLimit = 50000 //每次
 )

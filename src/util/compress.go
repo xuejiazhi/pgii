@@ -16,7 +16,7 @@ func Compress(str *[]byte) {
 
 // UnCompress 解压缩数据
 func UnCompress(str []byte) ([]byte, error) {
-	out := make([]byte, 10*len(str))
+	out := make([]byte, 20*len(str))
 	n, err := lz4.UncompressBlock(str, out)
 	out = out[:n]
 	return out, err

@@ -33,6 +33,7 @@ func (s *Params) Dump() {
 
 }
 
+// DumpSchema dump schema
 func (s *Params) DumpSchema() {
 	if P.Schema == "" {
 		util.PrintColorTips(util.LightRed, DumpFailedNoSelectSchema)
@@ -61,14 +62,14 @@ func (s *Params) DumpSchema() {
 
 	//step2 生成schema文件
 	scFile := filePath + "/schema.pgi"
-	f.Write(util.String2Bytes(scFile + "\n"))
+	_, _ = f.Write(util.String2Bytes(scFile + "\n"))
 	fs, _ := os.OpenFile(scFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
 	defer fileClose(fs)
 
 	//生成schema
 	scStr := util.String2Bytes(generateSchema(P.Schema))
 	util.Compress(&scStr)
-	fs.Write(scStr)
+	_, _ = fs.Write(scStr)
 	//print success
 	util.PrintColorTips(util.LightGreen, fmt.Sprintf("%s [%s]", DumpSchemaSuccess, P.Schema))
 
@@ -88,13 +89,19 @@ func (s *Params) DumpSchema() {
 			}
 
 			//校验表是否存在
-			tbName := cast.ToString(tn)
-			fn, err := saveTableFile(filePath, tbName)
+			fns, err := splitTableFile(filePath, cast.ToString(tn), SchemaStyle)
 			if err != nil {
-				util.PrintColorTips(util.LightRed, DumpFailedNoTable+fn)
+				util.PrintColorTips(util.LightRed, DumpFailedNoTable+strings.Join(fns, ","))
 				continue
 			}
-			f.Write(util.String2Bytes(fn + "\n"))
+
+			//write fileName
+			for _, fn := range fns {
+				_, _ = f.Write(util.String2Bytes(fn + "\n"))
+			}
+
+			//print tips
+			util.PrintColorTips(util.LightGreen, DumpTableSuccess, fmt.Sprintf(" [%v].....", tn))
 		}
 	}
 }
@@ -102,24 +109,46 @@ func (s *Params) DumpSchema() {
 // DumpTable 生成一个创建Table 的SQL
 // tbName 表名
 func (s *Params) DumpTable() {
-	//取表名
-	tbName := ""
-	if "" == s.Param[1] {
-		util.PrintColorTips(util.LightRed, DumpFailedNoTable)
-		return
-	} else {
-		tbName = s.Param[1]
-	}
-
 	//必须选中模式
 	if P.Schema == "" {
 		util.PrintColorTips(util.LightRed, DumpFailedNoSelectSchema)
 		return
 	}
 
-	if f, err := saveTableFile("./", tbName); err != nil {
-		util.PrintColorTips(util.LightRed, DumpFailedNoTable+f)
+	//取表名
+	if "" == s.Param[1] {
+		util.PrintColorTips(util.LightRed, DumpFailedNoTable)
+		return
 	}
+
+	//创建一个文件夹
+	filePath := fmt.Sprintf("dump_table_%s_%d", P.Schema, time.Now().Unix())
+	if err := util.CreateDir(filePath); err != nil {
+		util.PrintColorTips(util.LightRed, DumpFailedNoSelectSchema)
+		return
+	}
+
+	//step1 生成init文件
+	initFile := filePath + "/_init_"
+	f, _ := os.OpenFile(initFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
+	defer fileClose(f)
+
+	//get tablename
+	tbName := cast.ToString(s.Param[1])
+
+	//save file
+	fns, err := splitTableFile(filePath, tbName, TableStyle)
+	if err != nil {
+		util.PrintColorTips(util.LightRed, DumpFailedNoTable+strings.Join(fns, ","))
+	}
+
+	//circle write filename
+	for _, fn := range fns {
+		_, _ = f.Write(util.String2Bytes(fn + "\n"))
+	}
+
+	//print tips
+	util.PrintColorTips(util.LightGreen, DumpTableSuccess, fmt.Sprintf(" [%s].....", tbName))
 }
 
 // DumpDatabase 生成Database的备份
@@ -269,11 +298,8 @@ func genDataBaseSQL(dbName string) (genDBSQL string) {
 	return fmt.Sprintf("drop database if exists %s;create database %s;\n", dbName, dbName)
 }
 
-//func writeFile() {
-//
-//}
-
-func saveTableFile(filePath, tbName string) (fileName string, err error) {
+// save table file (saveTableFile)
+func _(filePath, tbName string) (fileName string, err error) {
 	var tbInfo map[string]interface{}
 	if tbInfo, err = P.GetTableByName(tbName); err != nil || len(tbInfo) == 0 {
 		util.PrintColorTips(util.LightRed, DumpFailedNoTable)
@@ -322,6 +348,88 @@ func saveTableFile(filePath, tbName string) (fileName string, err error) {
 
 	//打印
 	util.PrintColorTips(util.LightGreen, fmt.Sprintf("Table[%s] %s", tbName, DumpTableSuccess))
+	//return
+	return
+}
 
+// Save Split Table file
+func splitTableFile(filePath, tbName string, style int) (fileNames []string, err error) {
+	var tbInfo map[string]interface{}
+	if tbInfo, err = P.GetTableByName(tbName); err != nil || len(tbInfo) == 0 {
+		util.PrintColorTips(util.LightRed, DumpFailedNoTable)
+		return
+	}
+
+	//打开要生成的文件句柄
+	fileName := fmt.Sprintf("%s/%s%s%s", filePath, "tb_", tbName, ".pgi")
+	ft, _ := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
+
+	//生成Table 的DDL
+	tbSql := getCreateTableSql(tbName)
+
+	//处理SQL语句
+	//获取表的行数
+	cnt := P.QueryTableNums(fmt.Sprintf(`"%s"."%s"`, P.Schema, tbName))
+	pgCount := 0
+	if cnt > 0 {
+		pgCount = cnt/PgLimit + 1
+	}
+	//开始处理表的数据
+	//获取表的column
+	columnList := P.GetColumnList(P.Schema, tbName)
+	columnType := P.GetColumnsType(tbName, columnList...)
+
+	//先获取创建表语句和第一批插入语句
+	batchSql := getBatchSql(0, style, tbName, columnList, columnType)
+	//join tbsql
+	tbSql = string(append([]byte(tbSql), batchSql...))
+	//压缩数据
+	tbSqlByte := util.String2Bytes(tbSql)
+	util.Compress(&tbSqlByte)
+	//写入文件
+	_, _ = ft.Write(tbSqlByte)
+	//加入文件名
+	fileNames = append(fileNames, fileName)
+	//close ft
+	fileClose(ft)
+
+	//The data is larger, so split it
+	if pgCount > 1 {
+		for i := 1; i < pgCount; i++ {
+			//打开要生成的文件句柄
+			newFileName := fmt.Sprintf("%s/%s%s_%d.pgi", filePath, "tb_", tbName, i)
+			newFt, _ := os.OpenFile(newFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
+			newBatchSql := getBatchSql(i, style, tbName, columnList, columnType)
+			//压缩数据
+			newSqlByte := util.String2Bytes(newBatchSql)
+			util.Compress(&newSqlByte)
+			//写入文件
+			_, _ = newFt.Write(newSqlByte)
+			fileClose(newFt)
+			//加入文件名
+			fileNames = append(fileNames, newFileName)
+		}
+	}
+	//return value
+	return
+}
+
+// getBatchSql
+func getBatchSql(i, style int, tbName string, columnList []string, columnType map[string]string) (batchSql string) {
+	//get batchSQL
+	//定义定入的SQL
+	fullTbName := fmt.Sprintf(`"%s"`, tbName)
+	if style == SchemaStyle {
+		fullTbName = fmt.Sprintf(`"%s"."%s"`, P.Schema, tbName)
+	}
+	//get batch value
+	batchValue := generateBatchValue(i, fullTbName, columnList, columnType)
+	if len(batchValue) > 0 {
+		batchSql = fmt.Sprintf(`Insert into %s(%s) values %s;`,
+			fullTbName,
+			strings.Join(columnList, ","),
+			strings.Join(batchValue, ","))
+	}
+	//返回
 	return
 }

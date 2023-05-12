@@ -35,35 +35,33 @@ func (s *Params) LoadTable() {
 		util.PrintColorTips(util.LightRed, LoadFailedNoSelectSchema)
 		return
 	}
-	//todo:
-	pgFile := s.Param[1]
-	//pgFile := "../dump_load/dump_table_user_1681300666.pgi"
-	//judge
-	if _, err := os.Stat(pgFile); err != nil {
+
+	//get ini file
+	iniFile, err := s.getIniFile()
+	if err != nil {
+		util.PrintColorTips(util.LightRed, LoadTableNOFile, err.Error())
+		return
+	}
+
+	//open file
+	f, err := os.Open(iniFile)
+	defer f.Close()
+	if err != nil {
 		util.PrintColorTips(util.LightRed, LoadTableNOFile)
 		return
 	}
 
-	//Open File
-	f, err := os.Open(pgFile)
-	if err != nil {
-		util.PrintColorTips(util.LightRed, LoadNoFile, err.Error())
-		return
+	//define reader
+	reader := bufio.NewReader(f)
+	for {
+		//get file line
+		part, _, err := reader.ReadLine()
+		if err != nil {
+			break
+		}
+		//run sql
+		execUnzipSQL(string(part))
 	}
-
-	defer f.Close() //
-
-	content, err := ioutil.ReadAll(f)
-
-	//解压
-	unZipSQL, err := util.UnCompress(content)
-	affect, err := P.ExecSQL(string(unZipSQL))
-	if err != nil {
-		util.PrintColorTips(util.LightRed, LoadTableExecSQLFailed, err.Error())
-		return
-	}
-	//print Success
-	util.PrintColorTips(util.LightGreen, LoadTableSQLSuccess, fmt.Sprintf(" Affect Nums:%d", affect))
 }
 
 // LoadSchema 载入模式
@@ -74,21 +72,14 @@ func (s *Params) LoadSchema() {
 		return
 	}
 
-	filePath := s.Param[1]
-	//pgFile := "../dump_load/dump_table_user_1681300666.pgi"
-	//judge
-	if _, err := os.Stat(filePath); err != nil {
-		util.PrintColorTips(util.LightRed, LoadSchemaNOPath)
+	//get ini file
+	iniFile, err := s.getIniFile()
+	if err != nil {
+		util.PrintColorTips(util.LightRed, LoadSchemaNOPath, err.Error())
 		return
 	}
 
-	//取inifile
-	iniFile := fmt.Sprintf("%s/_init_", filePath)
-	if _, err := os.Stat(iniFile); err != nil {
-		util.PrintColorTips(util.LightRed, LoadSchemaNOPath)
-		return
-	}
-
+	//open file
 	f, err := os.Open(iniFile)
 	defer f.Close()
 	if err != nil {
@@ -96,42 +87,69 @@ func (s *Params) LoadSchema() {
 		return
 	}
 
+	//define reader
 	reader := bufio.NewReader(f)
-	//buffer := bytes.NewBuffer(make([]byte, 1024))
-
 	for {
 		//get file line
 		part, _, err := reader.ReadLine()
 		if err != nil {
 			break
 		}
-		fileLine := string(part)
-		//Open File
-		ft, err := os.Open(fileLine)
-		if err != nil {
-			util.PrintColorTips(util.LightRed, LoadNoFile, err.Error())
-			continue
-		}
-
-		//read content
-		content, err := ioutil.ReadAll(ft)
-
-		//解压
-		unZipSQL, err := util.UnCompress(content)
-		affect, err := P.ExecSQL(string(unZipSQL))
-		if err != nil {
-			util.PrintColorTips(util.LightRed, LoadTableExecSQLFailed, err.Error())
-			return
-		}
-		//print Success
-		util.PrintColorTips(util.LightGreen, LoadTableSQLSuccess, fmt.Sprintf(" Affect Nums:%d", affect))
-		ft.Close()
+		//run sql
+		execUnzipSQL(string(part))
 	}
-
-	//todo:
 }
 
 // LoadDataBase 载入库
 func (s *Params) LoadDataBase() {
 	//todo:
+}
+
+func (s *Params) getIniFile() (iniFile string, err error) {
+	filePath := s.Param[1]
+	//pgFile := "../dump_load/dump_table_user_1681300666.pgi"
+	//judge
+	if _, err = os.Stat(filePath); err != nil {
+		util.PrintColorTips(util.LightRed, LoadSchemaNOPath)
+		return
+	}
+
+	//取inifile
+	iniFile = fmt.Sprintf("%s/_init_", filePath)
+	if _, err = os.Stat(iniFile); err != nil {
+		util.PrintColorTips(util.LightRed, LoadSchemaNOPath)
+		return
+	}
+
+	//
+	return
+}
+
+func execUnzipSQL(fileName string) (err error) {
+	//Open File
+	ft, err := os.Open(fileName)
+	defer ft.Close()
+
+	//judge
+	if err != nil {
+		util.PrintColorTips(util.LightRed, LoadNoFile, fileName, err.Error())
+		return
+	}
+
+	//read content
+	content, err := ioutil.ReadAll(ft)
+
+	//解压
+	unZipSQL, err := util.UnCompress(content)
+	affect, err := P.ExecSQL(string(unZipSQL))
+	if err != nil {
+		util.PrintColorTips(util.LightRed, LoadTableExecSQLFailed, err.Error())
+		return
+	}
+
+	//print Success
+	util.PrintColorTips(util.LightGreen, LoadTableSQLSuccess, fmt.Sprintf(" [%s] Affect Nums:%d", fileName, affect))
+
+	//return
+	return
 }

@@ -131,15 +131,10 @@ func generateBatchValue(idx int, tbName string, columnList []string, columnType 
 	querySQL := P.GetQuerySql(tbName, columnList, columnType, idx)
 	//run sql
 	data, err := P.RunSQL(querySQL)
-	if err != nil {
-		fmt.Println("value is null")
+	if err != nil || len(data) == 0 {
 		return
 	}
 
-	if len(data) == 0 {
-		fmt.Println("value is null")
-		return
-	}
 	//循环
 	for _, v := range data {
 		var valSon []string
@@ -151,8 +146,13 @@ func generateBatchValue(idx int, tbName string, columnList []string, columnType 
 			}
 			//处理当数据中存在' 符号的存在
 			//Handles errors raised when the ' symbol is present in the data
-			valStr := strings.Replace(cast.ToString(v[sv]), "'", "''", -1)
-			valSon = append(valSon, fmt.Sprintf("'%s'", valStr))
+			valStr := ""
+			if v[sv] == nil {
+				valSon = append(valSon, "NULL")
+			} else {
+				valStr = strings.Replace(cast.ToString(v[sv]), "'", "''", -1)
+				valSon = append(valSon, fmt.Sprintf("'%s'", valStr))
+			}
 			l++
 		}
 		//加入数组
