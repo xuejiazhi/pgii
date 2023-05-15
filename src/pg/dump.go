@@ -67,7 +67,7 @@ func (s *Params) DumpSchema() {
 	defer fileClose(fs)
 
 	//生成schema
-	scStr := util.String2Bytes(generateSchema(P.Schema))
+	scStr := util.String2Bytes(generateSchema(P.Schema, DUMP))
 	util.Compress(&scStr)
 	_, _ = fs.Write(scStr)
 	//print success

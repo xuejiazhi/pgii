@@ -41,6 +41,11 @@ const (
 	InUseConnections                    //正在使用的链接数
 )
 
+const (
+	DDL = iota
+	DUMP
+)
+
 var (
 	DefaultHost     = "127.0.0.1"
 	DefaultUser     = "postgres"
@@ -117,11 +122,23 @@ func ShowTable(header string, data [][]interface{}) {
 }
 
 // ================DDL DUMP 使用===============================//
-func generateSchema(scName string) (scStr string) {
+func generateSchema(scName string, style ...int) (scStr string) {
 	//print Create schema SQL
 	scStr = "-- Create Schema Success \n"
+	//Drop Schema
 	scStr += fmt.Sprintf("-- DROP SCHEMA %s;\n", scName)
-	scStr += fmt.Sprintf("CREATE SCHEMA \"%s\" AUTHORIZATION %s;", scName, *UserName)
+
+	//get create schema
+	scStr += fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS \"%s\" AUTHORIZATION %s;", scName, *UserName)
+
+	//search path
+	if len(style) > 0 {
+		if style[0] == DUMP {
+			scStr += fmt.Sprintf("SET search_path TO \"%s\";\n", scName)
+		}
+	}
+
+	//return
 	return
 }
 
