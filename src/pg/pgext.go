@@ -47,7 +47,7 @@ func (p *PgDsn) QueryTableNums(tableName string) (count int) {
 // tableName 表名
 func (p *PgDsn) GetPgClassForTbName(tableName string) (classInfo map[string]interface{}, err error) {
 	//T-SQL
-	sqlStr := fmt.Sprintf("select oid,* from  pg_class where relname='%s'", tableName)
+	sqlStr := fmt.Sprintf("select oid,* from pg_class where relname='%s'", tableName)
 	//query
 	err = p.PgConn.Raw(sqlStr).First(&classInfo).Error
 	//return
@@ -122,7 +122,7 @@ func (p *PgDsn) GetColumnsType(tbName string, columns ...string) (types map[stri
 			}
 
 			columnName := cast.ToString(c["column_name"])
-			if util.InArray(columnName, columns) {
+			if util.InArray(columnName, columns...) {
 				newType[columnName] = cast.ToString(c["udt_name"])
 			}
 		}
@@ -242,7 +242,7 @@ func (p *PgDsn) getTableViewCondition(style, cmd string, param ...string) (condi
 	useName := util.If(style == "view", "viewname", "tablename")
 
 	//加上过滤条件
-	if util.InArray(cmd, EqualAndFilter) {
+	if util.InArray(cmd, EqualAndFilter...) {
 		if len(param) == 0 {
 			return
 		}
@@ -250,14 +250,14 @@ func (p *PgDsn) getTableViewCondition(style, cmd string, param ...string) (condi
 		inParam := ""
 		for k, v := range param {
 			//eq
-			if util.InArray(cmd, EqualVar) {
+			if util.InArray(cmd, EqualVar...) {
 				inParam += cast.ToString(util.If(len(param)-1 == k,
 					fmt.Sprintf("'%s'", v),
 					fmt.Sprintf("'%s',", v)))
 			}
 
 			//filter
-			if util.InArray(cmd, FilterVar) {
+			if util.InArray(cmd, FilterVar...) {
 				inParam += cast.ToString(util.If(len(param)-1 == k,
 					fmt.Sprintf("%s like '%%%s%%'", useName, v),
 					fmt.Sprintf("%s like '%%%s%%' or ", useName, v)))
@@ -265,14 +265,14 @@ func (p *PgDsn) getTableViewCondition(style, cmd string, param ...string) (condi
 		}
 		inParam = fmt.Sprintf("(%s)", inParam)
 		//eq的处理
-		if util.InArray(cmd, EqualVar) {
+		if util.InArray(cmd, EqualVar...) {
 			condition += cast.ToString(util.If(condition == "",
 				fmt.Sprintf(" %s in %s", useName, inParam),
 				fmt.Sprintf(" and %s in %s", useName, inParam)))
 		}
 
 		//filter的处理
-		if util.InArray(cmd, FilterVar) {
+		if util.InArray(cmd, FilterVar...) {
 			condition += cast.ToString(
 				util.If(condition == "",
 					fmt.Sprintf("  %s", inParam),

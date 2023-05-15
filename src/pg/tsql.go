@@ -13,14 +13,21 @@ func Psql(cmdRun, cmdStr string) {
 	bTime := time.Now().UnixMilli()
 	//执行指令
 	switch cmdRun {
-	case "select", "explain":
+	case
+		"select",
+		"explain":
 		if val, err := P.RunSQL(cmdStr); err != nil {
 			fmt.Println("Run T-SQL Error,error ", err.Error())
 		} else {
 			eTime := time.Now().UnixMilli()
 			ShowQuery(eTime-bTime, val)
 		}
-	case "update", "insert", "delete", "alter", "create":
+	case
+		"update",
+		"insert",
+		"delete",
+		"alter",
+		"create":
 		if affectRows, err := P.ExecSQL(cmdStr); err != nil {
 			fmt.Println(fmt.Sprintf("Run %s TSQL Error,error %s", cmdRun, err.Error()))
 		} else {

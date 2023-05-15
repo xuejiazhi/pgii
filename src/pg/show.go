@@ -277,15 +277,15 @@ func (s *Params) ShowTableView(cmd string) {
 		param = strings.Replace(param, "\"", "", -1)
 		params := strings.Split(param, "|")
 
-		if !util.InArray(sonCmd, EqualAndFilter) ||
-			!util.InArray(cmd, TableAndView) {
+		if !util.InArray(sonCmd, EqualAndFilter...) ||
+			!util.InArray(cmd, TableAndView...) {
 			fmt.Println("Failed:CmdLine Show Table Or View filter is Wrong!")
 			return
 		}
 
 		//校验是查表还是视图
 		util.IfCmdFunc(
-			util.InArray(cmd, TableVar),
+			util.InArray(cmd, TableVar...),
 			sonCmd,
 			params,
 			s.ShowTables,
@@ -293,13 +293,13 @@ func (s *Params) ShowTableView(cmd string) {
 		)
 
 	} else {
-		if !util.InArray(cmd, TableAndView) {
+		if !util.InArray(cmd, TableAndView...) {
 			fmt.Println("Failed:CmdLine Show Table Or View filter is Wrong!")
 			return
 		}
 
 		util.IfCmdFunc(
-			util.InArray(cmd, TableVar),
+			util.InArray(cmd, TableVar...),
 			"",
 			nil,
 			s.ShowTables,

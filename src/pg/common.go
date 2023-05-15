@@ -10,54 +10,6 @@ import (
 	"strings"
 )
 
-const (
-	ZeroCMDLength = iota
-	OneCMDLength
-	TwoCMDLength
-	ThreeCMDLength
-	FourCMDLength
-	FiveCMDLength
-)
-
-const (
-	NoneStyle = iota
-	DatabaseStyle
-	TableStyle
-	IndexStyle
-	ViewStyle
-	SelectStyle
-	SchemaStyle
-	TriggerStyle
-	VersionStyle
-	ConnectionStyle
-	ProcessStyle
-	TableSpaceStyle //表空间
-)
-
-const (
-	MaxConnections               = iota //最大连接数
-	SuperuserReservedConnections        //超级用户保留的连接数
-	RemainingConnections                //剩余连接数
-	InUseConnections                    //正在使用的链接数
-)
-
-const (
-	DDL = iota
-	DUMP
-)
-
-var (
-	DefaultHost     = "127.0.0.1"
-	DefaultUser     = "postgres"
-	DefaultPassword = "123456"
-	DefaultDB       = "postgres"
-	DefaultPort     = 5432
-)
-var (
-	SystemSchemaList = []string{"'pg_toast'", "'pg_temp_1'", "'pg_toast_temp_1'", "'pg_catalog'", "'information_schema'"}
-	SystemCmd        = []string{"show", "use", "desc", "help", "ddl", "dump", "size", "kill", "explain"}
-)
-
 // CheckParamType 检查传过来的参数
 func CheckParamType(types string) int {
 	switch types {
@@ -90,8 +42,8 @@ func CheckParamType(types string) int {
 
 func ShowTable(header string, data [][]interface{}) {
 	//默认为英文
-	if !util.InArray(Language, []string{"cn", "en"}) {
-		Language = "en"
+	if !util.InArray(Language, ZhCN, ZhEN) {
+		Language = ZhEN
 	}
 	showHeader := ShowPrettyHeader[Language][header]
 	prettyTable := table.NewWriter()
@@ -172,8 +124,9 @@ func generateBatchValue(idx int, tbName string, columnList []string, columnType 
 			}
 			l++
 		}
+		
 		//加入数组
-		batchValue = append(batchValue, "("+strings.Join(valSon, ",")+")")
+		batchValue = append(batchValue, fmt.Sprintf("(%s)", strings.Join(valSon, ",")))
 	}
 	return
 }

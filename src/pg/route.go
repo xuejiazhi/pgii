@@ -15,33 +15,33 @@ func Route(cmd string) {
 	cmdRun := strings.ToLower(cmdList[0])
 
 	//需要去掉多余空格的指令
-	if util.InArray(cmdRun, SystemCmd) {
+	if util.InArray(cmdRun, SystemCmd...) {
 		util.RemoveNullStr(&cmdList)
 	}
 
 	//根据指令route到各个指令
 	switch cmdRun {
-	case "show":
+	case ShowCMD:
 		Handler(cmdList[1:]...).Show()
-	case "use":
+	case UseCMD:
 		Handler(cmdList[1:]...).Use()
-	case "desc": //查看表结构
+	case DescCMD: //查看表结构
 		Handler(cmdList[1:]...).Desc()
-	case "help": //打印帮助
+	case HelpCMD: //打印帮助
 		help.Help(cmdList[1:]...)
-	case "ddl": //查看建模式与表的语句
+	case DdlCMD: //查看建模式与表的语句
 		Handler(cmdList[1:]...).DDL()
-	case "size": //查看库和表的空间大小
+	case SizeCMD: //查看库和表的空间大小
 		Handler(cmdList[1:]...).Size()
-	case "dump": //备份数据
+	case DumpCMD: //备份数据
 		Handler(cmdList[1:]...).Dump()
-	case "kill":
+	case KillCMD:
 		Handler(cmdList[1:]...).Kill()
-	case "set":
+	case SetCMD:
 		Handler(cmdList[1:]...).Set()
-	case "load":
+	case LoadCMD:
 		Handler(cmdList[1:]...).Load()
-	case "exit":
+	case ExitCMD:
 		os.Exit(0)
 	default:
 		Psql(cmdRun, cmdStr)

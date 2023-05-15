@@ -214,15 +214,15 @@ func (p *PgDsn) Trigger(cmd, value string) (triggerInfo []map[string]interface{}
 	}
 
 	// trigger_name 进行 filter 和 equal的操作
-	if util.InArray(cmd, EqualAndFilter) {
+	if util.InArray(cmd, EqualAndFilter...) {
 
 		//eq的处理
-		if util.InArray(cmd, EqualVar) {
+		if util.InArray(cmd, EqualVar...) {
 			conditionList = append(conditionList, fmt.Sprintf("trigger_name ='%s'", value))
 		}
 
 		//filter的处理
-		if util.InArray(cmd, FilterVar) {
+		if util.InArray(cmd, FilterVar...) {
 			conditionList = append(conditionList, fmt.Sprintf("trigger_name like '%%%s%%'", value))
 		}
 	}

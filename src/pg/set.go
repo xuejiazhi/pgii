@@ -18,7 +18,7 @@ func (s *Params) Set() {
 
 func (s *Params) SetLanguage() {
 	lang := util.TrimLower(s.Param[1])
-	if util.InArray(lang, []string{"en", "cn"}) {
+	if util.InArray(lang, ZhCN, ZhEN) {
 		Language = lang
 		util.PrintColorTips(util.LightGreen, SetLanguageSuccess)
 	} else {

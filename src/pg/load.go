@@ -60,7 +60,7 @@ func (s *Params) LoadTable() {
 			break
 		}
 		//run sql
-		execUnzipSQL(string(part))
+		_ = execUnzipSQL(string(part))
 	}
 }
 
@@ -96,7 +96,7 @@ func (s *Params) LoadSchema() {
 			break
 		}
 		//run sql
-		execUnzipSQL(string(part))
+		_ = execUnzipSQL(string(part))
 	}
 }
 
@@ -115,7 +115,7 @@ func (s *Params) getIniFile() (iniFile string, err error) {
 	}
 
 	//取inifile
-	iniFile = fmt.Sprintf("%s/_init_", filePath)
+	iniFile = fmt.Sprintf("%s/%s", filePath, INIFile)
 	if _, err = os.Stat(iniFile); err != nil {
 		util.PrintColorTips(util.LightRed, LoadSchemaNOPath)
 		return
@@ -125,6 +125,7 @@ func (s *Params) getIniFile() (iniFile string, err error) {
 	return
 }
 
+// exec sql
 func execUnzipSQL(fileName string) (err error) {
 	//Open File
 	ft, err := os.Open(fileName)

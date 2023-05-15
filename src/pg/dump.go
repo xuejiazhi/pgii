@@ -56,7 +56,7 @@ func (s *Params) DumpSchema() {
 	}
 
 	//step1 生成init文件
-	initFile := filePath + "/_init_"
+	initFile := fmt.Sprintf("%s/%s", filePath, INIFile)
 	f, _ := os.OpenFile(initFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
 	defer fileClose(f)
 
@@ -129,7 +129,7 @@ func (s *Params) DumpTable() {
 	}
 
 	//step1 生成init文件
-	initFile := filePath + "/_init_"
+	initFile := fmt.Sprintf("%s/%s", filePath, INIFile)
 	f, _ := os.OpenFile(initFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
 	defer fileClose(f)
 

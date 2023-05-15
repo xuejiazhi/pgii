@@ -110,7 +110,7 @@ func generateColumn(column []map[string]interface{}) (columnList []string) {
 		nextVal := fmt.Sprintf("nextval('%s_%s_seq'::regclass)", tb, cn)
 		if u, ok := v["udt_name"]; ok {
 			ud := strings.ToLower(cast.ToString(u))
-			if util.InArray(ud, []string{"int2", "int4", "int8"}) {
+			if util.InArray(ud, Int2Type, Int4Type, Int8Type) {
 				st += fmt.Sprintf(" %s", getSerial(nextVal, ud, v["column_default"]))
 			} else {
 				st += fmt.Sprintf(" %s", ud)
@@ -195,11 +195,11 @@ func getSerial(nextval, types string, dv interface{}) string {
 	//校验是否是serial类型
 	if cast.ToString(dv) == nextval {
 		switch types {
-		case "int2":
+		case Int2Type:
 			return "smallserial"
-		case "int4":
+		case Int4Type:
 			return "serial4"
-		case "int8":
+		case Int8Type:
 			return "bigserial"
 		default:
 			return types

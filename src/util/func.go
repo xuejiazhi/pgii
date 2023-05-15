@@ -22,7 +22,7 @@ func IfCmdFunc(condition bool, cmd string, param []string, x, y func(string, ...
 	}
 }
 
-func InArray(param string, params []string) bool {
+func InArray(param string, params ...string) bool {
 	for _, v := range params {
 		if param == v {
 			return true
