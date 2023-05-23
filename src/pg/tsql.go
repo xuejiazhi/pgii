@@ -27,7 +27,8 @@ func Psql(cmdRun, cmdStr string) {
 		"insert",
 		"delete",
 		"alter",
-		"create":
+		"create",
+		"drop":
 		if affectRows, err := P.ExecSQL(cmdStr); err != nil {
 			fmt.Println(fmt.Sprintf("Run %s TSQL Error,error %s", cmdRun, err.Error()))
 		} else {
