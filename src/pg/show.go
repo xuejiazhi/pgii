@@ -243,7 +243,7 @@ func (s *Params) ShowDatabases() {
 	ver, _ := P.Version()
 	vers := strings.Split(ver, ".")
 	if len(vers) > 0 {
-		version = cast.ToInt(ver[0])
+		version = cast.ToInt(vers[0])
 	}
 
 	//judge version support 15.X
@@ -264,19 +264,19 @@ func (s *Params) ShowDatabases() {
 				v["datallowconn"],
 				v["datconnlimit"])
 			//judge version
-			if version >= 15 {
+			if version < 15 {
 				sbs = append(sbs, v["datlastsysoid"])
 			}
 
 			sbs = append(sbs,
-				v["datlastsysoid"],
+				//v["datlastsysoid"],
 				P.GetTableSpaceNameByOid(cast.ToInt(v["dattablespace"])),
 				v["size"],
 			)
 			//加入数据列
 			dbs = append(dbs, sbs)
 		}
-		
+
 		//judge version show
 		if version >= 15 {
 			ShowTable(Database15ShowHeader, dbs)
