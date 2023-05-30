@@ -296,10 +296,19 @@ func (p *PgDsn) GetTableSpaceNameBySpcName(spcName string) (spcData []map[string
 }
 
 func (p *PgDsn) GetDatabaseInfoByName(dbName string) (pgDatabase map[string]interface{}, err error) {
-	sqlStr := fmt.Sprintf(`
-				select 
-					oid,datname,datdba,encoding,datcollate,datctype,datallowconn,datconnlimit,datlastsysoid,dattablespace,datacl 
-				from pg_database where datname ='%s'`, dbName)
+	//获取版本
+	version := 0
+	ver, _ := P.Version()
+	vers := strings.Split(ver, ".")
+	if len(vers) > 0 {
+		version = cast.ToInt(ver[0])
+	}
+
+	sqlStr := "select oid,datname,datdba,encoding,datcollate,datctype,datallowconn,datconnlimit,"
+	if version < 15 {
+		sqlStr += "datlastsysoid,"
+	}
+	sqlStr += fmt.Sprintf("dattablespace,datacl from pg_database where datname ='%s'", dbName)
 
 	//query
 	err = p.PgConn.Raw(sqlStr).Scan(&pgDatabase).Error
