@@ -238,7 +238,16 @@ func (s *Params) ShowVersion() {
 
 // ShowDatabases 列出所有的数据库
 func (s *Params) ShowDatabases() {
-	if dbList, err := P.Database(); err == nil {
+	//获取版本
+	version := 0
+	ver, _ := P.Version()
+	vers := strings.Split(ver, ".")
+	if len(vers) > 0 {
+		version = cast.ToInt(ver[0])
+	}
+
+	//judge version support 15.X
+	if dbList, err := P.Database(version); err == nil {
 		var dbs [][]interface{}
 		for _, v := range dbList {
 			var sbs []interface{}
@@ -253,7 +262,13 @@ func (s *Params) ShowDatabases() {
 				v["datcollate"],
 				v["datctype"],
 				v["datallowconn"],
-				v["datconnlimit"],
+				v["datconnlimit"])
+			//judge version
+			if version >= 15 {
+				sbs = append(sbs, v["datlastsysoid"])
+			}
+
+			sbs = append(sbs,
 				v["datlastsysoid"],
 				P.GetTableSpaceNameByOid(cast.ToInt(v["dattablespace"])),
 				v["size"],
@@ -261,7 +276,13 @@ func (s *Params) ShowDatabases() {
 			//加入数据列
 			dbs = append(dbs, sbs)
 		}
-		ShowTable(DatabaseShowHeader, dbs)
+		
+		//judge version show
+		if version >= 15 {
+			ShowTable(Database15ShowHeader, dbs)
+		} else {
+			ShowTable(DatabaseShowHeader, dbs)
+		}
 	} else {
 		util.PrintColorTips(util.LightRed, ShowDatabaseError, err.Error())
 	}

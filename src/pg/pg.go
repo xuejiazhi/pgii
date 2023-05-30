@@ -1,6 +1,7 @@
 package pg
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"github.com/spf13/cast"
@@ -55,7 +56,7 @@ func (p *PgDsn) Version() (string, error) {
 }
 
 // Database 获取数据库
-func (p *PgDsn) Database() (pgDatabases []map[string]interface{}, err error) {
+func (p *PgDsn) Database(version int) (pgDatabases []map[string]interface{}, err error) {
 	/**
 	  pg_database 数据库的信息表
 		datname 数据库名字
@@ -65,26 +66,18 @@ func (p *PgDsn) Database() (pgDatabases []map[string]interface{}, err error) {
 		datctype  此数据库的LC_CTYPE
 		datallowconn  如果为假则没有人能连接到这个数据库。这可以用来保护template0数据库不被修改。
 		datconnlimit  设置能够连接到这个数据库的最大并发连接数。-1表示没有限制。
-		datlastsysoid  数据库中最后一个系统OID，对pg_dump特别有用
+		datlastsysoid  数据库中最后一个系统OID，对pg_dump特别有用  （15 版本后此字段删除了）
 		dattablespace  此数据库的默认表空间。在此数据库中，所有pg_class.reltablespace为0的表都将被存储在这个表空间中，尤其是非共享系统目录都会在其中。
 		datacl   访问权限，更多信息参见 GRANT和 REVOKE
 	*/
-	sqlStr := `
-		select 
-			oid,
-			datname,
-			datdba,
-			encoding,
-			datcollate,
-			datctype,
-			datallowconn,
-			datconnlimit,
-			datlastsysoid,
-			dattablespace, 
-			(select pg_size_pretty( pg_database_size(datname) ) ) as size 
-		from 
-			pg_database`
+	var buffer bytes.Buffer
+	buffer.WriteString("select oid,datname,datdba,encoding,datcollate,datctype,datallowconn,datconnlimit,")
+	if version < 15 {
+		buffer.WriteString("datlastsysoid,")
+	}
+	buffer.WriteString("dattablespace, (select pg_size_pretty( pg_database_size(datname) ) ) as size from pg_database")
 
+	sqlStr := buffer.String()
 	//query
 	err = p.PgConn.Raw(sqlStr).Scan(&pgDatabases).Error
 
