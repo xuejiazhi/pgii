@@ -7,9 +7,7 @@ pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进
 
 - **跨平台**： 可以在多平台下编译，跨平台使用；
 - **零学习成本**：类似于MySQL Cli的指令,对熟悉mysql操作的人上手快；
-- **互动 Console**: 通过命令行 console。 
-- **增加了交互式提示**: 可以提示要输入的命令
- ![image](https://user-images.githubusercontent.com/16795993/229277904-02200b67-5a5d-4c40-968d-a7792830539c.png)
+- **互动 Console**: 通过命令行 console。
 
 
 # 登录
@@ -457,144 +455,39 @@ pgii~[postgres/]# kill pid 33134;
 Kill Process Success,pid[33134]
 ~~~
 
-## dump 指令
-### dump <tb|table> <tableName>
-```bash
-  功能：
-     用于dump一个表的备份文件，可以用于后续的恢复；
-  用法
-    pgii~[clouddb/common]# dump tb role;
-      Dump Table Success
-    ## linux下查看
-    [root@localhost src]# ls *.pgi
-      dump_table_role_time.pgi
-```
+## clear 指令
+### clear <tb|table> <tableName>
+***FUNCTION：***<br/>
+>   这个指令将清除表里面的所有数据，类似于TRUNCATE
 
-### dump <sc|schema>
-```bash
-  功能：
-     用于dump当前模式和下面的表的建模式语句和建表语句,并将表下面数据生成批量插入的T-SQL语句，生成一个pgi文件；
-  用法
-    pgii~[clouddb/db_mcs.com]# dump sc;
-        Dump Schema Success [db_mcs.com]
-        Dump Table Struct Success [dgna]
-         ->Dump Table Record Success [dgna]
-        Dump Table Struct Success [dgna_member]
-         ->Dump Table Record Success [dgna_member]
-        Dump Table Struct Success [syspatch_info]
-         ->Dump Table Record Success [syspatch_info]
-        Dump Table Struct Success [syspatch_member]
-         ->Dump Table Record Success [syspatch_member]
-        Dump Table Struct Success [predefineddgna_info]
-         ->Dump Table Record Success [predefineddgna_info]
-        Dump Table Struct Success [simulselect_info]
-         ->Dump Table Record Success [simulselect_info]
-        Dump Table Struct Success [simulselect_member]
-         ->Dump Table Record Success [simulselect_member]
-    ## linux下查看
-    [root@localhost src]# ls *.pgi
-       dump_schema_db_mcs.com.pgi
-```
-
-### dump <db|database>
-***功能：***<br/>
->  用于dump当前选择的数据库下面,并生成创建库,模式,表的语句，并将表里的数据生成批量插入的数据，生成一个压缩的pgi文件；
-
-***方法：***<br/>
+***USAGE：***<br/>
 ~~~C
-pgii~[clouddb/]# dump db;
->Dump DataBase Begin
-Dump DataBase Struct Success            
-----------------------------------------
->>Dump Schema Success[db_mcs1.com]      
->>>Dump Table Struct Success [pub_vpn]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_vpn]
->>>Dump Table Struct Success [userprofile]
- >>>>Dump Table Record Success ["db_mcs1.com".userprofile]
->>>Dump Table Struct Success [pub_groupprofile]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_groupprofile]
->>>Dump Table Struct Success [mcs_groupprofile]
- >>>>Dump Table Record Success ["db_mcs1.com".mcs_groupprofile]
->>>Dump Table Struct Success [pub_groupmember]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_groupmember]
->>>Dump Table Struct Success [mcs_blacklist]
- >>>>Dump Table Record Success ["db_mcs1.com".mcs_blacklist]
->>>Dump Table Struct Success [mcs_groupareaconfig]
- >>>>Dump Table Record Success ["db_mcs1.com".mcs_groupareaconfig]
->>>Dump Table Struct Success [mcs_groupgpsareaconfig]
- >>>>Dump Table Record Success ["db_mcs1.com".mcs_groupgpsareaconfig]
->>>Dump Table Struct Success [pub_ldsvpn]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_ldsvpn]
->>>Dump Table Struct Success [pub_record_user]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_record_user]
->>>Dump Table Struct Success [pub_record_group]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_record_group]
->>>Dump Table Struct Success [pub_record_vpn]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_record_vpn]
->>>Dump Table Struct Success [mcs_user_area_authorize]
- >>>>Dump Table Record Success ["db_mcs1.com".mcs_user_area_authorize]
->>>Dump Table Struct Success [pub_ldsgmk]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_ldsgmk]
->>>Dump Table Struct Success [pub_grouppatch_gmk]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_grouppatch_gmk]
->>>Dump Table Struct Success [kms_random]
- >>>>Dump Table Record Success ["db_mcs1.com".kms_random]
->>>Dump Table Struct Success [callrecord]
- >>>>Dump Table Record Success ["db_mcs1.com".callrecord]
->>>Dump Table Struct Success [datarecord]
- >>>>Dump Table Record Success ["db_mcs1.com".datarecord]
->>>Dump Table Struct Success [t_frs_fileinfo]
- >>>>Dump Table Record Success ["db_mcs1.com".t_frs_fileinfo]
->>>Dump Table Struct Success [ue_register_backup]
- >>>>Dump Table Record Success ["db_mcs1.com".ue_register_backup]
->>>Dump Table Struct Success [mcs_user_contact_list]
- >>>>Dump Table Record Success ["db_mcs1.com".mcs_user_contact_list]
->>>Dump Table Struct Success [fa_info]
- >>>>Dump Table Record Success ["db_mcs1.com".fa_info]
->>>Dump Table Struct Success [fa_users]
- >>>>Dump Table Record Success ["db_mcs1.com".fa_users]
->>>Dump Table Struct Success [fa_history]
- >>>>Dump Table Record Success ["db_mcs1.com".fa_history]
->>>Dump Table Struct Success [user_roles]
- >>>>Dump Table Record Success ["db_mcs1.com".user_roles]
->>>Dump Table Struct Success [group_roles]
- >>>>Dump Table Record Success ["db_mcs1.com".group_roles]
->>>Dump Table Struct Success [pcall_role_pri]
- >>>>Dump Table Record Success ["db_mcs1.com".pcall_role_pri]
->>>Dump Table Struct Success [gcall_role_pri]
- >>>>Dump Table Record Success ["db_mcs1.com".gcall_role_pri]
->>>Dump Table Struct Success [mcs_user_common_sms_list]
- >>>>Dump Table Record Success ["db_mcs1.com".mcs_user_common_sms_list]
->>>Dump Table Struct Success [tetra_gid]
- >>>>Dump Table Record Success ["db_mcs1.com".tetra_gid]
->>>Dump Table Struct Success [service_priority]
- >>>>Dump Table Record Success ["db_mcs1.com".service_priority]
-----------------------------------------
->>Dump Schema Success[public]
-tips:Dump Cmd Table fail,no table in Schema!
-----------------------------------------
->>Dump Schema Success[common]
->>>Dump Table Struct Success [app_cfg]
- >>>>Dump Table Record Success ["common".app_cfg]
->>>Dump Table Struct Success [gw_info]
- >>>>Dump Table Record Success ["common".gw_info]
->>>Dump Table Struct Success [listening_info]
- >>>>Dump Table Record Success ["common".listening_info]
->>>Dump Table Struct Success [mcs_user_area]
- >>>>Dump Table Record Success ["common".mcs_user_area]
->>>Dump Table Struct Success [tenant_info]
- >>>>Dump Table Record Success ["common".tenant_info]
->>>Dump Table Struct Success [pstn_info]
- >>>>Dump Table Record Success ["common".pstn_info]
->>>Dump Table Struct Success [terminal_statistic]
- >>>>Dump Table Record Success ["common".terminal_statistic]
->>>Dump Table Struct Success [tetra_cfg]
- >>>>Dump Table Record Success ["common".tetra_cfg]
-----------------------------------------
-## linux下查看
-[root@localhost src]# ls *.pgi
-dump_Database_clouddb_1680227905.pgi
+pgi~[xc/test]# show tb;
++------------+-----------+------------+------------+-----------+-----------+
+| SCHEMA     | TABLENAME | TABLEOWNER | TABLESPACE | TABLESIZE | INDEXSIZE |
++------------+-----------+------------+------------+-----------+-----------+
+| test       | test      | postgres   | <nil>      | 16 kB     | 0 bytes   |
++------------+-----------+------------+------------+-----------+-----------+
+| test       | t_test    | postgres   | <nil>      | 356 MB    | 107 MB    |
++------------+-----------+------------+------------+-----------+-----------+
+pgi~[xc/test]# select count(*) from t_test;
++---------+
+|   COUNT |
++---------+
+| 5000000 |
++---------+
+pgi~[xc/db_mcs.com]# clear tb t_test;
+Clear table success
+pgi~[xc/db_mcs.com]# select count(*) from t_test; 
++-------+
+| COUNT |
++-------+
+|     0 |
++-------+
+[Total: 1 Rows]  [RunTimes 0.10s]
 ~~~
+
+
 
 ### explain <T-SQL>
 ***功能：***<br/>
@@ -619,18 +512,6 @@ pgii~[clouddb/db_mcs.com]# explain  select * from userprofile;
 | Seq Scan on userprofile  (cost=0.00..105.41 rows=2241 width=230) |
 +------------------------------------------------------------------+
 [Total: 1 Rows]  [RunTimes 2.18s]
-~~~
-
-	## load instruction
-### load <tb|table> <pgi file name>
-***功能：***<br/>
->     导入由dump table指令生成的备份文件
-
-***方法：***<br/>
-~~~C
-pgii~[benchmark/public]# load table ../dump_table_spatial_ref_sys_1681366410.pgi;
-pgii~[benchmark/public]# load tb ../dump_table_spatial_ref_sys_1681366410.pgi;
-  Load Table Success Affect Nums:8500
 ~~~
 
 ***View table***<br/>

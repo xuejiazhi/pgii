@@ -8,9 +8,7 @@ pgii is a PostgreSql cli tool. PostgreSql is developed in CMD or Golang and can 
 
 - **cross-platform**： Can be compiled under multiple platforms, cross-platform use；
 - **Zero-cost learning**：Similar to the MySQL Cli command, familiar with the mysql operation of the people on the hand；
-- **Interactive Console**: Through the console command line。 
-- **Added interactive prompts**: Prompts for commands to be entered
-![image](https://user-images.githubusercontent.com/16795993/229277870-b495a0e3-2a96-4af2-82f1-51c8ee8c3545.png)
+- **Interactive Console**: Through the console command line。
 
 **Welcome to join us to develop**
 
@@ -474,147 +472,37 @@ pgii~[postgres/]# kill pid 33134;
 Kill Process Success,pid[33134]
 ~~~
 
-## dump instruction
-### dump <tb|table> <tableName>
+## clear instruction
+### clear <tb|table> <tableName>
 ***FUNCTION：***<br/>
->   dump the backup file of a table, which can be used for subsequent restoration；
+>   This command clears all data in a table, similar to TRUNCATE
 
 ***USAGE：***<br/>
 ~~~C
-pgii~[clouddb/common]# dump tb role;
- Dump Table Success
-## View in linux
-[root@localhost src]# ls *.pgi
- dump_table_role_time.pgi
+pgi~[xc/test]# show tb;
++------------+-----------+------------+------------+-----------+-----------+
+| SCHEMA     | TABLENAME | TABLEOWNER | TABLESPACE | TABLESIZE | INDEXSIZE |
++------------+-----------+------------+------------+-----------+-----------+
+| test       | test      | postgres   | <nil>      | 16 kB     | 0 bytes   |
++------------+-----------+------------+------------+-----------+-----------+
+| test       | t_test    | postgres   | <nil>      | 356 MB    | 107 MB    |
++------------+-----------+------------+------------+-----------+-----------+
+pgi~[xc/test]# select count(*) from t_test;
++---------+
+|   COUNT |
++---------+
+| 5000000 |
++---------+
+pgi~[xc/db_mcs.com]# clear tb t_test;
+Clear table success
+pgi~[xc/db_mcs.com]# select count(*) from t_test; 
++-------+
+| COUNT |
++-------+
+|     0 |
++-------+
+[Total: 1 Rows]  [RunTimes 0.10s]
 ~~~
-
-### dump <sc|schema>
-***FUNCTION：***<br/>
-> dump schema creation statements and table creation statements of the current schema and the following tables, and generate T-SQL statements inserted in batches from the data in the table to generate a pgi file；
-
-***USAGE：***<br/>
-~~~C
-pgii~[clouddb/db_mcs.com]# dump sc;
-    Dump Schema Success [db_mcs.com]
-    Dump Table Struct Success [dgna]
-     ->Dump Table Record Success [dgna]
-    Dump Table Struct Success [dgna_member]
-     ->Dump Table Record Success [dgna_member]
-    Dump Table Struct Success [syspatch_info]
-     ->Dump Table Record Success [syspatch_info]
-    Dump Table Struct Success [syspatch_member]
-     ->Dump Table Record Success [syspatch_member]
-    Dump Table Struct Success [predefineddgna_info]
-     ->Dump Table Record Success [predefineddgna_info]
-    Dump Table Struct Success [simulselect_info]
-     ->Dump Table Record Success [simulselect_info]
-    Dump Table Struct Success [simulselect_member]
-     ->Dump Table Record Success [simulselect_member]
-## View in linux
-[root@localhost src]# ls *.pgi
-   dump_schema_db_mcs.com.pgi
-~~~
-
-### dump <db|database>
-***FUNCTION：***<br/>
->  Used to dump the currently selected database and generate statements 
->  to create libraries, schemas, and tables, and generate batch inserted 
->  data from the table, generating a compressed pgi file;
-
-***USAGE：***<br/>
-~~~C
-pgii~[clouddb/]# dump db;
->Dump DataBase Begin
-Dump DataBase Struct Success            
-----------------------------------------
->>Dump Schema Success[db_mcs1.com]      
->>>Dump Table Struct Success [pub_vpn]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_vpn]
->>>Dump Table Struct Success [userprofile]
- >>>>Dump Table Record Success ["db_mcs1.com".userprofile]
->>>Dump Table Struct Success [pub_groupprofile]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_groupprofile]
->>>Dump Table Struct Success [mcs_groupprofile]
- >>>>Dump Table Record Success ["db_mcs1.com".mcs_groupprofile]
->>>Dump Table Struct Success [pub_groupmember]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_groupmember]
->>>Dump Table Struct Success [mcs_blacklist]
- >>>>Dump Table Record Success ["db_mcs1.com".mcs_blacklist]
->>>Dump Table Struct Success [mcs_groupareaconfig]
- >>>>Dump Table Record Success ["db_mcs1.com".mcs_groupareaconfig]
->>>Dump Table Struct Success [mcs_groupgpsareaconfig]
- >>>>Dump Table Record Success ["db_mcs1.com".mcs_groupgpsareaconfig]
->>>Dump Table Struct Success [pub_ldsvpn]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_ldsvpn]
->>>Dump Table Struct Success [pub_record_user]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_record_user]
->>>Dump Table Struct Success [pub_record_group]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_record_group]
->>>Dump Table Struct Success [pub_record_vpn]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_record_vpn]
->>>Dump Table Struct Success [mcs_user_area_authorize]
- >>>>Dump Table Record Success ["db_mcs1.com".mcs_user_area_authorize]
->>>Dump Table Struct Success [pub_ldsgmk]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_ldsgmk]
->>>Dump Table Struct Success [pub_grouppatch_gmk]
- >>>>Dump Table Record Success ["db_mcs1.com".pub_grouppatch_gmk]
->>>Dump Table Struct Success [kms_random]
- >>>>Dump Table Record Success ["db_mcs1.com".kms_random]
->>>Dump Table Struct Success [callrecord]
- >>>>Dump Table Record Success ["db_mcs1.com".callrecord]
->>>Dump Table Struct Success [datarecord]
- >>>>Dump Table Record Success ["db_mcs1.com".datarecord]
->>>Dump Table Struct Success [t_frs_fileinfo]
- >>>>Dump Table Record Success ["db_mcs1.com".t_frs_fileinfo]
->>>Dump Table Struct Success [ue_register_backup]
- >>>>Dump Table Record Success ["db_mcs1.com".ue_register_backup]
->>>Dump Table Struct Success [mcs_user_contact_list]
- >>>>Dump Table Record Success ["db_mcs1.com".mcs_user_contact_list]
->>>Dump Table Struct Success [fa_info]
- >>>>Dump Table Record Success ["db_mcs1.com".fa_info]
->>>Dump Table Struct Success [fa_users]
- >>>>Dump Table Record Success ["db_mcs1.com".fa_users]
->>>Dump Table Struct Success [fa_history]
- >>>>Dump Table Record Success ["db_mcs1.com".fa_history]
->>>Dump Table Struct Success [user_roles]
- >>>>Dump Table Record Success ["db_mcs1.com".user_roles]
->>>Dump Table Struct Success [group_roles]
- >>>>Dump Table Record Success ["db_mcs1.com".group_roles]
->>>Dump Table Struct Success [pcall_role_pri]
- >>>>Dump Table Record Success ["db_mcs1.com".pcall_role_pri]
->>>Dump Table Struct Success [gcall_role_pri]
- >>>>Dump Table Record Success ["db_mcs1.com".gcall_role_pri]
->>>Dump Table Struct Success [mcs_user_common_sms_list]
- >>>>Dump Table Record Success ["db_mcs1.com".mcs_user_common_sms_list]
->>>Dump Table Struct Success [tetra_gid]
- >>>>Dump Table Record Success ["db_mcs1.com".tetra_gid]
->>>Dump Table Struct Success [service_priority]
- >>>>Dump Table Record Success ["db_mcs1.com".service_priority]
-----------------------------------------
->>Dump Schema Success[public]
-tips:Dump Cmd Table fail,no table in Schema!
-----------------------------------------
->>Dump Schema Success[common]
->>>Dump Table Struct Success [app_cfg]
- >>>>Dump Table Record Success ["common".app_cfg]
->>>Dump Table Struct Success [gw_info]
- >>>>Dump Table Record Success ["common".gw_info]
->>>Dump Table Struct Success [listening_info]
- >>>>Dump Table Record Success ["common".listening_info]
->>>Dump Table Struct Success [mcs_user_area]
- >>>>Dump Table Record Success ["common".mcs_user_area]
->>>Dump Table Struct Success [tenant_info]
- >>>>Dump Table Record Success ["common".tenant_info]
->>>Dump Table Struct Success [pstn_info]
- >>>>Dump Table Record Success ["common".pstn_info]
->>>Dump Table Struct Success [terminal_statistic]
- >>>>Dump Table Record Success ["common".terminal_statistic]
->>>Dump Table Struct Success [tetra_cfg]
- >>>>Dump Table Record Success ["common".tetra_cfg]
-----------------------------------------
-## View in linux
-[root@localhost src]# ls *.pgi
-dump_Database_clouddb_1680227905.pgi
 
 ~~~
 ### explain <T-SQL>
@@ -642,25 +530,6 @@ pgii~[clouddb/db_mcs.com]# explain  select * from userprofile;
 [Total: 1 Rows]  [RunTimes 2.18s]
 ~~~
 
-## load instruction
-### load <tb|table> <pgi file name>
-***FUNCTION：***<br/>
->     Import the backup file generated by the "dump table" directive
-
-***USAGE：***<br/>
-~~~C
-pgii~[benchmark/public]# load table ../dump_table_spatial_ref_sys_1681366410.pgi;
-pgii~[benchmark/public]# load tb ../dump_table_spatial_ref_sys_1681366410.pgi;
-  Load Table Success Affect Nums:8500
-~~~
-
-***View table***<br/>
-> The table to be imported is "spatial_ref_sys"
-![image](https://user-images.githubusercontent.com/16795993/231673276-e48eb76a-5f96-4bb7-aa57-62ca0c04ac8d.png)
-> The "spatial_ref_sys" table has been generated, and 8500 records have been imported
-![image](https://user-images.githubusercontent.com/16795993/231674142-df137b49-ee15-42c3-97cc-adbffa3fe3d7.png)
-
-  
 ## TODO
 -  dump database ✅
 -  kill pid ✅
