@@ -55,4 +55,26 @@ pgi~[yc/pgii]# select count(*) from t_test;
 pgi~[yc/pgii]# dump tb t_test;
  Dump Table Success [t_test].....
 ~~~
+如下图,在命令所在的文件夹下面生成了一个 dump_table_pgii_1686301979 的文件夹,文件夹下面是t_test表生成的相关导出备份文件 
 ![image](https://github.com/xuejiazhi/pgii/assets/16795993/2a2a6490-19fe-4fb1-ad36-6a8042f38e63)
+
+### dump <sc|schema>
+***FUNCTION：***<br/>
+>   将指定模式下的表和表数据等导出对应的pgi压缩文件,在使用这个指令时需要选中对应的模式,否则无法完成;
+
+***用法：***<br/>
+~~~C
+pgi~[yc/pgii]# show tb;
++--------+-----------+------------+------------+-----------+-----------+
+| SCHEMA | TABLENAME | TABLEOWNER | TABLESPACE | TABLESIZE | INDEXSIZE |
++--------+-----------+------------+------------+-----------+-----------+
+| pgii   | t_test    | postgres   | <nil>      | 356 MB    | 107 MB    |
++--------+-----------+------------+------------+-----------+-----------+
+| pgii   | t_user    | postgres   | <nil>      | 128 kB    | 40 kB     |
++--------+-----------+------------+------------+-----------+-----------+
+
+pgi~[yc/pgii]# dump sc;
+ Dump Schema Success [pgii]
+ Dump Table Success [t_test].....
+ Dump Table Success [t_user].....
+~~~
