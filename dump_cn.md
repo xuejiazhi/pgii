@@ -55,3 +55,4 @@ pgi~[yc/pgii]# select count(*) from t_test;
 pgi~[yc/pgii]# dump tb t_test;
  Dump Table Success [t_test].....
 ~~~
+![image](https://github.com/xuejiazhi/pgii/assets/16795993/2a2a6490-19fe-4fb1-ad36-6a8042f38e63)
