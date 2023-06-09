@@ -1,45 +1,46 @@
-package pg
+package cmd
 
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
+	"pgii/src/pg/db"
+	"pgii/src/pg/global"
 	"pgii/src/util"
 )
 
 func (s *Params) Load() {
 	//参数长度至少为2位
-	if len(s.Param) != TwoCMDLength {
-		util.PrintColorTips(util.LightRed, LoadFailed)
+	if len(s.Param) != global.TwoCMDLength {
+		util.PrintColorTips(util.LightRed, global.LoadFailed)
 		return
 	}
 	//get cmd 2
 	sCmd := util.TrimLower(s.Param[0])
 	switch CheckParamType(sCmd) {
-	case TableStyle:
+	case global.TableStyle:
 		s.LoadTable()
-	case SchemaStyle:
+	case global.SchemaStyle:
 		s.LoadSchema()
-	case DatabaseStyle:
+	case global.DatabaseStyle:
 		s.LoadDataBase()
 	default:
-		util.PrintColorTips(util.LightRed, LoadFailed)
+		util.PrintColorTips(util.LightRed, global.LoadFailed)
 	}
 }
 
 // LoadTable 载入表
 func (s *Params) LoadTable() {
 	//必须选中模式
-	if P.Schema == "" {
-		util.PrintColorTips(util.LightRed, LoadFailedNoSelectSchema)
+	if db.P.Schema == "" {
+		util.PrintColorTips(util.LightRed, global.LoadFailedNoSelectSchema)
 		return
 	}
 
 	//get ini file
 	iniFile, err := s.getIniFile()
 	if err != nil {
-		util.PrintColorTips(util.LightRed, LoadTableNOFile, err.Error())
+		util.PrintColorTips(util.LightRed, global.LoadTableNOFile, err.Error())
 		return
 	}
 
@@ -47,7 +48,7 @@ func (s *Params) LoadTable() {
 	f, err := os.Open(iniFile)
 	defer f.Close()
 	if err != nil {
-		util.PrintColorTips(util.LightRed, LoadTableNOFile)
+		util.PrintColorTips(util.LightRed, global.LoadTableNOFile)
 		return
 	}
 
@@ -67,15 +68,15 @@ func (s *Params) LoadTable() {
 // LoadSchema 载入模式
 func (s *Params) LoadSchema() {
 	//必须选中模式
-	if P.DataBase == "" {
-		util.PrintColorTips(util.LightRed, LoadFailedNoSelectDB)
+	if db.P.DataBase == "" {
+		util.PrintColorTips(util.LightRed, global.LoadFailedNoSelectDB)
 		return
 	}
 
 	//get ini file
 	iniFile, err := s.getIniFile()
 	if err != nil {
-		util.PrintColorTips(util.LightRed, LoadSchemaNOPath, err.Error())
+		util.PrintColorTips(util.LightRed, global.LoadSchemaNOPath, err.Error())
 		return
 	}
 
@@ -83,7 +84,7 @@ func (s *Params) LoadSchema() {
 	f, err := os.Open(iniFile)
 	defer f.Close()
 	if err != nil {
-		util.PrintColorTips(util.LightRed, LoadSchemaNOPath)
+		util.PrintColorTips(util.LightRed, global.LoadSchemaNOPath)
 		return
 	}
 
@@ -110,47 +111,17 @@ func (s *Params) getIniFile() (iniFile string, err error) {
 	//pgFile := "../dump_load/dump_table_user_1681300666.pgi"
 	//judge
 	if _, err = os.Stat(filePath); err != nil {
-		util.PrintColorTips(util.LightRed, LoadSchemaNOPath)
+		util.PrintColorTips(util.LightRed, global.LoadSchemaNOPath)
 		return
 	}
 
 	//取inifile
-	iniFile = fmt.Sprintf("%s/%s", filePath, INIFile)
+	iniFile = fmt.Sprintf("%s/%s", filePath, global.INIFile)
 	if _, err = os.Stat(iniFile); err != nil {
-		util.PrintColorTips(util.LightRed, LoadSchemaNOPath)
+		util.PrintColorTips(util.LightRed, global.LoadSchemaNOPath)
 		return
 	}
 
 	//
-	return
-}
-
-// exec sql
-func execUnzipSQL(fileName string) (err error) {
-	//Open File
-	ft, err := os.Open(fileName)
-	defer ft.Close()
-
-	//judge
-	if err != nil {
-		util.PrintColorTips(util.LightRed, LoadNoFile, fileName, err.Error())
-		return
-	}
-
-	//read content
-	content, err := ioutil.ReadAll(ft)
-
-	//解压
-	unZipSQL, err := util.UnCompress(content)
-	affect, err := P.ExecSQL(string(unZipSQL))
-	if err != nil {
-		util.PrintColorTips(util.LightRed, LoadTableExecSQLFailed, err.Error())
-		return
-	}
-
-	//print Success
-	util.PrintColorTips(util.LightGreen, LoadTableSQLSuccess, fmt.Sprintf(" [%s] Affect Nums:%d", fileName, affect))
-
-	//return
 	return
 }

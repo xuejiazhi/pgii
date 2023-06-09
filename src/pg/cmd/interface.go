@@ -1,4 +1,4 @@
-package pg
+package cmd
 
 type HandlerInterface interface {
 	SizeInterface
@@ -10,16 +10,7 @@ type HandlerInterface interface {
 	KillInterface
 	SetInterface
 	LoadInterface
-}
-
-func Handler(param ...string) HandlerInterface {
-	return HandlerInterface(getInstance(param...))
-}
-
-func getInstance(param ...string) *Params {
-	return &Params{
-		Param: param,
-	}
+	ClearInterface
 }
 
 type Params struct {
@@ -86,4 +77,9 @@ type LoadInterface interface {
 	LoadTable()
 	LoadSchema()
 	LoadDataBase()
+}
+
+type ClearInterface interface {
+	Clear()
+	ClearTable([]string)
 }

@@ -1,10 +1,11 @@
-package pg
+package cmd
 
 import (
 	"fmt"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cast"
 	"os"
+	"pgii/src/pg/db"
 	"time"
 )
 
@@ -16,7 +17,7 @@ func Psql(cmdRun, cmdStr string) {
 	case
 		"select",
 		"explain":
-		if val, err := P.RunSQL(cmdStr); err != nil {
+		if val, err := db.P.RunSQL(cmdStr); err != nil {
 			fmt.Println("Run T-SQL Error,error ", err.Error())
 		} else {
 			eTime := time.Now().UnixMilli()
@@ -29,7 +30,7 @@ func Psql(cmdRun, cmdStr string) {
 		"alter",
 		"create",
 		"drop":
-		if affectRows, err := P.ExecSQL(cmdStr); err != nil {
+		if affectRows, err := db.P.ExecSQL(cmdStr); err != nil {
 			fmt.Println(fmt.Sprintf("Run %s TSQL Error,error %s", cmdRun, err.Error()))
 		} else {
 			fmt.Println(fmt.Sprintf("Run %s TSQL Success,Affect Rows %d Line", cmdRun, affectRows))

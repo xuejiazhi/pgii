@@ -1,4 +1,4 @@
-package pg
+package db
 
 import (
 	"bytes"
@@ -8,6 +8,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"pgii/src/pg/global"
 	"pgii/src/util"
 	"strings"
 )
@@ -160,7 +161,7 @@ func (p *PgDsn) Process(param ...interface{}) (process []map[string]interface{},
 		case "all":
 			sqlStr = "select pid,datname,usename,client_addr,client_port,application_name,state from pg_stat_activity"
 		case "pid":
-			if len(param) != ThreeCMDLength {
+			if len(param) != global.ThreeCMDLength {
 				err = errors.New("show proc pid param error")
 				return
 			} else {
@@ -207,15 +208,15 @@ func (p *PgDsn) Trigger(cmd, value string) (triggerInfo []map[string]interface{}
 	}
 
 	// trigger_name 进行 filter 和 equal的操作
-	if util.InArray(cmd, EqualAndFilter...) {
+	if util.InArray(cmd, global.EqualAndFilter...) {
 
 		//eq的处理
-		if util.InArray(cmd, EqualVar...) {
+		if util.InArray(cmd, global.EqualVar...) {
 			conditionList = append(conditionList, fmt.Sprintf("trigger_name ='%s'", value))
 		}
 
 		//filter的处理
-		if util.InArray(cmd, FilterVar...) {
+		if util.InArray(cmd, global.FilterVar...) {
 			conditionList = append(conditionList, fmt.Sprintf("trigger_name like '%%%s%%'", value))
 		}
 	}
@@ -237,7 +238,7 @@ func (p *PgDsn) SchemaNS() (pgSchema []map[string]interface{}, err error) {
 	//query
 	err = p.PgConn.Raw(
 		fmt.Sprintf(`select oid,* from pg_namespace where nspname not in(%s)`,
-			strings.Join(SystemSchemaList, ","))).
+			strings.Join(global.SystemSchemaList, ","))).
 		Scan(&pgSchema).
 		Error
 	//return

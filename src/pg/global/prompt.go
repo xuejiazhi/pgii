@@ -1,4 +1,4 @@
-package pg
+package global
 
 import (
 	prompt "github.com/c-bata/go-prompt"

@@ -1,9 +1,10 @@
-package pg
+package db
 
 import (
 	"errors"
 	"fmt"
 	"github.com/spf13/cast"
+	"pgii/src/pg/global"
 	"pgii/src/util"
 	"strings"
 )
@@ -14,13 +15,13 @@ func (p *PgDsn) GetSizeInfo(style int, Name string) (sizeInfo map[string]interfa
 	// 获取哪种类型的size
 	sizeType := func() string {
 		switch style {
-		case DatabaseStyle:
+		case global.DatabaseStyle:
 			return "pg_database_size"
-		case TableStyle:
+		case global.TableStyle:
 			return "pg_total_relation_size"
-		case IndexStyle:
+		case global.IndexStyle:
 			return "pg_indexes_size"
-		case TableSpaceStyle: //表空间
+		case global.TableSpaceStyle: //表空间
 			return "pg_tablespace_size"
 		default:
 			return "pg_database_size"
@@ -145,8 +146,8 @@ func (p *PgDsn) GetQuerySql(tbName string, fieldList []string, columnTypes map[s
 	sqlStr = fmt.Sprintf(`SELECT %s FROM %s  OFFSET %d LIMIT %d`,
 		strings.Join(newFiledList, ","),
 		tbName,
-		pageSize*PgLimit,
-		PgLimit)
+		pageSize*global.PgLimit,
+		global.PgLimit)
 	return
 }
 
@@ -155,9 +156,9 @@ func (p *PgDsn) GetConnectionNums(types int) (connection map[string]interface{},
 	//T-SQL
 	prefixStr := func() string {
 		switch types {
-		case MaxConnections:
+		case global.MaxConnections:
 			return "max_connections"
-		case SuperuserReservedConnections:
+		case global.SuperuserReservedConnections:
 			return "superuser_reserved_connections"
 		default:
 			return "max_connections"
@@ -176,7 +177,7 @@ func (p *PgDsn) GetUseConnection(types int) (resiConn map[string]interface{}, er
 	//
 	sqlStr := ""
 	switch types {
-	case RemainingConnections:
+	case global.RemainingConnections:
 		sqlStr = `
 select
 	max_conn-now_conn as conn_nums
@@ -194,7 +195,7 @@ from
 	where
 		name = 'max_connections') t;
 `
-	case InUseConnections:
+	case global.InUseConnections:
 		sqlStr = `select
 			count(*) as conn_nums
 		from
@@ -242,7 +243,7 @@ func (p *PgDsn) getTableViewCondition(style, cmd string, param ...string) (condi
 	useName := util.If(style == "view", "viewname", "tablename")
 
 	//加上过滤条件
-	if util.InArray(cmd, EqualAndFilter...) {
+	if util.InArray(cmd, global.EqualAndFilter...) {
 		if len(param) == 0 {
 			return
 		}
@@ -250,14 +251,14 @@ func (p *PgDsn) getTableViewCondition(style, cmd string, param ...string) (condi
 		inParam := ""
 		for k, v := range param {
 			//eq
-			if util.InArray(cmd, EqualVar...) {
+			if util.InArray(cmd, global.EqualVar...) {
 				inParam += cast.ToString(util.If(len(param)-1 == k,
 					fmt.Sprintf("'%s'", v),
 					fmt.Sprintf("'%s',", v)))
 			}
 
 			//filter
-			if util.InArray(cmd, FilterVar...) {
+			if util.InArray(cmd, global.FilterVar...) {
 				inParam += cast.ToString(util.If(len(param)-1 == k,
 					fmt.Sprintf("%s like '%%%s%%'", useName, v),
 					fmt.Sprintf("%s like '%%%s%%' or ", useName, v)))
@@ -265,14 +266,14 @@ func (p *PgDsn) getTableViewCondition(style, cmd string, param ...string) (condi
 		}
 		inParam = fmt.Sprintf("(%s)", inParam)
 		//eq的处理
-		if util.InArray(cmd, EqualVar...) {
+		if util.InArray(cmd, global.EqualVar...) {
 			condition += cast.ToString(util.If(condition == "",
 				fmt.Sprintf(" %s in %s", useName, inParam),
 				fmt.Sprintf(" and %s in %s", useName, inParam)))
 		}
 
 		//filter的处理
-		if util.InArray(cmd, FilterVar...) {
+		if util.InArray(cmd, global.FilterVar...) {
 			condition += cast.ToString(
 				util.If(condition == "",
 					fmt.Sprintf("  %s", inParam),
@@ -281,4 +282,12 @@ func (p *PgDsn) getTableViewCondition(style, cmd string, param ...string) (condi
 
 	}
 	return
+}
+
+// ClearTable 清除表数据
+func (p *PgDsn) ClearTable(tbName string) (affect int64, err error) {
+	//T-SQL
+	sqlStr := fmt.Sprintf("TRUNCATE %s RESTART IDENTITY;", tbName)
+	//exec sql
+	return P.ExecSQL(sqlStr)
 }

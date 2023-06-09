@@ -1,4 +1,60 @@
-package pg
+package global
+
+import flag "github.com/spf13/pflag"
+
+var (
+	//CMD
+	ShowCMD    = "show"
+	UseCMD     = "use"
+	DescCMD    = "desc"
+	HelpCMD    = "help"
+	DdlCMD     = "ddl"
+	DumpCMD    = "dump"
+	SizeCMD    = "size"
+	KillCMD    = "kill"
+	ExplainCMD = "explain"
+	SetCMD     = "set"
+	LoadCMD    = "load"
+	ExitCMD    = "exit"
+	ClearCMD   = "clear"
+
+	//config set
+	DefaultHost     = "127.0.0.1"
+	DefaultUser     = "postgres"
+	DefaultPassword = "123456"
+	DefaultDB       = "postgres"
+	DefaultPort     = 5432
+
+	//array
+	EqualAndFilter   = []string{"equal", "eq", "filter", "fi"}
+	EqualVar         = []string{"equal", "eq"}
+	FilterVar        = []string{"filter", "fi"}
+	TableAndView     = []string{"tb", "table", "view", "vw"}
+	TableVar         = []string{"tb", "table"}
+	SystemSchemaList = []string{"'pg_toast'", "'pg_temp_1'", "'pg_toast_temp_1'", "'pg_catalog'", "'information_schema'"}
+	SystemCmd        = []string{ShowCMD, UseCMD, DescCMD, HelpCMD, DdlCMD, DumpCMD, SizeCMD, KillCMD, ExplainCMD}
+
+	//get column limit
+	PgLimit = 50000
+
+	//int type
+	Int2Type = "int2"
+	Int4Type = "int4"
+	Int8Type = "int8"
+
+	ZhCN    = "cn"
+	ZhEN    = "en"
+	INIFile = "_init_"
+)
+
+var (
+	Host     = flag.StringP("host", "h", DefaultHost, CmdTipsHost)
+	UserName = flag.StringP("user", "u", DefaultUser, CmdTipsUser)
+	PassWord = flag.StringP("password", "p", DefaultPassword, CmdTipsPassword)
+	Database = flag.StringP("db", "d", DefaultDB, CmdTipsDatabase)
+	Port     = flag.Int("port", DefaultPort, CmdTipsPort)
+	Language = "en"
+)
 
 var (
 	// LineOperate CloseFileFailed COMMON
@@ -83,4 +139,10 @@ var (
 	CmdTipsPassword = "Input Your Postgresql Password"
 	CmdTipsDatabase = "Input Your Postgresql database"
 	CmdTipsPort     = "Input Your Postgresql Port"
+
+	ClearErr                  = "Clear table error"
+	ClearSuccess              = "Clear table success"
+	ClearParamLengthErrror    = "Clear Table Param must be "
+	ClearFailedNoSelectSchema = "Failed:Clear Table,Schema not Selected!"
+	ClearFailedNoTable        = "Failed:Clear Table fail,Table not exists!"
 )
