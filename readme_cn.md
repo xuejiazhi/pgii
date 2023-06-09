@@ -2,12 +2,13 @@
 
 # 一个postgreSql的Cli工具
 [![imi License](https://img.shields.io/badge/license-MIT-green)](https://github.com/xuejiazhi/pgii/blob/main/LICENSE)
-简体中文 | [English](./readme.md) | [帮助文档](https://github.com/xuejiazhi/pgii/wiki/pgii-%E4%B8%AD%E6%96%87%E5%B8%AE%E5%8A%A9%E6%96%87%E6%A1%A3)<br/>
+简体中文 |[导入导出帮助](./dump_cn.md) |[English](./readme.md) | [帮助文档](https://github.com/xuejiazhi/pgii/wiki/pgii-%E4%B8%AD%E6%96%87%E5%B8%AE%E5%8A%A9%E6%96%87%E6%A1%A3)<br/>
 pgii 是一个PostgreSql cli的工具,对PostgreSql 在CMD或者,采用Golang进行开发,可以多平台下面编译使用：
 
 - **跨平台**： 可以在多平台下编译，跨平台使用；
 - **零学习成本**：类似于MySQL Cli的指令,对熟悉mysql操作的人上手快；
 - **互动 Console**: 通过命令行 console。
+- **大数据的导出与导入**:通过dump与load指令可以对数据进行导入导出,非常的方便,可以对千万级的大表进行操作,[[导入导出帮助]](./dump_cn.md)
 
 
 # 登录
