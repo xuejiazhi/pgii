@@ -531,10 +531,11 @@ pgii~[clouddb/db_mcs.com]# explain  select * from userprofile;
 ~~~
 
 ## TODO
--  dump database ✅
+-  dump table ✅
+-  dump scheam ✅
 -  kill pid ✅
 -  show process ✅
 -  load table ✅
--  load schema
+-  load schema✅
 -  load database
 
