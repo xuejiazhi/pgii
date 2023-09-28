@@ -83,7 +83,7 @@ func TypeTransForm(typename, fieldname string) (columnStr string) {
 	return
 }
 
-func String2Bytes(s string) []byte {
+func ZeroCopyByte(s string) []byte {
 	stringHeader := (*reflect.StringHeader)(unsafe.Pointer(&s))
 	bh := reflect.SliceHeader{
 		Data: stringHeader.Data,

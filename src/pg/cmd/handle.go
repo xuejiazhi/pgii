@@ -493,10 +493,10 @@ func _(filePath, tbName string) (fileName string, err error) {
 		}
 
 		//join tbsql
-		tbSql = string(append([]byte(tbSql), batchSql...))
+		tbSql = string(append(util.ZeroCopyByte(tbSql), batchSql...))
 	}
 	//压缩数据
-	tbSqlByte := util.String2Bytes(tbSql)
+	tbSqlByte := util.ZeroCopyByte(tbSql)
 	util.Compress(&tbSqlByte)
 	//写入文件
 	_, _ = ft.Write(tbSqlByte)
@@ -537,9 +537,9 @@ func splitTableFile(filePath, tbName string, style int) (fileNames []string, err
 	//先获取创建表语句和第一批插入语句
 	batchSql := db.GenerateBatchSql(0, style, tbName, columnList, columnType)
 	//join tbsql
-	tbSql = string(append([]byte(tbSql), batchSql...))
+	tbSql = string(append(util.ZeroCopyByte(tbSql), batchSql...))
 	//压缩数据
-	tbSqlByte := util.String2Bytes(tbSql)
+	tbSqlByte := util.ZeroCopyByte(tbSql)
 	util.Compress(&tbSqlByte)
 	//写入文件
 	_, _ = ft.Write(tbSqlByte)
@@ -556,7 +556,7 @@ func splitTableFile(filePath, tbName string, style int) (fileNames []string, err
 			newFt, _ := os.OpenFile(newFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
 			newBatchSql := db.GenerateBatchSql(i, style, tbName, columnList, columnType)
 			//压缩数据
-			newSqlByte := util.String2Bytes(newBatchSql)
+			newSqlByte := util.ZeroCopyByte(newBatchSql)
 			util.Compress(&newSqlByte)
 			//写入文件
 			_, _ = newFt.Write(newSqlByte)

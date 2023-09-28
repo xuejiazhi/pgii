@@ -60,7 +60,7 @@ func ReadLine() {
 	cmdLine := ""
 	//键盘输入
 	//print header
-	fmt.Print(util.SetColor(fmt.Sprintf("pgi~[%s/%s]# ", *global.Database, db.P.Schema), util.LightBlue))
+	fmt.Print(util.SetColor(fmt.Sprintf("pgii~[%s/%s]# ", *global.Database, db.P.Schema), util.LightBlue))
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		t := strings.Trim(scanner.Text(), "")

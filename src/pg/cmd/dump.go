@@ -63,12 +63,12 @@ func (s *Params) DumpSchema() {
 
 	//step2 生成schema文件
 	scFile := filePath + "/schema.pgi"
-	_, _ = f.Write(util.String2Bytes(scFile + "\n"))
+	_, _ = f.Write(util.ZeroCopyByte(scFile + "\n"))
 	fs, _ := os.OpenFile(scFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
 	defer fileClose(fs)
 
 	//生成schema
-	scStr := util.String2Bytes(db.GenerateSchema(db.P.Schema, global.DUMP))
+	scStr := util.ZeroCopyByte(db.GenerateSchema(db.P.Schema, global.DUMP))
 	util.Compress(&scStr)
 	_, _ = fs.Write(scStr)
 	//print success
@@ -98,7 +98,7 @@ func (s *Params) DumpSchema() {
 
 			//write fileName
 			for _, fn := range fns {
-				_, _ = f.Write(util.String2Bytes(fn + "\n"))
+				_, _ = f.Write(util.ZeroCopyByte(fn + "\n"))
 			}
 
 			//print tips
@@ -145,7 +145,7 @@ func (s *Params) DumpTable() {
 
 	//circle write filename
 	for _, fn := range fns {
-		_, _ = f.Write(util.String2Bytes(fn + "\n"))
+		_, _ = f.Write(util.ZeroCopyByte(fn + "\n"))
 	}
 
 	//print tips
@@ -184,7 +184,7 @@ func (s *Params) DumpDatabase() {
 	defer fileClose(f)
 
 	//generate db sql
-	dbSQL := []byte(genDataBaseSQL(db.P.DataBase))
+	dbSQL := util.ZeroCopyByte(genDataBaseSQL(db.P.DataBase))
 
 	//压缩数据
 	util.Compress(&dbSQL)
@@ -194,23 +194,23 @@ func (s *Params) DumpDatabase() {
 	//遍历schema
 	for _, m := range scList {
 		util.PrintColorTips(util.LightBlue, global.LineOperate)
-		schmaName := cast.ToString(m["nspname"])
+		schemaName := cast.ToString(m["nspname"])
 		//校验schema 是否存在
-		if info, err := db.P.GetSchemaFromNS(schmaName); err == nil {
+		if info, err := db.P.GetSchemaFromNS(schemaName); err == nil {
 			if len(info) == 0 {
 				util.PrintColorTips(util.LightRed, ">>"+global.DumpSchemaNotExists)
 			}
 		}
 		//开始写入schema
 		//生成schema
-		schemaStr := []byte(db.GenerateSchema(schmaName))
+		schemaStr := util.ZeroCopyByte(db.GenerateSchema(schemaName))
 		util.Compress(&schemaStr)
 		//写入文件
 		_, _ = f.Write(schemaStr)
-		util.PrintColorTips(util.LightGreen, fmt.Sprintf(">>%s[%s]", global.DumpSchemaSuccess, schmaName))
+		util.PrintColorTips(util.LightGreen, fmt.Sprintf(">>%s[%s]", global.DumpSchemaSuccess, schemaName))
 
 		//查询所有的表
-		if tbs, err := db.P.GetTableBySchema(schmaName); err == nil {
+		if tbs, err := db.P.GetTableBySchema(schemaName); err == nil {
 			if len(tbs) == 0 {
 				util.PrintColorTips(util.LightRed, global.DumpFailedSchemaNoTable)
 				continue
@@ -224,7 +224,7 @@ func (s *Params) DumpDatabase() {
 				}
 
 				tbName := cast.ToString(tn)
-				fullTbName := fmt.Sprintf(`"%s".%s`, schmaName, tbName)
+				fullTbName := fmt.Sprintf(`"%s".%s`, schemaName, tbName)
 				//校验表是否存在
 				if tbInfo, err := db.P.GetTableByName(cast.ToString(tbName)); err != nil || len(tbInfo) == 0 {
 					util.PrintColorTips(util.LightRed, ">>>"+global.DumpFailedNoTable)
@@ -232,7 +232,7 @@ func (s *Params) DumpDatabase() {
 				}
 
 				//生成Table 的DDL
-				tbsql := []byte(getTableDdlSql(schmaName, tbName))
+				tbsql := util.ZeroCopyByte(getTableDdlSql(schemaName, tbName))
 				//压缩数据
 				util.Compress(&tbsql)
 				//写入文件
@@ -249,17 +249,17 @@ func (s *Params) DumpDatabase() {
 				}
 				//开始处理表的数据
 				//获取表的column
-				columnList := db.P.GetColumnList(schmaName, tbName)
+				columnList := db.P.GetColumnList(schemaName, tbName)
 				columnType := db.P.GetColumnsType(tbName, columnList...)
 				for i := 0; i < pgCount; i++ {
 					batchSql := ""
 					//定义定入的SQL
 					batchValue := db.GenerateBatchValue(i, fullTbName, columnList, columnType)
 					if len(batchValue) > 0 {
-						batchSql = fmt.Sprintf(`Insert into "%s".%s(%s) values %s;\n`, schmaName, tbName, strings.Join(columnList, ","), strings.Join(batchValue, ","))
+						batchSql = fmt.Sprintf(`Insert into "%s".%s(%s) values %s;\n`, schemaName, tbName, strings.Join(columnList, ","), strings.Join(batchValue, ","))
 					}
 					//压缩数据
-					tbSqlByte := []byte(batchSql)
+					tbSqlByte := util.ZeroCopyByte(batchSql)
 					util.Compress(&tbSqlByte)
 					//写入文件
 					_, _ = f.Write(tbSqlByte)
