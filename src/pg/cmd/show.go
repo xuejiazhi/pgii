@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+var DefaultVersion = 15
+
 func (s *Params) Show() {
 	if len(s.Param) == global.ZeroCMDLength {
 		util.PrintColorTips(util.LightRed, global.CmdLineWrong)
@@ -266,7 +268,7 @@ func (s *Params) ShowDatabases() {
 				v["datallowconn"],
 				v["datconnlimit"])
 			//judge version
-			if version < 15 {
+			if version < DefaultVersion {
 				sbs = append(sbs, v["datlastsysoid"])
 			}
 
